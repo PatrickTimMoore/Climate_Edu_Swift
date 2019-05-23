@@ -10,8 +10,7 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
-    
-    //1
+    //declaring varables used to stare game-data
     var game: GameManager!
     var climateBG: SKShapeNode!
     var weatherBG: SKShapeNode!
@@ -21,27 +20,30 @@ class GameScene: SKScene {
     var ceBG: SKShapeNode!
     var cweBG: SKShapeNode!
     
+    // Function runs on start of the aplication
     override func didMove(to view: SKView) {
-        //2
         initializeMenu()
         game = GameManager(scene: self)
     }
     
-    //3
+    // Function runs on screen touch
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
+        // Add on-click functionality here
     }
     
     private func initializeMenu() {
+        // Declaring constants to determine object sizing
         let screenSize: CGRect = UIScreen.main.bounds
         let screenWidth = screenSize.width
         let screenHeight = screenSize.height
+        // Determines ratio
         let ratio: CGFloat = (screenWidth / CGFloat(850))
         let circleWidth: CGFloat = (ratio * CGFloat(270))
         let barWidth: CGFloat = ratio * 110
         let barLength: CGFloat = ratio * CGFloat(550)
         let bottomMargin: CGFloat = ((screenHeight / -2) + (0.6 * circleWidth))
         let midMargin: CGFloat = ((3 / 4) * barLength * barLength).squareRoot()
+        // Declares center of the 3 circles as anchor points
         let p1 = CGPoint(x: (barLength / -2), y: bottomMargin + midMargin)
         let p2 = CGPoint(x: (barLength / 2), y: bottomMargin + midMargin)
         let p3 = CGPoint(x: 0, y: bottomMargin)
@@ -88,21 +90,21 @@ class GameScene: SKScene {
         ceBG.fillColor = SKColor.yellow
         ceBG.name = "ce_space"
         self.addChild(ceBG)
-        // Create Climate
+        // Create Climate Circle
         climateBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
         climateBG.position = p1
         climateBG.zPosition = 3
         climateBG.fillColor = SKColor.blue
         climateBG.name = "c_space"
         self.addChild(climateBG)
-        // Create Weather
+        // Create Weather Circle
         weatherBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
         weatherBG.position = p2
         weatherBG.zPosition = 3
         weatherBG.fillColor = SKColor.red
         weatherBG.name = "w_space"
         self.addChild(weatherBG)
-        // Create Enviroment
+        // Create Enviroment Circle
         enviromBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
         enviromBG.position = p3
         enviromBG.zPosition = 3
