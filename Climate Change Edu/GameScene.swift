@@ -12,12 +12,7 @@ import GameplayKit
 class GameScene: SKScene {
     
     //1
-    var gameLogo: SKLabelNode!
-    var bestScore: SKLabelNode!
-    var playButton: SKShapeNode!
     var game: GameManager!
-    var currentScore: SKLabelNode!
-    var playerPositions: [(Int, Int)] = []
     var climateBG: SKShapeNode!
     var weatherBG: SKShapeNode!
     var enviromBG: SKShapeNode!
@@ -25,8 +20,6 @@ class GameScene: SKScene {
     var weBG: SKShapeNode!
     var ceBG: SKShapeNode!
     var cweBG: SKShapeNode!
-    var gameArray: [(node: SKShapeNode, x: Int, y: Int)] = []
-    var scorePos: CGPoint?
     
     override func didMove(to view: SKView) {
         //2
