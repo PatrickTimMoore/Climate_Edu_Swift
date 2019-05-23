@@ -1,6 +1,6 @@
 //
 //  GameScene.swift
-//  Climate Change Edu
+//  Snake
 //
 //  Created by Patrick Moore on 5/15/19.
 //  Copyright © 2019 Patrick Moore. All rights reserved.
@@ -11,100 +11,110 @@ import GameplayKit
 
 class GameScene: SKScene {
     
-    var entities = [GKEntity]()
-    var graphs = [String : GKGraph]()
+    //1
+    var gameLogo: SKLabelNode!
+    var bestScore: SKLabelNode!
+    var playButton: SKShapeNode!
+    var game: GameManager!
+    var currentScore: SKLabelNode!
+    var playerPositions: [(Int, Int)] = []
+    var climateBG: SKShapeNode!
+    var weatherBG: SKShapeNode!
+    var enviromBG: SKShapeNode!
+    var cwBG: SKShapeNode!
+    var weBG: SKShapeNode!
+    var ceBG: SKShapeNode!
+    var cweBG: SKShapeNode!
+    var gameArray: [(node: SKShapeNode, x: Int, y: Int)] = []
+    var scorePos: CGPoint?
     
-    private var lastUpdateTime : TimeInterval = 0
-    private var label : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
-    
-    override func sceneDidLoad() {
-
-        self.lastUpdateTime = 0
-        
-        // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
-        }
-        
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
-        
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
-            
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(M_PI), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
+    override func didMove(to view: SKView) {
+        //2
+        initializeMenu()
+        game = GameManager(scene: self)
     }
     
-    
-    func touchDown(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.green
-            self.addChild(n)
-        }
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue
-            self.addChild(n)
-        }
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.red
-            self.addChild(n)
-        }
-    }
-    
+    //3
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let label = self.label {
-            label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
-        }
         
-        for t in touches { self.touchDown(atPoint: t.location(in: self)) }
     }
     
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
-    
-    
-    override func update(_ currentTime: TimeInterval) {
-        // Called before each frame is rendered
-        
-        // Initialize _lastUpdateTime if it has not already been
-        if (self.lastUpdateTime == 0) {
-            self.lastUpdateTime = currentTime
-        }
-        
-        // Calculate time since last update
-        let dt = currentTime - self.lastUpdateTime
-        
-        // Update entities
-        for entity in self.entities {
-            entity.update(deltaTime: dt)
-        }
-        
-        self.lastUpdateTime = currentTime
+    private func initializeMenu() {
+        let screenSize: CGRect = UIScreen.main.bounds
+        let screenWidth = screenSize.width
+        let screenHeight = screenSize.height
+        let ratio: CGFloat = (screenWidth / CGFloat(850))
+        let circleWidth: CGFloat = (ratio * CGFloat(270))
+        let barWidth: CGFloat = ratio * 110
+        let barLength: CGFloat = ratio * CGFloat(550)
+        let bottomMargin: CGFloat = ((screenHeight / -2) + (0.6 * circleWidth))
+        let midMargin: CGFloat = ((3 / 4) * barLength * barLength).squareRoot()
+        let p1 = CGPoint(x: (barLength / -2), y: bottomMargin + midMargin)
+        let p2 = CGPoint(x: (barLength / 2), y: bottomMargin + midMargin)
+        let p3 = CGPoint(x: 0, y: bottomMargin)
+        // Create Common Area
+        cweBG = SKShapeNode()
+        cweBG.position = CGPoint(x: 0, y: 0)
+        cweBG.zPosition = 1
+        let path1 = CGMutablePath()
+        path1.addLines(between: [p1, p2, p3])
+        cweBG.path = path1
+        cweBG.fillColor = SKColor.lightGray
+        cweBG.name = "cwe_space"
+        self.addChild(cweBG)
+        // Create Combo Area
+        cwBG = SKShapeNode()
+        cwBG.position = CGPoint(x: 0, y: 0)
+        cwBG.zPosition = 2
+        let path2 = CGMutablePath()
+        let cwBar: [CGPoint] = [CGPoint(x: p1.x, y: p1.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y - (barWidth / 2)), CGPoint(x: p1.x, y: p1.y - (barWidth / 2))]
+        path2.addLines(between: [cwBar[0], cwBar[1], cwBar[2], cwBar[3]])
+        cwBG.path = path2
+        cwBG.fillColor = SKColor.purple
+        cwBG.name = "cw_space"
+        self.addChild(cwBG)
+        // Create Combo Area
+        weBG = SKShapeNode()
+        weBG.position = CGPoint(x: 0, y: 0)
+        weBG.zPosition = 2
+        let path3 = CGMutablePath()
+        let weBar: [CGPoint] = [CGPoint(x: p1.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p1.y + (barWidth / 4)), CGPoint(x: p3.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y + (barWidth / 4)), CGPoint(x: p3.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y - (barWidth / 4)), CGPoint(x: p1.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p1.y - (barWidth / 4))]
+        path3.addLines(between: [weBar[0], weBar[1], weBar[2], weBar[3]])
+        weBG.path = path3
+        weBG.fillColor = SKColor.cyan
+        weBG.name = "we_space"
+        self.addChild(weBG)
+        // Create Combo Area
+        ceBG = SKShapeNode()
+        ceBG.position = CGPoint(x: 0, y: 0)
+        ceBG.zPosition = 2
+        let path4 = CGMutablePath()
+        let ceBar: [CGPoint] = [CGPoint(x: p3.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y - (barWidth / 4)), CGPoint(x: p2.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p2.y - (barWidth / 4)), CGPoint(x: p2.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p2.y + (barWidth / 4)), CGPoint(x: p3.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y + (barWidth / 4))]
+        path4.addLines(between: [ceBar[0], ceBar[1], ceBar[2], ceBar[3]])
+        ceBG.path = path4
+        ceBG.fillColor = SKColor.yellow
+        ceBG.name = "ce_space"
+        self.addChild(ceBG)
+        // Create Climate
+        climateBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
+        climateBG.position = p1
+        climateBG.zPosition = 3
+        climateBG.fillColor = SKColor.blue
+        climateBG.name = "c_space"
+        self.addChild(climateBG)
+        // Create Weather
+        weatherBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
+        weatherBG.position = p2
+        weatherBG.zPosition = 3
+        weatherBG.fillColor = SKColor.red
+        weatherBG.name = "w_space"
+        self.addChild(weatherBG)
+        // Create Enviroment
+        enviromBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
+        enviromBG.position = p3
+        enviromBG.zPosition = 3
+        enviromBG.fillColor = SKColor.green
+        enviromBG.name = "e_space"
+        self.addChild(enviromBG)
     }
 }
