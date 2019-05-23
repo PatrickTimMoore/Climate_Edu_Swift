@@ -1,6 +1,6 @@
 //
-//  GameScene.swift
-//  Snake
+//  AppDelegate.swift
+//  Climate Change Edu
 //
 //  Created by Patrick Moore on 5/15/19.
 //  Copyright © 2019 Patrick Moore. All rights reserved.
