@@ -1,8 +1,8 @@
 //
-//  GameViewController.swift
-//  Snake
+//  AppDelegate.swift
+//  Climate Change Edu
 //
-//  Created by Patrick Moore on 5/16/19.
+//  Created by Patrick Moore on 5/15/19.
 //  Copyright © 2019 Patrick Moore. All rights reserved.
 //
 
