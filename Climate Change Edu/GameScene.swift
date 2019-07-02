@@ -19,6 +19,22 @@ class GameScene: SKScene {
     var weBG: SKShapeNode!
     var ceBG: SKShapeNode!
     var cweBG: SKShapeNode!
+    var tile1: SKShapeNode!
+    var tile2: SKShapeNode!
+    var tile3: SKShapeNode!
+    var tile4: SKShapeNode!
+    var tile5: SKShapeNode!
+    var tile6: SKShapeNode!
+    var tile7: SKShapeNode!
+    var tile8: SKShapeNode!
+    var tile9: SKShapeNode!
+    var tile10: SKShapeNode!
+    var tile11: SKShapeNode!
+    var tile12: SKShapeNode!
+    var tile13: SKShapeNode!
+    var tile14: SKShapeNode!
+    var tile15: SKShapeNode!
+    
     
     // Function runs on start of the aplication
     override func didMove(to view: SKView) {
@@ -43,6 +59,9 @@ class GameScene: SKScene {
         let barLength: CGFloat = ratio * CGFloat(550)
         let bottomMargin: CGFloat = ((screenHeight / -2) + (0.6 * circleWidth))
         let midMargin: CGFloat = ((3 / 4) * barLength * barLength).squareRoot()
+        // Declares size of tiles
+        let tileLength: CGFloat = ((1/9) * 850 * ratio)
+        let tileHeight: CGFloat = (tileLength / 2)
         // Declares center of the 3 circles as anchor points
         let p1 = CGPoint(x: (barLength / -2), y: bottomMargin + midMargin)
         let p2 = CGPoint(x: (barLength / 2), y: bottomMargin + midMargin)
@@ -189,5 +208,88 @@ class GameScene: SKScene {
         weLabel2.zRotation = 60 * CGFloat.pi / 180
         self.addChild(weLabel1)
         self.addChild(weLabel2)
+        let cweLabel1 = SKLabelNode(fontNamed: "ArialMT")
+        let cweLabel2 = SKLabelNode(fontNamed: "ArialMT")
+        let cweLabel3 = SKLabelNode(fontNamed: "ArialMT")
+        cweLabel1.text = "Enviroment and"
+        cweLabel2.text = "Weather and"
+        cweLabel3.text = "Climate"
+        cweLabel1.fontSize = 30 * ratio
+        cweLabel2.fontSize = 30 * ratio
+        cweLabel3.fontSize = 30 * ratio
+        cweLabel1.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel1.fontSize * 3.8))
+        cweLabel2.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel2.fontSize * 2.4))
+        cweLabel3.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel3.fontSize * 1.0))
+        cweLabel1.zPosition = 4
+        cweLabel2.zPosition = 4
+        cweLabel3.zPosition = 4
+        cweLabel1.fontColor = SKColor.black
+        cweLabel2.fontColor = SKColor.black
+        cweLabel3.fontColor = SKColor.black
+        self.addChild(cweLabel1)
+        self.addChild(cweLabel2)
+        self.addChild(cweLabel3)
+        let naLabel1 = SKLabelNode(fontNamed: "ArialMT")
+        let naLabel2 = SKLabelNode(fontNamed: "ArialMT")
+        let naLabel3 = SKLabelNode(fontNamed: "ArialMT")
+        let naLabel4 = SKLabelNode(fontNamed: "ArialMT")
+        naLabel1.text = "unrelated"
+        naLabel2.text = "unrelated"
+        naLabel3.text = "unrelated"
+        naLabel4.text = "unrelated"
+        naLabel1.fontSize = 30 * ratio
+        naLabel2.fontSize = 30 * ratio
+        naLabel3.fontSize = 30 * ratio
+        naLabel4.fontSize = 30 * ratio
+        naLabel1.position = CGPoint(x: 7 * screenWidth / 20, y: (weatherBG.frame.midY + (3 * enviromBG.frame.midY)) / 4)
+        naLabel2.position = CGPoint(x: 7 * screenWidth / -20, y: (weatherBG.frame.midY + (3 * enviromBG.frame.midY)) / 4)
+        naLabel3.position = CGPoint(x: 7 * screenWidth / 20, y: (enviromBG.frame.midY - screenHeight) / 3)
+        naLabel4.position = CGPoint(x: 7 * screenWidth / -20, y: (enviromBG.frame.midY - screenHeight) / 3)
+        naLabel1.zPosition = 4
+        naLabel2.zPosition = 4
+        naLabel3.zPosition = 4
+        naLabel4.zPosition = 4
+        naLabel1.fontColor = SKColor.black
+        naLabel2.fontColor = SKColor.black
+        naLabel3.fontColor = SKColor.black
+        naLabel4.fontColor = SKColor.black
+        self.addChild(naLabel1)
+        self.addChild(naLabel2)
+        self.addChild(naLabel3)
+        self.addChild(naLabel4)
+        let tileMin = bottomMargin + midMargin + (0.6 * circleWidth)
+        let tileMax = screenHeight / 2
+        let tileOffsetX = tileLength / -2
+        let tileBufferX = screenWidth / 6
+        tile1 = SKShapeNode.init(rect: CGRect(x: tileOffsetX - (2 * tileBufferX), y: (tileMin / 4) + (3 * tileMax / 4), width: tileLength, height: tileHeight))
+        tile2 = SKShapeNode.init(rect: CGRect(x: tileOffsetX - tileBufferX, y: (tileMin / 4) + (3 * tileMax / 4), width: tileLength, height: tileHeight))
+        tile3 = SKShapeNode.init(rect: CGRect(x: tileOffsetX, y: (tileMin / 4) + (3 * tileMax / 4), width: tileLength, height: tileHeight))
+        tile4 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + tileBufferX, y: (tileMin / 4) + (3 * tileMax / 4), width: tileLength, height: tileHeight))
+        tile5 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + (2 * tileBufferX), y: (tileMin / 4) + (3 * tileMax / 4), width: tileLength, height: tileHeight))
+        tile6 = SKShapeNode.init(rect: CGRect(x: tileOffsetX - (2 * tileBufferX), y: (tileMin + tileMax) / 2, width: tileLength, height: tileHeight))
+        tile7 = SKShapeNode.init(rect: CGRect(x: tileOffsetX - tileBufferX, y: (tileMin + tileMax) / 2, width: tileLength, height: tileHeight))
+        tile8 = SKShapeNode.init(rect: CGRect(x: tileOffsetX, y: (tileMin + tileMax) / 2, width: tileLength, height: tileHeight))
+        tile9 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + tileBufferX, y: (tileMin + tileMax) / 2, width: tileLength, height: tileHeight))
+        tile10 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + (2 * tileBufferX), y: (tileMin + tileMax) / 2, width: tileLength, height: tileHeight))
+        tile11 = SKShapeNode.init(rect: CGRect(x: tileOffsetX - (2 * tileBufferX), y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
+        tile12 = SKShapeNode.init(rect: CGRect(x: tileOffsetX - tileBufferX, y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
+        tile13 = SKShapeNode.init(rect: CGRect(x: tileOffsetX, y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
+        tile14 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + tileBufferX, y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
+        tile15 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + (2 * tileBufferX), y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
+        self.addChild(tile1)
+        self.addChild(tile2)
+        self.addChild(tile3)
+        self.addChild(tile4)
+        self.addChild(tile5)
+        self.addChild(tile6)
+        self.addChild(tile7)
+        self.addChild(tile8)
+        self.addChild(tile9)
+        self.addChild(tile10)
+        self.addChild(tile11)
+        self.addChild(tile12)
+        self.addChild(tile13)
+        self.addChild(tile14)
+        self.addChild(tile15)
     }
 }
