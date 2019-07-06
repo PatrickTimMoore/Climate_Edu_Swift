@@ -34,6 +34,8 @@ class GameScene: SKScene {
     var tile13: SKShapeNode!
     var tile14: SKShapeNode!
     var tile15: SKShapeNode!
+    var nodeToMove: SKNode!
+    var locationOld: CGPoint!
     
     
     // Function runs on start of the aplication
@@ -42,10 +44,35 @@ class GameScene: SKScene {
         game = GameManager(scene: self)
     }
     
-    // Function runs on screen touch
+    // Function runs on initial screen touch
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Add on-click functionality here
+        for touch in touches {
+            let location = touch.location(in: self)
+            let touchedNode = self.nodes(at: location)
+            for node in touchedNode {
+                if node.name == "tile" {
+                    nodeToMove = node
+                    locationOld = location
+                }
+            }
+        }
     }
+    
+    // Function runs on dragging screen touch
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Add on-drag functionality here
+        for touch in touches {
+            let location = touch.location(in: self)
+            nodeToMove.position = CGPoint(x: nodeToMove.position.x + location.x - locationOld.x, y: nodeToMove.position.y + location.y - locationOld.y)
+        }
+    }
+    
+    //-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+    //
+    //line.path = nil;
+    //
+    //}
     
     private func initializeMenu() {
         // Declaring constants to determine object sizing
