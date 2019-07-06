@@ -276,6 +276,21 @@ class GameScene: SKScene {
         tile13 = SKShapeNode.init(rect: CGRect(x: tileOffsetX, y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
         tile14 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + tileBufferX, y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
         tile15 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + (2 * tileBufferX), y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
+        tile1.name = "tile"
+        tile2.name = "tile"
+        tile3.name = "tile"
+        tile4.name = "tile"
+        tile5.name = "tile"
+        tile6.name = "tile"
+        tile7.name = "tile"
+        tile8.name = "tile"
+        tile9.name = "tile"
+        tile10.name = "tile"
+        tile11.name = "tile"
+        tile12.name = "tile"
+        tile13.name = "tile"
+        tile14.name = "tile"
+        tile15.name = "tile"
         self.addChild(tile1)
         self.addChild(tile2)
         self.addChild(tile3)
