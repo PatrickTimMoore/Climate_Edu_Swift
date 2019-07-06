@@ -257,10 +257,13 @@ class GameScene: SKScene {
         self.addChild(naLabel2)
         self.addChild(naLabel3)
         self.addChild(naLabel4)
+        // Establish draggable tiles in bulk
+        // Dimentional variables
         let tileMin = bottomMargin + midMargin + (0.6 * circleWidth)
         let tileMax = screenHeight / 2
         let tileOffsetX = tileLength / -2
         let tileBufferX = screenWidth / 6
+        // Create tile
         tile1 = SKShapeNode.init(rect: CGRect(x: tileOffsetX - (2 * tileBufferX), y: (tileMin / 4) + (3 * tileMax / 4), width: tileLength, height: tileHeight))
         tile2 = SKShapeNode.init(rect: CGRect(x: tileOffsetX - tileBufferX, y: (tileMin / 4) + (3 * tileMax / 4), width: tileLength, height: tileHeight))
         tile3 = SKShapeNode.init(rect: CGRect(x: tileOffsetX, y: (tileMin / 4) + (3 * tileMax / 4), width: tileLength, height: tileHeight))
@@ -276,6 +279,7 @@ class GameScene: SKScene {
         tile13 = SKShapeNode.init(rect: CGRect(x: tileOffsetX, y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
         tile14 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + tileBufferX, y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
         tile15 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + (2 * tileBufferX), y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
+        // Assign tile type
         tile1.name = "tile"
         tile2.name = "tile"
         tile3.name = "tile"
@@ -291,6 +295,71 @@ class GameScene: SKScene {
         tile13.name = "tile"
         tile14.name = "tile"
         tile15.name = "tile"
+        // Color tile
+        tile1.fillColor = SKColor.white
+        tile2.fillColor = SKColor.white
+        tile3.fillColor = SKColor.white
+        tile4.fillColor = SKColor.white
+        tile5.fillColor = SKColor.white
+        tile6.fillColor = SKColor.white
+        tile7.fillColor = SKColor.white
+        tile8.fillColor = SKColor.white
+        tile9.fillColor = SKColor.white
+        tile10.fillColor = SKColor.white
+        tile11.fillColor = SKColor.white
+        tile12.fillColor = SKColor.white
+        tile13.fillColor = SKColor.white
+        tile14.fillColor = SKColor.white
+        tile15.fillColor = SKColor.white
+        // make tile always visable
+        tile1.zPosition = 5
+        tile2.zPosition = 5
+        tile3.zPosition = 5
+        tile4.zPosition = 5
+        tile5.zPosition = 5
+        tile6.zPosition = 5
+        tile7.zPosition = 5
+        tile8.zPosition = 5
+        tile9.zPosition = 5
+        tile10.zPosition = 5
+        tile11.zPosition = 5
+        tile12.zPosition = 5
+        tile13.zPosition = 5
+        tile14.zPosition = 5
+        tile15.zPosition = 5
+        // Create labels
+        let tileLabel1 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel2 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel3 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel4 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel5 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel6 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel7 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel8 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel9 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel10 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel11 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel12 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel13 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel14 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel15 = SKLabelNode(fontNamed: "ArialMT")
+        // Placeholder labels
+        tileLabel1.text = "1"
+        tileLabel2.text = "2"
+        tileLabel3.text = "3"
+        tileLabel4.text = "4"
+        tileLabel5.text = "5"
+        tileLabel6.text = "6"
+        tileLabel7.text = "7"
+        tileLabel8.text = "8"
+        tileLabel9.text = "9"
+        tileLabel10.text = "10"
+        tileLabel11.text = "11"
+        tileLabel12.text = "12"
+        tileLabel13.text = "13"
+        tileLabel14.text = "14"
+        tileLabel15.text = "15"
+        // add tiles to screen
         self.addChild(tile1)
         self.addChild(tile2)
         self.addChild(tile3)
@@ -306,5 +375,69 @@ class GameScene: SKScene {
         self.addChild(tile13)
         self.addChild(tile14)
         self.addChild(tile15)
+        // Place Labels in center of tiles
+        tileLabel1.position = CGPoint(x: tile1.frame.midX, y: tile1.frame.midY)
+        tileLabel2.position = CGPoint(x: tile2.frame.midX, y: tile2.frame.midY)
+        tileLabel3.position = CGPoint(x: tile3.frame.midX, y: tile3.frame.midY)
+        tileLabel4.position = CGPoint(x: tile4.frame.midX, y: tile4.frame.midY)
+        tileLabel5.position = CGPoint(x: tile5.frame.midX, y: tile5.frame.midY)
+        tileLabel6.position = CGPoint(x: tile6.frame.midX, y: tile6.frame.midY)
+        tileLabel7.position = CGPoint(x: tile7.frame.midX, y: tile7.frame.midY)
+        tileLabel8.position = CGPoint(x: tile8.frame.midX, y: tile8.frame.midY)
+        tileLabel9.position = CGPoint(x: tile9.frame.midX, y: tile9.frame.midY)
+        tileLabel10.position = CGPoint(x: tile10.frame.midX, y: tile10.frame.midY)
+        tileLabel11.position = CGPoint(x: tile11.frame.midX, y: tile11.frame.midY)
+        tileLabel12.position = CGPoint(x: tile12.frame.midX, y: tile12.frame.midY)
+        tileLabel13.position = CGPoint(x: tile13.frame.midX, y: tile13.frame.midY)
+        tileLabel14.position = CGPoint(x: tile14.frame.midX, y: tile14.frame.midY)
+        tileLabel15.position = CGPoint(x: tile15.frame.midX, y: tile15.frame.midY)
+        // Color text
+        tileLabel1.fontColor = SKColor.black
+        tileLabel2.fontColor = SKColor.black
+        tileLabel3.fontColor = SKColor.black
+        tileLabel4.fontColor = SKColor.black
+        tileLabel5.fontColor = SKColor.black
+        tileLabel6.fontColor = SKColor.black
+        tileLabel7.fontColor = SKColor.black
+        tileLabel8.fontColor = SKColor.black
+        tileLabel9.fontColor = SKColor.black
+        tileLabel10.fontColor = SKColor.black
+        tileLabel11.fontColor = SKColor.black
+        tileLabel12.fontColor = SKColor.black
+        tileLabel13.fontColor = SKColor.black
+        tileLabel14.fontColor = SKColor.black
+        tileLabel15.fontColor = SKColor.black
+        // Make labels appear over tiles
+        tileLabel1.zPosition = 6
+        tileLabel2.zPosition = 6
+        tileLabel3.zPosition = 6
+        tileLabel4.zPosition = 6
+        tileLabel5.zPosition = 6
+        tileLabel6.zPosition = 6
+        tileLabel7.zPosition = 6
+        tileLabel8.zPosition = 6
+        tileLabel9.zPosition = 6
+        tileLabel10.zPosition = 6
+        tileLabel11.zPosition = 6
+        tileLabel12.zPosition = 6
+        tileLabel13.zPosition = 6
+        tileLabel14.zPosition = 6
+        tileLabel15.zPosition = 6
+        // Add labels  to screen
+        self.addChild(tileLabel1)
+        self.addChild(tileLabel2)
+        self.addChild(tileLabel3)
+        self.addChild(tileLabel4)
+        self.addChild(tileLabel5)
+        self.addChild(tileLabel6)
+        self.addChild(tileLabel7)
+        self.addChild(tileLabel8)
+        self.addChild(tileLabel9)
+        self.addChild(tileLabel10)
+        self.addChild(tileLabel11)
+        self.addChild(tileLabel12)
+        self.addChild(tileLabel13)
+        self.addChild(tileLabel14)
+        self.addChild(tileLabel15)
     }
 }
