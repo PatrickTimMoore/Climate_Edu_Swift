@@ -65,6 +65,7 @@ class GameScene: SKScene {
         for touch in touches {
             let location = touch.location(in: self)
             nodeToMove.position = CGPoint(x: nodeToMove.position.x + location.x - locationOld.x, y: nodeToMove.position.y + location.y - locationOld.y)
+            locationOld = location
         }
     }
     
