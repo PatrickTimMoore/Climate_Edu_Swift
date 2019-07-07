@@ -34,14 +34,31 @@ class GameScene: SKScene {
     var tile13: SKShapeNode!
     var tile14: SKShapeNode!
     var tile15: SKShapeNode!
+    var tileLabel1: SKLabelNode!
+    var tileLabel2: SKLabelNode!
+    var tileLabel3: SKLabelNode!
+    var tileLabel4: SKLabelNode!
+    var tileLabel5: SKLabelNode!
+    var tileLabel6: SKLabelNode!
+    var tileLabel7: SKLabelNode!
+    var tileLabel8: SKLabelNode!
+    var tileLabel9: SKLabelNode!
+    var tileLabel10: SKLabelNode!
+    var tileLabel11: SKLabelNode!
+    var tileLabel12: SKLabelNode!
+    var tileLabel13: SKLabelNode!
+    var tileLabel14: SKLabelNode!
+    var tileLabel15: SKLabelNode!
     var nodeToMove: SKNode!
+    var nodeLabelToMove: SKNode!
     var locationOld: CGPoint!
-    
+    var zPosUpdater: CGFloat!
     
     // Function runs on start of the aplication
     override func didMove(to view: SKView) {
         initializeMenu()
         game = GameManager(scene: self)
+        zPosUpdater = 7
     }
     
     // Function runs on initial screen touch
@@ -54,7 +71,64 @@ class GameScene: SKScene {
                 if node.name == "tile" {
                     nodeToMove = node
                     locationOld = location
+                    break
                 }
+            }
+            switch nodeToMove {
+                case tile1:
+                    nodeLabelToMove = tileLabel1
+                    break
+                case tile2:
+                    nodeLabelToMove = tileLabel2
+                    break
+                case tile3:
+                    nodeLabelToMove = tileLabel3
+                    break
+                case tile4:
+                    nodeLabelToMove = tileLabel4
+                    break
+                case tile5:
+                    nodeLabelToMove = tileLabel5
+                    break
+                case tile6:
+                    nodeLabelToMove = tileLabel6
+                    break
+                case tile7:
+                    nodeLabelToMove = tileLabel7
+                    break
+                case tile8:
+                    nodeLabelToMove = tileLabel8
+                    break
+                case tile9:
+                    nodeLabelToMove = tileLabel9
+                    break
+                case tile10:
+                    nodeLabelToMove = tileLabel10
+                    break
+                case tile11:
+                    nodeLabelToMove = tileLabel11
+                    break
+                case tile12:
+                    nodeLabelToMove = tileLabel12
+                    break
+                case tile13:
+                    nodeLabelToMove = tileLabel13
+                    break
+                case tile14:
+                    nodeLabelToMove = tileLabel14
+                    break
+                case tile15:
+                    nodeLabelToMove = tileLabel15
+                    break
+                case .none:
+                    break
+                case .some(_):
+                    break
+            }
+            if nodeToMove != nil {
+                nodeToMove.zPosition = zPosUpdater
+                nodeLabelToMove.zPosition = zPosUpdater + 1
+                zPosUpdater = zPosUpdater + 2
             }
         }
     }
@@ -62,18 +136,21 @@ class GameScene: SKScene {
     // Function runs on dragging screen touch
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Add on-drag functionality here
-        for touch in touches {
-            let location = touch.location(in: self)
-            nodeToMove.position = CGPoint(x: nodeToMove.position.x + location.x - locationOld.x, y: nodeToMove.position.y + location.y - locationOld.y)
-            locationOld = location
+        if nodeToMove != nil {
+            for touch in touches {
+                let location = touch.location(in: self)
+                nodeToMove.position = CGPoint(x: nodeToMove.position.x + location.x - locationOld.x, y: nodeToMove.position.y + location.y - locationOld.y)
+                nodeLabelToMove.position = CGPoint(x: nodeLabelToMove.position.x + location.x - locationOld.x, y: nodeLabelToMove.position.y + location.y - locationOld.y)
+                locationOld = location
+            }
         }
     }
     
-    //-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
-    //
-    //line.path = nil;
-    //
-    //}
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        locationOld = nil
+        nodeToMove = nil
+        nodeLabelToMove = nil
+    }
     
     private func initializeMenu() {
         // Declaring constants to determine object sizing
@@ -339,6 +416,22 @@ class GameScene: SKScene {
         tile13.fillColor = SKColor.white
         tile14.fillColor = SKColor.white
         tile15.fillColor = SKColor.white
+        // Color outline tile
+        tile1.strokeColor = SKColor.black
+        tile2.strokeColor = SKColor.black
+        tile3.strokeColor = SKColor.black
+        tile4.strokeColor = SKColor.black
+        tile5.strokeColor = SKColor.black
+        tile6.strokeColor = SKColor.black
+        tile7.strokeColor = SKColor.black
+        tile8.strokeColor = SKColor.black
+        tile9.strokeColor = SKColor.black
+        tile10.strokeColor = SKColor.black
+        tile11.strokeColor = SKColor.black
+        tile12.strokeColor = SKColor.black
+        tile13.strokeColor = SKColor.black
+        tile14.strokeColor = SKColor.black
+        tile15.strokeColor = SKColor.black
         // make tile always visable
         tile1.zPosition = 5
         tile2.zPosition = 5
@@ -356,37 +449,117 @@ class GameScene: SKScene {
         tile14.zPosition = 5
         tile15.zPosition = 5
         // Create labels
-        let tileLabel1 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel2 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel3 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel4 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel5 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel6 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel7 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel8 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel9 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel10 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel11 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel12 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel13 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel14 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel15 = SKLabelNode(fontNamed: "ArialMT")
+        tileLabel1 = SKLabelNode(fontNamed: "ArialMT")
+        tileLabel2 = SKLabelNode(fontNamed: "ArialMT")
+        tileLabel3 = SKLabelNode(fontNamed: "ArialMT")
+        tileLabel4 = SKLabelNode(fontNamed: "ArialMT")
+        tileLabel5 = SKLabelNode(fontNamed: "ArialMT")
+        tileLabel6 = SKLabelNode(fontNamed: "ArialMT")
+        tileLabel7 = SKLabelNode(fontNamed: "ArialMT")
+        tileLabel8 = SKLabelNode(fontNamed: "ArialMT")
+        tileLabel9 = SKLabelNode(fontNamed: "ArialMT")
+        tileLabel10 = SKLabelNode(fontNamed: "ArialMT")
+        tileLabel11 = SKLabelNode(fontNamed: "ArialMT")
+        tileLabel12 = SKLabelNode(fontNamed: "ArialMT")
+        tileLabel13 = SKLabelNode(fontNamed: "ArialMT")
+        tileLabel14 = SKLabelNode(fontNamed: "ArialMT")
+        tileLabel15 = SKLabelNode(fontNamed: "ArialMT")
         // Placeholder labels
-        tileLabel1.text = "1"
-        tileLabel2.text = "2"
-        tileLabel3.text = "3"
-        tileLabel4.text = "4"
-        tileLabel5.text = "5"
-        tileLabel6.text = "6"
-        tileLabel7.text = "7"
-        tileLabel8.text = "8"
-        tileLabel9.text = "9"
-        tileLabel10.text = "10"
-        tileLabel11.text = "11"
-        tileLabel12.text = "12"
-        tileLabel13.text = "13"
-        tileLabel14.text = "14"
-        tileLabel15.text = "15"
+        tileLabel1.text = "Cooling temps"
+        tileLabel2.text = "Warming temps"
+        tileLabel3.text = "Daily changes"
+        tileLabel4.text = "Yearly changes"
+        tileLabel5.text = ">30 year changes"
+        tileLabel6.text = "Farming"
+        tileLabel7.text = "Industry"
+        tileLabel8.text = "Local"
+        tileLabel9.text = "Regional"
+        tileLabel10.text = "Global"
+        tileLabel11.text = "Animals & plants"
+        tileLabel12.text = "People"
+        tileLabel13.text = "Forests"
+        tileLabel14.text = "Oceans"
+        tileLabel15.text = "Greenhouse effect"
+        tileLabel1.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tileLabel2.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tileLabel3.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tileLabel4.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tileLabel5.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tileLabel6.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tileLabel7.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tileLabel8.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tileLabel9.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tileLabel10.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tileLabel11.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tileLabel12.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tileLabel13.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tileLabel14.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tileLabel15.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tileLabel1.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        tileLabel2.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        tileLabel3.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        tileLabel4.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        tileLabel5.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        tileLabel6.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        tileLabel7.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        tileLabel8.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        tileLabel9.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        tileLabel10.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        tileLabel11.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        tileLabel12.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        tileLabel13.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        tileLabel14.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        tileLabel15.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        if #available(iOS 11.0, *) {
+            tileLabel1.numberOfLines = 3
+            tileLabel1.preferredMaxLayoutWidth = tileLength
+            tileLabel1.fontSize = tileLength / 6
+            tileLabel2.numberOfLines = 3
+            tileLabel2.preferredMaxLayoutWidth = tileLength
+            tileLabel2.fontSize = tileLength / 6
+            tileLabel3.numberOfLines = 3
+            tileLabel3.preferredMaxLayoutWidth = tileLength
+            tileLabel3.fontSize = tileLength / 6
+            tileLabel4.numberOfLines = 3
+            tileLabel4.preferredMaxLayoutWidth = tileLength
+            tileLabel4.fontSize = tileLength / 6
+            tileLabel5.numberOfLines = 3
+            tileLabel5.preferredMaxLayoutWidth = tileLength
+            tileLabel5.fontSize = tileLength / 6
+            tileLabel6.numberOfLines = 3
+            tileLabel6.preferredMaxLayoutWidth = tileLength
+            tileLabel6.fontSize = tileLength / 6
+            tileLabel7.numberOfLines = 3
+            tileLabel7.preferredMaxLayoutWidth = tileLength
+            tileLabel7.fontSize = tileLength / 6
+            tileLabel8.numberOfLines = 3
+            tileLabel8.preferredMaxLayoutWidth = tileLength
+            tileLabel8.fontSize = tileLength / 6
+            tileLabel9.numberOfLines = 3
+            tileLabel9.preferredMaxLayoutWidth = tileLength
+            tileLabel9.fontSize = tileLength / 6
+            tileLabel10.numberOfLines = 3
+            tileLabel10.preferredMaxLayoutWidth = tileLength
+            tileLabel10.fontSize = tileLength / 6
+            tileLabel11.numberOfLines = 3
+            tileLabel11.preferredMaxLayoutWidth = tileLength
+            tileLabel11.fontSize = tileLength / 6
+            tileLabel12.numberOfLines = 3
+            tileLabel12.preferredMaxLayoutWidth = tileLength
+            tileLabel12.fontSize = tileLength / 6
+            tileLabel13.numberOfLines = 3
+            tileLabel13.preferredMaxLayoutWidth = tileLength
+            tileLabel13.fontSize = tileLength / 6
+            tileLabel14.numberOfLines = 3
+            tileLabel14.preferredMaxLayoutWidth = tileLength
+            tileLabel14.fontSize = tileLength / 6
+            tileLabel15.numberOfLines = 3
+            tileLabel15.preferredMaxLayoutWidth = tileLength
+            tileLabel15.fontSize = tileLength / 6
+        } else {
+            // Fallback on earlier versions
+            // FIX IN FUTURE UPDATE
+        }
         // add tiles to screen
         self.addChild(tile1)
         self.addChild(tile2)
@@ -404,21 +577,21 @@ class GameScene: SKScene {
         self.addChild(tile14)
         self.addChild(tile15)
         // Place Labels in center of tiles
-        tileLabel1.position = CGPoint(x: tile1.frame.midX, y: tile1.frame.midY)
-        tileLabel2.position = CGPoint(x: tile2.frame.midX, y: tile2.frame.midY)
-        tileLabel3.position = CGPoint(x: tile3.frame.midX, y: tile3.frame.midY)
-        tileLabel4.position = CGPoint(x: tile4.frame.midX, y: tile4.frame.midY)
-        tileLabel5.position = CGPoint(x: tile5.frame.midX, y: tile5.frame.midY)
-        tileLabel6.position = CGPoint(x: tile6.frame.midX, y: tile6.frame.midY)
-        tileLabel7.position = CGPoint(x: tile7.frame.midX, y: tile7.frame.midY)
-        tileLabel8.position = CGPoint(x: tile8.frame.midX, y: tile8.frame.midY)
-        tileLabel9.position = CGPoint(x: tile9.frame.midX, y: tile9.frame.midY)
-        tileLabel10.position = CGPoint(x: tile10.frame.midX, y: tile10.frame.midY)
-        tileLabel11.position = CGPoint(x: tile11.frame.midX, y: tile11.frame.midY)
-        tileLabel12.position = CGPoint(x: tile12.frame.midX, y: tile12.frame.midY)
-        tileLabel13.position = CGPoint(x: tile13.frame.midX, y: tile13.frame.midY)
-        tileLabel14.position = CGPoint(x: tile14.frame.midX, y: tile14.frame.midY)
-        tileLabel15.position = CGPoint(x: tile15.frame.midX, y: tile15.frame.midY)
+        tileLabel1.position = CGPoint(x: tile1.frame.minX + (tileLength / 20), y: tile1.frame.midY)
+        tileLabel2.position = CGPoint(x: tile2.frame.minX + (tileLength / 20), y: tile2.frame.midY)
+        tileLabel3.position = CGPoint(x: tile3.frame.minX + (tileLength / 20), y: tile3.frame.midY)
+        tileLabel4.position = CGPoint(x: tile4.frame.minX + (tileLength / 20), y: tile4.frame.midY)
+        tileLabel5.position = CGPoint(x: tile5.frame.minX + (tileLength / 20), y: tile5.frame.midY)
+        tileLabel6.position = CGPoint(x: tile6.frame.minX + (tileLength / 20), y: tile6.frame.midY)
+        tileLabel7.position = CGPoint(x: tile7.frame.minX + (tileLength / 20), y: tile7.frame.midY)
+        tileLabel8.position = CGPoint(x: tile8.frame.minX + (tileLength / 20), y: tile8.frame.midY)
+        tileLabel9.position = CGPoint(x: tile9.frame.minX + (tileLength / 20), y: tile9.frame.midY)
+        tileLabel10.position = CGPoint(x: tile10.frame.minX + (tileLength / 20), y: tile10.frame.midY)
+        tileLabel11.position = CGPoint(x: tile11.frame.minX + (tileLength / 20), y: tile11.frame.midY)
+        tileLabel12.position = CGPoint(x: tile12.frame.minX + (tileLength / 20), y: tile12.frame.midY)
+        tileLabel13.position = CGPoint(x: tile13.frame.minX + (tileLength / 20), y: tile13.frame.midY)
+        tileLabel14.position = CGPoint(x: tile14.frame.minX + (tileLength / 20), y: tile14.frame.midY)
+        tileLabel15.position = CGPoint(x: tile15.frame.minX + (tileLength / 20), y: tile15.frame.midY)
         // Color text
         tileLabel1.fontColor = SKColor.black
         tileLabel2.fontColor = SKColor.black
