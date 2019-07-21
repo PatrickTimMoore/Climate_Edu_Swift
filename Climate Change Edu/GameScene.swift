@@ -23,6 +23,9 @@ class GameScene: SKScene {
     var cwBar: [CGPoint]!
     var ceBar: [CGPoint]!
     var weBar: [CGPoint]!
+    var p1: CGPoint!
+    var p2: CGPoint!
+    var p3: CGPoint!
     var tile1: SKShapeNode!
     var tile2: SKShapeNode!
     var tile3: SKShapeNode!
@@ -58,6 +61,7 @@ class GameScene: SKScene {
     var locationOld: CGPoint!
     var zPosUpdater: CGFloat!
     var nodeFound: Bool!
+    var circleWidth: CGFloat!
     
     // Function runs on start of the aplication
     override func didMove(to view: SKView) {
@@ -151,6 +155,12 @@ class GameScene: SKScene {
         }
     }
     
+    func distance(_ a: CGPoint, _ b: CGPoint) -> CGFloat {
+        let xDist = a.x - b.x
+        let yDist = a.y - b.y
+        return CGFloat(sqrt(xDist * xDist + yDist * yDist))
+    }
+    
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Add on-release functionality here
         if nodeToMove != nil {
@@ -160,10 +170,22 @@ class GameScene: SKScene {
                 nodeFound = false
                 for node in touchedNodeEnd {
                     if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
-                        // Enter locking logic
-                        print("Circle!")
-                        nodeFound = true
-                        break
+                        if (node.name == "c_space") && (distance(locationEnd, p1) < circleWidth / 2) {
+                            // Enter locking logic
+                            print("C Circle!")
+                            nodeFound = true
+                            break
+                        } else if (node.name == "w_space") && (distance(locationEnd, p2) < circleWidth / 2) {
+                            // Enter locking logic
+                            print("W Circle!")
+                            nodeFound = true
+                            break
+                        } else if (node.name == "e_space") && (distance(locationEnd, p3) < circleWidth / 2) {
+                            // Enter locking logic
+                            print("E Circle!")
+                            nodeFound = true
+                            break
+                        }
                     } else if node.name == "cwe_space" && (locationEnd.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) {
                         // Enter locking logic
                         print("CWE Triangle!")
@@ -212,7 +234,7 @@ class GameScene: SKScene {
         let screenHeight = screenSize.height
         // Determines ratio
         let ratio: CGFloat = (screenWidth / CGFloat(850))
-        let circleWidth: CGFloat = (ratio * CGFloat(270))
+        circleWidth = (ratio * CGFloat(270))
         let barWidth: CGFloat = ratio * 110
         let barLength: CGFloat = ratio * CGFloat(550)
         let bottomMargin: CGFloat = ((screenHeight / -2) + (0.6 * circleWidth))
@@ -221,9 +243,9 @@ class GameScene: SKScene {
         let tileLength: CGFloat = ((1/9) * 850 * ratio)
         let tileHeight: CGFloat = (tileLength / 2)
         // Declares center of the 3 circles as anchor points
-        let p1 = CGPoint(x: (barLength / -2), y: bottomMargin + midMargin)
-        let p2 = CGPoint(x: (barLength / 2), y: bottomMargin + midMargin)
-        let p3 = CGPoint(x: 0, y: bottomMargin)
+        p1 = CGPoint(x: (barLength / -2), y: bottomMargin + midMargin)
+        p2 = CGPoint(x: (barLength / 2), y: bottomMargin + midMargin)
+        p3 = CGPoint(x: 0, y: bottomMargin)
         // Create N/A Area
         naBG = SKShapeNode()
         naBG.position = CGPoint(x: 0, y: 0)
