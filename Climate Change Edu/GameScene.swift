@@ -62,6 +62,8 @@ class GameScene: SKScene {
     var zPosUpdater: CGFloat!
     var nodeFound: Bool!
     var circleWidth: CGFloat!
+    var bottomMargin: CGFloat!
+    var midMargin: CGFloat!
     
     // Function runs on start of the aplication
     override func didMove(to view: SKView) {
@@ -138,6 +140,8 @@ class GameScene: SKScene {
                 nodeToMove.zPosition = zPosUpdater
                 nodeLabelToMove.zPosition = zPosUpdater + 1
                 zPosUpdater = zPosUpdater + 2
+                nodeToMove.run(SKAction.scale(to: 1, duration: 0.2))
+                nodeLabelToMove.run(SKAction.scale(to: 1, duration: 0.2))
             }
         }
     }
@@ -204,12 +208,16 @@ class GameScene: SKScene {
                             break
                         } else if node.name == "ce_space" && (locationEnd.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (locationEnd.x - ceBar[3].x) + ceBar[3].y)) && (locationEnd.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) {
                             // Enter locking logic
+                            nodeToMove.run(SKAction.scale(to: 0.5, duration: 0.2))
+                            nodeLabelToMove.run(SKAction.scale(to: 0.5, duration: 0.2))
                             print("CE Bar!")
                             nodeFound = true
                             break
                         }
                     } else if node.name == "na_space" {
                         // Enter locking logic
+                        nodeToMove.run(SKAction.scale(to: 0.5, duration: 0.2))
+                        nodeLabelToMove.run(SKAction.scale(to: 0.5, duration: 0.2))
                         print("None!")
                         nodeFound = true
                         break
@@ -237,8 +245,8 @@ class GameScene: SKScene {
         circleWidth = (ratio * CGFloat(270))
         let barWidth: CGFloat = ratio * 110
         let barLength: CGFloat = ratio * CGFloat(550)
-        let bottomMargin: CGFloat = ((screenHeight / -2) + (0.6 * circleWidth))
-        let midMargin: CGFloat = ((3 / 4) * barLength * barLength).squareRoot()
+        bottomMargin = ((screenHeight / -2) + (0.6 * circleWidth))
+        midMargin = ((3 / 4) * barLength * barLength).squareRoot()
         // Declares size of tiles
         let tileLength: CGFloat = ((1/9) * 850 * ratio)
         let tileHeight: CGFloat = (tileLength / 2)
