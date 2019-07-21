@@ -19,6 +19,9 @@ class GameScene: SKScene {
     var weBG: SKShapeNode!
     var ceBG: SKShapeNode!
     var cweBG: SKShapeNode!
+    var naBG: SKShapeNode!
+    var ceBar: [CGPoint]!
+    var weBar: [CGPoint]!
     var tile1: SKShapeNode!
     var tile2: SKShapeNode!
     var tile3: SKShapeNode!
@@ -53,12 +56,13 @@ class GameScene: SKScene {
     var nodeLabelToMove: SKNode!
     var locationOld: CGPoint!
     var zPosUpdater: CGFloat!
+    var nodeFound: Bool!
     
     // Function runs on start of the aplication
     override func didMove(to view: SKView) {
         initializeMenu()
         game = GameManager(scene: self)
-        zPosUpdater = 7
+        zPosUpdater = 8
     }
     
     // Function runs on initial screen touch
@@ -147,9 +151,57 @@ class GameScene: SKScene {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        locationOld = nil
-        nodeToMove = nil
-        nodeLabelToMove = nil
+        // Add on-release functionality here
+        if nodeToMove != nil {
+            for touch in touches {
+                let locationEnd = touch.location(in: self)
+                let touchedNodeEnd = self.nodes(at: locationEnd)
+                nodeFound = false
+                for node in touchedNodeEnd {
+                    if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
+                        // Enter locking logic
+                        print("Circle!")
+                        nodeFound = true
+                        break
+                    } else if node.name == "cwe_space" && (locationEnd.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) {
+                        // Enter locking logic
+                        print("CWE Triangle!")
+                        nodeFound = true
+                        break
+                    } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
+                        if node.name == "cw_space" {
+                            // Enter locking logic
+                            print("CW Bar!")
+                            nodeFound = true
+                            break
+                        } else if node.name == "we_space" && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) && (locationEnd.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (locationEnd.x - weBar[3].x) + weBar[3].y)) {
+                            // Enter locking logic
+                            print("WE Bar!")
+                            nodeFound = true
+                            break
+                        } else if node.name == "ce_space" && (locationEnd.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (locationEnd.x - ceBar[3].x) + ceBar[3].y)) && (locationEnd.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) {
+                            // Enter locking logic
+                            print("CE Bar!")
+                            nodeFound = true
+                            break
+                        }
+                    } else if node.name == "na_space" {
+                        // Enter locking logic
+                        print("None!")
+                        nodeFound = true
+                        break
+                    }
+                }
+                if !nodeFound {
+                    nodeToMove.run(SKAction.move(by: CGVector(dx: -(nodeToMove.position.x), dy: -(nodeToMove.position.y)), duration: 0.3))
+                    nodeLabelToMove.run(SKAction.move(by: CGVector(dx: -(nodeToMove.position.x), dy: -(nodeToMove.position.y)), duration: 0.3))
+                    print("Bank!")
+                }
+            }
+            locationOld = nil
+            nodeToMove = nil
+            nodeLabelToMove = nil
+        }
     }
     
     private func initializeMenu() {
@@ -171,10 +223,21 @@ class GameScene: SKScene {
         let p1 = CGPoint(x: (barLength / -2), y: bottomMargin + midMargin)
         let p2 = CGPoint(x: (barLength / 2), y: bottomMargin + midMargin)
         let p3 = CGPoint(x: 0, y: bottomMargin)
+        // Create N/A Area
+        naBG = SKShapeNode()
+        naBG.position = CGPoint(x: 0, y: 0)
+        naBG.zPosition = 1
+        let path5 = CGMutablePath()
+        let naSpace: [CGPoint] = [CGPoint(x: screenWidth / -2, y: midMargin + bottomMargin), CGPoint(x: screenWidth / -2, y: screenHeight / -2), CGPoint(x: screenWidth / 2, y: screenHeight / -2), CGPoint(x: screenWidth / 2, y: midMargin + bottomMargin)]
+        path5.addLines(between: [naSpace[0], naSpace[1], naSpace[2], naSpace[3]])
+        naBG.path = path5
+        //naBG.fillColor = SKColor.lightGray
+        naBG.name = "na_space"
+        self.addChild(naBG)
         // Create Common Area
         cweBG = SKShapeNode()
         cweBG.position = CGPoint(x: 0, y: 0)
-        cweBG.zPosition = 1
+        cweBG.zPosition = 2
         let path1 = CGMutablePath()
         path1.addLines(between: [p1, p2, p3])
         cweBG.path = path1
@@ -184,7 +247,7 @@ class GameScene: SKScene {
         // Create Combo Area
         cwBG = SKShapeNode()
         cwBG.position = CGPoint(x: 0, y: 0)
-        cwBG.zPosition = 2
+        cwBG.zPosition = 3
         let path2 = CGMutablePath()
         let cwBar: [CGPoint] = [CGPoint(x: p1.x, y: p1.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y - (barWidth / 2)), CGPoint(x: p1.x, y: p1.y - (barWidth / 2))]
         path2.addLines(between: [cwBar[0], cwBar[1], cwBar[2], cwBar[3]])
@@ -197,9 +260,9 @@ class GameScene: SKScene {
         // Create Combo Area
         ceBG = SKShapeNode()
         ceBG.position = CGPoint(x: 0, y: 0)
-        ceBG.zPosition = 2
+        ceBG.zPosition = 3
         let path3 = CGMutablePath()
-        let ceBar: [CGPoint] = [CGPoint(x: p1.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p1.y + (barWidth / 4)), CGPoint(x: p3.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y + (barWidth / 4)), CGPoint(x: p3.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y - (barWidth / 4)), CGPoint(x: p1.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p1.y - (barWidth / 4))]
+        ceBar = [CGPoint(x: p1.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p1.y + (barWidth / 4)), CGPoint(x: p3.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y + (barWidth / 4)), CGPoint(x: p3.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y - (barWidth / 4)), CGPoint(x: p1.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p1.y - (barWidth / 4))]
         path3.addLines(between: [ceBar[0], ceBar[1], ceBar[2], ceBar[3]])
         ceBG.path = path3
         ceBG.fillColor = SKColor.cyan
@@ -210,9 +273,9 @@ class GameScene: SKScene {
         // Create Combo Area
         weBG = SKShapeNode()
         weBG.position = CGPoint(x: 0, y: 0)
-        weBG.zPosition = 2
+        weBG.zPosition = 3
         let path4 = CGMutablePath()
-        let weBar: [CGPoint] = [CGPoint(x: p3.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y - (barWidth / 4)), CGPoint(x: p2.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p2.y - (barWidth / 4)), CGPoint(x: p2.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p2.y + (barWidth / 4)), CGPoint(x: p3.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y + (barWidth / 4))]
+        weBar = [CGPoint(x: p3.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y - (barWidth / 4)), CGPoint(x: p2.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p2.y - (barWidth / 4)), CGPoint(x: p2.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p2.y + (barWidth / 4)), CGPoint(x: p3.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y + (barWidth / 4))]
         path4.addLines(between: [weBar[0], weBar[1], weBar[2], weBar[3]])
         weBG.path = path4
         weBG.fillColor = SKColor.yellow
@@ -223,7 +286,7 @@ class GameScene: SKScene {
         // Create Climate Circle
         climateBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
         climateBG.position = p1
-        climateBG.zPosition = 3
+        climateBG.zPosition = 4
         climateBG.fillColor = SKColor.blue
         climateBG.strokeColor = SKColor.black
         climateBG.lineWidth = 4 * ratio
@@ -232,7 +295,7 @@ class GameScene: SKScene {
         // Create Weather Circle
         weatherBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
         weatherBG.position = p2
-        weatherBG.zPosition = 3
+        weatherBG.zPosition = 4
         weatherBG.fillColor = SKColor.red
         weatherBG.strokeColor = SKColor.black
         weatherBG.lineWidth = 4 * ratio
@@ -241,7 +304,7 @@ class GameScene: SKScene {
         // Create Enviroment Circle
         enviromBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
         enviromBG.position = p3
-        enviromBG.zPosition = 3
+        enviromBG.zPosition = 4
         enviromBG.fillColor = SKColor.green
         enviromBG.strokeColor = SKColor.black
         enviromBG.lineWidth = 4 * ratio
@@ -260,9 +323,9 @@ class GameScene: SKScene {
         cLabel.position = CGPoint(x: climateBG.frame.midX, y: climateBG.frame.midY - (cLabel.fontSize / 2))
         wLabel.position = CGPoint(x: weatherBG.frame.midX, y: weatherBG.frame.midY - (cLabel.fontSize / 2))
         eLabel.position = CGPoint(x: enviromBG.frame.midX, y: enviromBG.frame.midY - (cLabel.fontSize / 2))
-        cLabel.zPosition = 4
-        wLabel.zPosition = 4
-        eLabel.zPosition = 4
+        cLabel.zPosition = 5
+        wLabel.zPosition = 5
+        eLabel.zPosition = 5
         self.addChild(cLabel)
         self.addChild(wLabel)
         self.addChild(eLabel)
@@ -275,8 +338,8 @@ class GameScene: SKScene {
         cwLabel2.fontSize = 30 * ratio
         cwLabel1.position = CGPoint(x: cwBG.frame.midX, y: cwBG.frame.midY + (cwLabel1.fontSize * 0.2))
         cwLabel2.position = CGPoint(x: cwBG.frame.midX, y: cwBG.frame.midY - (cwLabel2.fontSize * 1.2))
-        cwLabel1.zPosition = 4
-        cwLabel2.zPosition = 4
+        cwLabel1.zPosition = 5
+        cwLabel2.zPosition = 5
         cwLabel1.fontColor = SKColor.black
         cwLabel2.fontColor = SKColor.black
         self.addChild(cwLabel1)
@@ -289,8 +352,8 @@ class GameScene: SKScene {
         ceLabel2.fontSize = 30 * ratio
         ceLabel1.position = CGPoint(x: ceBG.frame.midX + (ceLabel1.fontSize * 0.2 * CGFloat(3).squareRoot()), y: ceBG.frame.midY + (ceLabel1.fontSize * 0.2))
         ceLabel2.position = CGPoint(x: ceBG.frame.midX - (ceLabel2.fontSize * 0.5 * CGFloat(3).squareRoot()), y: ceBG.frame.midY - (ceLabel2.fontSize * 0.5))
-        ceLabel1.zPosition = 4
-        ceLabel2.zPosition = 4
+        ceLabel1.zPosition = 5
+        ceLabel2.zPosition = 5
         ceLabel1.fontColor = SKColor.black
         ceLabel2.fontColor = SKColor.black
         ceLabel1.zRotation = -60 * CGFloat.pi / 180
@@ -305,8 +368,8 @@ class GameScene: SKScene {
         weLabel2.fontSize = 30 * ratio
         weLabel1.position = CGPoint(x: weBG.frame.midX - (weLabel1.fontSize * 0.2 * CGFloat(3).squareRoot()), y: weBG.frame.midY + (weLabel1.fontSize * 0.2))
         weLabel2.position = CGPoint(x: weBG.frame.midX + (weLabel2.fontSize * 0.5 * CGFloat(3).squareRoot()), y: weBG.frame.midY - (weLabel2.fontSize * 0.5))
-        weLabel1.zPosition = 4
-        weLabel2.zPosition = 4
+        weLabel1.zPosition = 5
+        weLabel2.zPosition = 5
         weLabel1.fontColor = SKColor.black
         weLabel2.fontColor = SKColor.black
         weLabel1.zRotation = 60 * CGFloat.pi / 180
@@ -325,9 +388,9 @@ class GameScene: SKScene {
         cweLabel1.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel1.fontSize * 3.8))
         cweLabel2.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel2.fontSize * 2.4))
         cweLabel3.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel3.fontSize * 1.0))
-        cweLabel1.zPosition = 4
-        cweLabel2.zPosition = 4
-        cweLabel3.zPosition = 4
+        cweLabel1.zPosition = 5
+        cweLabel2.zPosition = 5
+        cweLabel3.zPosition = 5
         cweLabel1.fontColor = SKColor.black
         cweLabel2.fontColor = SKColor.black
         cweLabel3.fontColor = SKColor.black
@@ -350,10 +413,10 @@ class GameScene: SKScene {
         naLabel2.position = CGPoint(x: 7 * screenWidth / -20, y: (weatherBG.frame.midY + (3 * enviromBG.frame.midY)) / 4)
         naLabel3.position = CGPoint(x: 7 * screenWidth / 20, y: (enviromBG.frame.midY - screenHeight) / 3)
         naLabel4.position = CGPoint(x: 7 * screenWidth / -20, y: (enviromBG.frame.midY - screenHeight) / 3)
-        naLabel1.zPosition = 4
-        naLabel2.zPosition = 4
-        naLabel3.zPosition = 4
-        naLabel4.zPosition = 4
+        naLabel1.zPosition = 5
+        naLabel2.zPosition = 5
+        naLabel3.zPosition = 5
+        naLabel4.zPosition = 5
         naLabel1.fontColor = SKColor.black
         naLabel2.fontColor = SKColor.black
         naLabel3.fontColor = SKColor.black
@@ -433,21 +496,21 @@ class GameScene: SKScene {
         tile14.strokeColor = SKColor.black
         tile15.strokeColor = SKColor.black
         // make tile always visable
-        tile1.zPosition = 5
-        tile2.zPosition = 5
-        tile3.zPosition = 5
-        tile4.zPosition = 5
-        tile5.zPosition = 5
-        tile6.zPosition = 5
-        tile7.zPosition = 5
-        tile8.zPosition = 5
-        tile9.zPosition = 5
-        tile10.zPosition = 5
-        tile11.zPosition = 5
-        tile12.zPosition = 5
-        tile13.zPosition = 5
-        tile14.zPosition = 5
-        tile15.zPosition = 5
+        tile1.zPosition = 6
+        tile2.zPosition = 6
+        tile3.zPosition = 6
+        tile4.zPosition = 6
+        tile5.zPosition = 6
+        tile6.zPosition = 6
+        tile7.zPosition = 6
+        tile8.zPosition = 6
+        tile9.zPosition = 6
+        tile10.zPosition = 6
+        tile11.zPosition = 6
+        tile12.zPosition = 6
+        tile13.zPosition = 6
+        tile14.zPosition = 6
+        tile15.zPosition = 6
         // Create labels
         tileLabel1 = SKLabelNode(fontNamed: "ArialMT")
         tileLabel2 = SKLabelNode(fontNamed: "ArialMT")
@@ -609,21 +672,21 @@ class GameScene: SKScene {
         tileLabel14.fontColor = SKColor.black
         tileLabel15.fontColor = SKColor.black
         // Make labels appear over tiles
-        tileLabel1.zPosition = 6
-        tileLabel2.zPosition = 6
-        tileLabel3.zPosition = 6
-        tileLabel4.zPosition = 6
-        tileLabel5.zPosition = 6
-        tileLabel6.zPosition = 6
-        tileLabel7.zPosition = 6
-        tileLabel8.zPosition = 6
-        tileLabel9.zPosition = 6
-        tileLabel10.zPosition = 6
-        tileLabel11.zPosition = 6
-        tileLabel12.zPosition = 6
-        tileLabel13.zPosition = 6
-        tileLabel14.zPosition = 6
-        tileLabel15.zPosition = 6
+        tileLabel1.zPosition = 7
+        tileLabel2.zPosition = 7
+        tileLabel3.zPosition = 7
+        tileLabel4.zPosition = 7
+        tileLabel5.zPosition = 7
+        tileLabel6.zPosition = 7
+        tileLabel7.zPosition = 7
+        tileLabel8.zPosition = 7
+        tileLabel9.zPosition = 7
+        tileLabel10.zPosition = 7
+        tileLabel11.zPosition = 7
+        tileLabel12.zPosition = 7
+        tileLabel13.zPosition = 7
+        tileLabel14.zPosition = 7
+        tileLabel15.zPosition = 7
         // Add labels  to screen
         self.addChild(tileLabel1)
         self.addChild(tileLabel2)
