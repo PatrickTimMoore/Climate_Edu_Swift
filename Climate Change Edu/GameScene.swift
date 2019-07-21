@@ -20,6 +20,7 @@ class GameScene: SKScene {
     var ceBG: SKShapeNode!
     var cweBG: SKShapeNode!
     var naBG: SKShapeNode!
+    var cwBar: [CGPoint]!
     var ceBar: [CGPoint]!
     var weBar: [CGPoint]!
     var tile1: SKShapeNode!
@@ -228,10 +229,12 @@ class GameScene: SKScene {
         naBG.position = CGPoint(x: 0, y: 0)
         naBG.zPosition = 1
         let path5 = CGMutablePath()
-        let naSpace: [CGPoint] = [CGPoint(x: screenWidth / -2, y: midMargin + bottomMargin), CGPoint(x: screenWidth / -2, y: screenHeight / -2), CGPoint(x: screenWidth / 2, y: screenHeight / -2), CGPoint(x: screenWidth / 2, y: midMargin + bottomMargin)]
-        path5.addLines(between: [naSpace[0], naSpace[1], naSpace[2], naSpace[3]])
+        let naSpace: [CGPoint] = [CGPoint(x: (screenWidth / -2) - (4 * ratio), y: midMargin + bottomMargin + (0.6 * circleWidth)), CGPoint(x: (screenWidth / -2) - (4 * ratio), y: (screenHeight / -2) - (4 * ratio)), CGPoint(x: (screenWidth / 2) + (4 * ratio), y: (screenHeight / -2) - (4 * ratio)), CGPoint(x: (screenWidth / 2) + (4 * ratio), y: midMargin + bottomMargin + (0.6 * circleWidth))]
+        path5.addLines(between: [naSpace[0], naSpace[1], naSpace[2], naSpace[3], naSpace[0]])
         naBG.path = path5
-        //naBG.fillColor = SKColor.lightGray
+        naBG.fillColor = SKColor.lightGray
+        naBG.strokeColor = SKColor.black
+        naBG.lineWidth = 4 * ratio
         naBG.name = "na_space"
         self.addChild(naBG)
         // Create Common Area
@@ -249,8 +252,8 @@ class GameScene: SKScene {
         cwBG.position = CGPoint(x: 0, y: 0)
         cwBG.zPosition = 3
         let path2 = CGMutablePath()
-        let cwBar: [CGPoint] = [CGPoint(x: p1.x, y: p1.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y - (barWidth / 2)), CGPoint(x: p1.x, y: p1.y - (barWidth / 2))]
-        path2.addLines(between: [cwBar[0], cwBar[1], cwBar[2], cwBar[3]])
+        cwBar = [CGPoint(x: p1.x, y: p1.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y - (barWidth / 2)), CGPoint(x: p1.x, y: p1.y - (barWidth / 2))]
+        path2.addLines(between: [cwBar[0], cwBar[1], cwBar[2], cwBar[3], cwBar[0]])
         cwBG.path = path2
         cwBG.fillColor = SKColor.magenta
         cwBG.strokeColor = SKColor.black
@@ -263,7 +266,7 @@ class GameScene: SKScene {
         ceBG.zPosition = 3
         let path3 = CGMutablePath()
         ceBar = [CGPoint(x: p1.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p1.y + (barWidth / 4)), CGPoint(x: p3.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y + (barWidth / 4)), CGPoint(x: p3.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y - (barWidth / 4)), CGPoint(x: p1.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p1.y - (barWidth / 4))]
-        path3.addLines(between: [ceBar[0], ceBar[1], ceBar[2], ceBar[3]])
+        path3.addLines(between: [ceBar[0], ceBar[1], ceBar[2], ceBar[3], ceBar[0]])
         ceBG.path = path3
         ceBG.fillColor = SKColor.cyan
         ceBG.strokeColor = SKColor.black
@@ -276,7 +279,7 @@ class GameScene: SKScene {
         weBG.zPosition = 3
         let path4 = CGMutablePath()
         weBar = [CGPoint(x: p3.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y - (barWidth / 4)), CGPoint(x: p2.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p2.y - (barWidth / 4)), CGPoint(x: p2.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p2.y + (barWidth / 4)), CGPoint(x: p3.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y + (barWidth / 4))]
-        path4.addLines(between: [weBar[0], weBar[1], weBar[2], weBar[3]])
+        path4.addLines(between: [weBar[0], weBar[1], weBar[2], weBar[3], weBar[0]])
         weBG.path = path4
         weBG.fillColor = SKColor.yellow
         weBG.strokeColor = SKColor.black
