@@ -64,6 +64,7 @@ class GameScene: SKScene {
     var circleWidth: CGFloat!
     var bottomMargin: CGFloat!
     var midMargin: CGFloat!
+    var tileBankLocDict: Dictionary<Int, CGPoint>!
     
     // Function runs on start of the aplication
     override func didMove(to view: SKView) {
@@ -77,6 +78,7 @@ class GameScene: SKScene {
         // Add on-click functionality here
         for touch in touches {
             let location = touch.location(in: self)
+            print(location)
             let touchedNode = self.nodes(at: location)
             for node in touchedNode {
                 if node.name == "tile" {
@@ -140,8 +142,59 @@ class GameScene: SKScene {
                 nodeToMove.zPosition = zPosUpdater
                 nodeLabelToMove.zPosition = zPosUpdater + 1
                 zPosUpdater = zPosUpdater + 2
-                nodeToMove.run(SKAction.scale(to: 1, duration: 0.2))
-                nodeLabelToMove.run(SKAction.scale(to: 1, duration: 0.2))
+                nodeToMove.run(SKAction.scale(to: 1.4, duration: 0.2))
+                nodeLabelToMove.run(SKAction.scale(to: 1.4, duration: 0.2))
+                for node in touchedNode {
+                    if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
+                        if (node.name == "c_space") && (distance(location, p1) < circleWidth / 2) {
+                            // Enter locking logic
+                            print("C Circle Pick!")
+                            nodeFound = true
+                            break
+                        } else if (node.name == "w_space") && (distance(location, p2) < circleWidth / 2) {
+                            // Enter locking logic
+                            print("W Circle Pick!")
+                            nodeFound = true
+                            break
+                        } else if (node.name == "e_space") && (distance(location, p3) < circleWidth / 2) {
+                            // Enter locking logic
+                            print("E Circle Pick!")
+                            nodeFound = true
+                            break
+                        }
+                    } else if node.name == "cwe_space" && (location.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) {
+                        // Enter locking logic
+                        print("CWE Triangle Pick!")
+                        nodeFound = true
+                        break
+                    } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
+                        if node.name == "cw_space" {
+                            // Enter locking logic
+                            print("CW Bar Pick!")
+                            nodeFound = true
+                            break
+                        } else if node.name == "we_space" && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) && (location.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (location.x - weBar[3].x) + weBar[3].y)) {
+                            // Enter locking logic
+                            nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
+                            nodeLabelToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
+                            print("WE Bar Pick!")
+                            nodeFound = true
+                            break
+                        } else if node.name == "ce_space" && (location.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (location.x - ceBar[3].x) + ceBar[3].y)) && (location.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) {
+                            // Enter locking logic
+                            nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
+                            nodeLabelToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
+                            print("CE Bar Pick!")
+                            nodeFound = true
+                            break
+                        }
+                    } else if node.name == "na_space" {
+                        // Enter locking logic
+                        print("None Pick!")
+                        nodeFound = true
+                        break
+                    }
+                }
             }
         }
     }
@@ -155,6 +208,42 @@ class GameScene: SKScene {
                 nodeToMove.position = CGPoint(x: nodeToMove.position.x + location.x - locationOld.x, y: nodeToMove.position.y + location.y - locationOld.y)
                 nodeLabelToMove.position = CGPoint(x: nodeLabelToMove.position.x + location.x - locationOld.x, y: nodeLabelToMove.position.y + location.y - locationOld.y)
                 locationOld = location
+                let castedNode:SKShapeNode = nodeToMove as! SKShapeNode
+                let touchedNodeMid = self.nodes(at: location)
+                for node in touchedNodeMid {
+                    if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
+                        if (node.name == "c_space") && (distance(location, p1) < circleWidth / 2) {
+                            castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
+                            break
+                        } else if (node.name == "w_space") && (distance(location, p2) < circleWidth / 2) {
+                            castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
+                            break
+                        } else if (node.name == "e_space") && (distance(location, p3) < circleWidth / 2) {
+                            castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
+                            break
+                        }
+                    } else if node.name == "cwe_space" && (location.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) {
+                        castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
+                        break
+                    } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
+                        if node.name == "cw_space" {
+                            castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
+                            break
+                        } else if node.name == "we_space" && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) && (location.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (location.x - weBar[3].x) + weBar[3].y)) {
+                            castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1/2, alpha: 1)
+                            break
+                        } else if node.name == "ce_space" && (location.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (location.x - ceBar[3].x) + ceBar[3].y)) && (location.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) {
+                            castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1, alpha: 1)
+                            break
+                        }
+                    } else if node.name == "na_space" {
+                        // castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
+                        castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
+                        break
+                    } else {
+                        castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
+                    }
+                }
             }
         }
     }
@@ -176,56 +265,138 @@ class GameScene: SKScene {
                     if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
                         if (node.name == "c_space") && (distance(locationEnd, p1) < circleWidth / 2) {
                             // Enter locking logic
+                            nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                            nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             print("C Circle!")
                             nodeFound = true
                             break
                         } else if (node.name == "w_space") && (distance(locationEnd, p2) < circleWidth / 2) {
                             // Enter locking logic
+                            nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                            nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             print("W Circle!")
                             nodeFound = true
                             break
                         } else if (node.name == "e_space") && (distance(locationEnd, p3) < circleWidth / 2) {
                             // Enter locking logic
+                            nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                            nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             print("E Circle!")
                             nodeFound = true
                             break
                         }
                     } else if node.name == "cwe_space" && (locationEnd.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) {
                         // Enter locking logic
+                        nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                        nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                         print("CWE Triangle!")
                         nodeFound = true
                         break
                     } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
                         if node.name == "cw_space" {
                             // Enter locking logic
+                            nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                            nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             print("CW Bar!")
                             nodeFound = true
                             break
                         } else if node.name == "we_space" && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) && (locationEnd.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (locationEnd.x - weBar[3].x) + weBar[3].y)) {
                             // Enter locking logic
+                            nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                            nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                            nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
+                            nodeLabelToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
                             print("WE Bar!")
                             nodeFound = true
                             break
                         } else if node.name == "ce_space" && (locationEnd.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (locationEnd.x - ceBar[3].x) + ceBar[3].y)) && (locationEnd.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) {
                             // Enter locking logic
-                            nodeToMove.run(SKAction.scale(to: 0.5, duration: 0.2))
-                            nodeLabelToMove.run(SKAction.scale(to: 0.5, duration: 0.2))
+                            nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                            nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                            nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
+                            nodeLabelToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
                             print("CE Bar!")
                             nodeFound = true
                             break
                         }
                     } else if node.name == "na_space" {
                         // Enter locking logic
-                        nodeToMove.run(SKAction.scale(to: 0.5, duration: 0.2))
-                        nodeLabelToMove.run(SKAction.scale(to: 0.5, duration: 0.2))
+                        nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                        nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                         print("None!")
                         nodeFound = true
                         break
                     }
                 }
                 if !nodeFound {
-                    nodeToMove.run(SKAction.move(by: CGVector(dx: -(nodeToMove.position.x), dy: -(nodeToMove.position.y)), duration: 0.3))
-                    nodeLabelToMove.run(SKAction.move(by: CGVector(dx: -(nodeToMove.position.x), dy: -(nodeToMove.position.y)), duration: 0.3))
+                    switch nodeToMove {
+                    case tile1:
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[1]!.x - (nodeToMove.position.x), dy: tileBankLocDict[1]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[1]!.x - (nodeToMove.position.x), dy: tileBankLocDict[1]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        break
+                    case tile2:
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[2]!.x - (nodeToMove.position.x), dy: tileBankLocDict[2]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[2]!.x - (nodeToMove.position.x), dy: tileBankLocDict[2]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        break
+                    case tile3:
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[3]!.x - (nodeToMove.position.x), dy: tileBankLocDict[3]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[3]!.x - (nodeToMove.position.x), dy: tileBankLocDict[3]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        break
+                    case tile4:
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[4]!.x - (nodeToMove.position.x), dy: tileBankLocDict[4]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[4]!.x - (nodeToMove.position.x), dy: tileBankLocDict[4]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        break
+                    case tile5:
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[5]!.x - (nodeToMove.position.x), dy: tileBankLocDict[5]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[5]!.x - (nodeToMove.position.x), dy: tileBankLocDict[5]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        break
+                    case tile6:
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[6]!.x - (nodeToMove.position.x), dy: tileBankLocDict[6]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[6]!.x - (nodeToMove.position.x), dy: tileBankLocDict[6]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        break
+                    case tile7:
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[7]!.x - (nodeToMove.position.x), dy: tileBankLocDict[7]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[7]!.x - (nodeToMove.position.x), dy: tileBankLocDict[7]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        break
+                    case tile8:
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[8]!.x - (nodeToMove.position.x), dy: tileBankLocDict[8]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[8]!.x - (nodeToMove.position.x), dy: tileBankLocDict[8]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        break
+                    case tile9:
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[9]!.x - (nodeToMove.position.x), dy: tileBankLocDict[9]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[9]!.x - (nodeToMove.position.x), dy: tileBankLocDict[9]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        break
+                    case tile10:
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[10]!.x - (nodeToMove.position.x), dy: tileBankLocDict[10]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[10]!.x - (nodeToMove.position.x), dy: tileBankLocDict[10]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        break
+                    case tile11:
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[11]!.x - (nodeToMove.position.x), dy: tileBankLocDict[11]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[11]!.x - (nodeToMove.position.x), dy: tileBankLocDict[11]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        break
+                    case tile12:
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[12]!.x - (nodeToMove.position.x), dy: tileBankLocDict[12]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[12]!.x - (nodeToMove.position.x), dy: tileBankLocDict[12]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        break
+                    case tile13:
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[13]!.x - (nodeToMove.position.x), dy: tileBankLocDict[13]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[13]!.x - (nodeToMove.position.x), dy: tileBankLocDict[13]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        break
+                    case tile14:
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[14]!.x - (nodeToMove.position.x), dy: tileBankLocDict[14]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[14]!.x - (nodeToMove.position.x), dy: tileBankLocDict[14]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        break
+                    case tile15:
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[15]!.x - (nodeToMove.position.x), dy: tileBankLocDict[15]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[15]!.x - (nodeToMove.position.x), dy: tileBankLocDict[15]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        break
+                    case .none:
+                        break
+                    case .some(_):
+                        break
+                    }
+                    nodeToMove.run(SKAction.scale(to: 1, duration: 0.2))
+                    nodeLabelToMove.run(SKAction.scale(to: 1, duration: 0.2))
                     print("Bank!")
                 }
             }
@@ -343,6 +514,14 @@ class GameScene: SKScene {
         enviromBG.lineWidth = 4 * ratio
         enviromBG.name = "e_space"
         self.addChild(enviromBG)
+        // Create Immobile Bank Label
+        let bankLabel = SKLabelNode(fontNamed: "ArialMT")
+        bankLabel.text = "Word Bank"
+        bankLabel.fontSize = 50 * ratio
+        bankLabel.zPosition = 2
+        bankLabel.position = CGPoint(x: naBG.frame.midX, y: naBG.frame.maxY + (25 * ratio))
+        bankLabel.fontColor = SKColor.black
+        self.addChild(bankLabel)
         // Create Immobile Circle Labels
         let cLabel = SKLabelNode(fontNamed: "ArialMT")
         let wLabel = SKLabelNode(fontNamed: "ArialMT")
@@ -464,22 +643,53 @@ class GameScene: SKScene {
         let tileMax = screenHeight / 2
         let tileOffsetX = tileLength / -2
         let tileBufferX = screenWidth / 6
-        // Create tile
-        tile1 = SKShapeNode.init(rect: CGRect(x: tileOffsetX - (2 * tileBufferX), y: (tileMin / 4) + (3 * tileMax / 4), width: tileLength, height: tileHeight))
-        tile2 = SKShapeNode.init(rect: CGRect(x: tileOffsetX - tileBufferX, y: (tileMin / 4) + (3 * tileMax / 4), width: tileLength, height: tileHeight))
-        tile3 = SKShapeNode.init(rect: CGRect(x: tileOffsetX, y: (tileMin / 4) + (3 * tileMax / 4), width: tileLength, height: tileHeight))
-        tile4 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + tileBufferX, y: (tileMin / 4) + (3 * tileMax / 4), width: tileLength, height: tileHeight))
-        tile5 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + (2 * tileBufferX), y: (tileMin / 4) + (3 * tileMax / 4), width: tileLength, height: tileHeight))
-        tile6 = SKShapeNode.init(rect: CGRect(x: tileOffsetX - (2 * tileBufferX), y: (tileMin + tileMax) / 2, width: tileLength, height: tileHeight))
-        tile7 = SKShapeNode.init(rect: CGRect(x: tileOffsetX - tileBufferX, y: (tileMin + tileMax) / 2, width: tileLength, height: tileHeight))
-        tile8 = SKShapeNode.init(rect: CGRect(x: tileOffsetX, y: (tileMin + tileMax) / 2, width: tileLength, height: tileHeight))
-        tile9 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + tileBufferX, y: (tileMin + tileMax) / 2, width: tileLength, height: tileHeight))
-        tile10 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + (2 * tileBufferX), y: (tileMin + tileMax) / 2, width: tileLength, height: tileHeight))
-        tile11 = SKShapeNode.init(rect: CGRect(x: tileOffsetX - (2 * tileBufferX), y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
-        tile12 = SKShapeNode.init(rect: CGRect(x: tileOffsetX - tileBufferX, y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
-        tile13 = SKShapeNode.init(rect: CGRect(x: tileOffsetX, y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
-        tile14 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + tileBufferX, y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
-        tile15 = SKShapeNode.init(rect: CGRect(x: tileOffsetX + (2 * tileBufferX), y: (3 * tileMin / 4) + (tileMax / 4), width: tileLength, height: tileHeight))
+        // Create tile lookup table
+        tileBankLocDict = [1: CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2)),
+                           2: CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2)),
+                           3: CGPoint(x: tileOffsetX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2)),
+                           4: CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2)),
+                           5: CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2)),
+                           6: CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2)),
+                           7: CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2)),
+                           8: CGPoint(x: tileOffsetX + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2)),
+                           9: CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2)),
+                           10: CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2)),
+                           11: CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2)),
+                           12: CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2)),
+                           13: CGPoint(x: tileOffsetX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2)),
+                           14: CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2)),
+                           15: CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))]
+        // Creates tiles to be used
+        tile1 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile1.position = tileBankLocDict[1]!
+        tile2 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile2.position = tileBankLocDict[2]!
+        tile3 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile3.position = tileBankLocDict[3]!
+        tile4 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile4.position = tileBankLocDict[4]!
+        tile5 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile5.position = tileBankLocDict[5]!
+        tile6 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile6.position = tileBankLocDict[6]!
+        tile7 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile7.position = tileBankLocDict[7]!
+        tile8 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile8.position = tileBankLocDict[8]!
+        tile9 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile9.position = tileBankLocDict[9]!
+        tile10 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile10.position = tileBankLocDict[10]!
+        tile11 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile11.position = tileBankLocDict[11]!
+        tile12 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile12.position = tileBankLocDict[12]!
+        tile13 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile13.position = tileBankLocDict[13]!
+        tile14 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile14.position = tileBankLocDict[14]!
+        tile15 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile15.position = tileBankLocDict[15]!
         // Assign tile type
         tile1.name = "tile"
         tile2.name = "tile"
@@ -561,21 +771,21 @@ class GameScene: SKScene {
         tileLabel14 = SKLabelNode(fontNamed: "ArialMT")
         tileLabel15 = SKLabelNode(fontNamed: "ArialMT")
         // Placeholder labels
-        tileLabel1.text = "Cooling temps"
-        tileLabel2.text = "Warming temps"
-        tileLabel3.text = "Daily changes"
-        tileLabel4.text = "Yearly changes"
-        tileLabel5.text = ">30 year changes"
+        tileLabel1.text = "Cooling\n temps "
+        tileLabel2.text = "Warming\n  temps "
+        tileLabel3.text = "   Daily\nchanges"
+        tileLabel4.text = "  Yearly\nchanges"
+        tileLabel5.text = ">30 year\n changes "
         tileLabel6.text = "Farming"
         tileLabel7.text = "Industry"
         tileLabel8.text = "Local"
         tileLabel9.text = "Regional"
         tileLabel10.text = "Global"
-        tileLabel11.text = "Animals & plants"
+        tileLabel11.text = "Animals\n& plants"
         tileLabel12.text = "People"
         tileLabel13.text = "Forests"
         tileLabel14.text = "Oceans"
-        tileLabel15.text = "Greenhouse effect"
+        tileLabel15.text = "Greenhouse\n      effect "
         tileLabel1.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
         tileLabel2.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
         tileLabel3.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
@@ -591,21 +801,21 @@ class GameScene: SKScene {
         tileLabel13.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
         tileLabel14.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
         tileLabel15.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel1.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        tileLabel2.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        tileLabel3.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        tileLabel4.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        tileLabel5.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        tileLabel6.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        tileLabel7.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        tileLabel8.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        tileLabel9.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        tileLabel10.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        tileLabel11.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        tileLabel12.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        tileLabel13.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        tileLabel14.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        tileLabel15.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        tileLabel1.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tileLabel2.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tileLabel3.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tileLabel4.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tileLabel5.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tileLabel6.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tileLabel7.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tileLabel8.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tileLabel9.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tileLabel10.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tileLabel11.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tileLabel12.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tileLabel13.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tileLabel14.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tileLabel15.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
         if #available(iOS 11.0, *) {
             tileLabel1.numberOfLines = 3
             tileLabel1.preferredMaxLayoutWidth = tileLength
@@ -673,21 +883,21 @@ class GameScene: SKScene {
         self.addChild(tile14)
         self.addChild(tile15)
         // Place Labels in center of tiles
-        tileLabel1.position = CGPoint(x: tile1.frame.minX + (tileLength / 20), y: tile1.frame.midY)
-        tileLabel2.position = CGPoint(x: tile2.frame.minX + (tileLength / 20), y: tile2.frame.midY)
-        tileLabel3.position = CGPoint(x: tile3.frame.minX + (tileLength / 20), y: tile3.frame.midY)
-        tileLabel4.position = CGPoint(x: tile4.frame.minX + (tileLength / 20), y: tile4.frame.midY)
-        tileLabel5.position = CGPoint(x: tile5.frame.minX + (tileLength / 20), y: tile5.frame.midY)
-        tileLabel6.position = CGPoint(x: tile6.frame.minX + (tileLength / 20), y: tile6.frame.midY)
-        tileLabel7.position = CGPoint(x: tile7.frame.minX + (tileLength / 20), y: tile7.frame.midY)
-        tileLabel8.position = CGPoint(x: tile8.frame.minX + (tileLength / 20), y: tile8.frame.midY)
-        tileLabel9.position = CGPoint(x: tile9.frame.minX + (tileLength / 20), y: tile9.frame.midY)
-        tileLabel10.position = CGPoint(x: tile10.frame.minX + (tileLength / 20), y: tile10.frame.midY)
-        tileLabel11.position = CGPoint(x: tile11.frame.minX + (tileLength / 20), y: tile11.frame.midY)
-        tileLabel12.position = CGPoint(x: tile12.frame.minX + (tileLength / 20), y: tile12.frame.midY)
-        tileLabel13.position = CGPoint(x: tile13.frame.minX + (tileLength / 20), y: tile13.frame.midY)
-        tileLabel14.position = CGPoint(x: tile14.frame.minX + (tileLength / 20), y: tile14.frame.midY)
-        tileLabel15.position = CGPoint(x: tile15.frame.minX + (tileLength / 20), y: tile15.frame.midY)
+        tileLabel1.position = CGPoint(x: tile1.frame.midX, y: tile1.frame.midY)
+        tileLabel2.position = CGPoint(x: tile2.frame.midX, y: tile2.frame.midY)
+        tileLabel3.position = CGPoint(x: tile3.frame.midX, y: tile3.frame.midY)
+        tileLabel4.position = CGPoint(x: tile4.frame.midX, y: tile4.frame.midY)
+        tileLabel5.position = CGPoint(x: tile5.frame.midX, y: tile5.frame.midY)
+        tileLabel6.position = CGPoint(x: tile6.frame.midX, y: tile6.frame.midY)
+        tileLabel7.position = CGPoint(x: tile7.frame.midX, y: tile7.frame.midY)
+        tileLabel8.position = CGPoint(x: tile8.frame.midX, y: tile8.frame.midY)
+        tileLabel9.position = CGPoint(x: tile9.frame.midX, y: tile9.frame.midY)
+        tileLabel10.position = CGPoint(x: tile10.frame.midX, y: tile10.frame.midY)
+        tileLabel11.position = CGPoint(x: tile11.frame.midX, y: tile11.frame.midY)
+        tileLabel12.position = CGPoint(x: tile12.frame.midX, y: tile12.frame.midY)
+        tileLabel13.position = CGPoint(x: tile13.frame.midX, y: tile13.frame.midY)
+        tileLabel14.position = CGPoint(x: tile14.frame.midX, y: tile14.frame.midY)
+        tileLabel15.position = CGPoint(x: tile15.frame.midX, y: tile15.frame.midY)
         // Color text
         tileLabel1.fontColor = SKColor.black
         tileLabel2.fontColor = SKColor.black

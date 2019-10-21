@@ -14,7 +14,6 @@
 		CD6B0819228D1BC800324EC8 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6B0818228D1BC800324EC8 /* GameViewController.swift */; };
 		CD6B081C228D1BC800324EC8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CD6B081A228D1BC800324EC8 /* Main.storyboard */; };
 		CD6B081E228D1BC800324EC8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD6B081D228D1BC800324EC8 /* Assets.xcassets */; };
-		CD6B0821228D1BC800324EC8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CD6B081F228D1BC800324EC8 /* LaunchScreen.storyboard */; };
 		CD6B082C228D1BC800324EC8 /* Climate_Change_EduTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6B082B228D1BC800324EC8 /* Climate_Change_EduTests.swift */; };
 		CD6B0837228D1BC900324EC8 /* Climate_Change_EduUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6B0836228D1BC900324EC8 /* Climate_Change_EduUITests.swift */; };
 /* End PBXBuildFile section */
@@ -250,7 +249,6 @@
 				CD6B081C228D1BC800324EC8 /* Main.storyboard in Resources */,
 				CD6B0813228D1BC800324EC8 /* GameScene.sks in Resources */,
 				CD6B081E228D1BC800324EC8 /* Assets.xcassets in Resources */,
-				CD6B0821228D1BC800324EC8 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
