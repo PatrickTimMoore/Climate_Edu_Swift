@@ -237,7 +237,6 @@ class GameScene: SKScene {
                             break
                         }
                     } else if node.name == "na_space" {
-                        // castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
                         castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
                         break
                     } else {
@@ -430,7 +429,8 @@ class GameScene: SKScene {
         naBG.position = CGPoint(x: 0, y: 0)
         naBG.zPosition = 1
         let path5 = CGMutablePath()
-        let naSpace: [CGPoint] = [CGPoint(x: (screenWidth / -2) - (4 * ratio), y: midMargin + bottomMargin + (0.6 * circleWidth)), CGPoint(x: (screenWidth / -2) - (4 * ratio), y: (screenHeight / -2) - (4 * ratio)), CGPoint(x: (screenWidth / 2) + (4 * ratio), y: (screenHeight / -2) - (4 * ratio)), CGPoint(x: (screenWidth / 2) + (4 * ratio), y: midMargin + bottomMargin + (0.6 * circleWidth))]
+        let halfScreenWidth = (screenWidth / 2)
+        let naSpace: [CGPoint] = [CGPoint(x: -(halfScreenWidth) - (4 * ratio), y: midMargin + bottomMargin + (0.6 * circleWidth)), CGPoint(x: -(halfScreenWidth) - (4 * ratio), y: (screenHeight / -2) - (4 * ratio)), CGPoint(x: halfScreenWidth + (4 * ratio), y: (screenHeight / -2) - (4 * ratio)), CGPoint(x: halfScreenWidth + (4 * ratio), y: midMargin + bottomMargin + (0.6 * circleWidth))]
         path5.addLines(between: [naSpace[0], naSpace[1], naSpace[2], naSpace[3], naSpace[0]])
         naBG.path = path5
         naBG.fillColor = SKColor.lightGray
@@ -644,21 +644,36 @@ class GameScene: SKScene {
         let tileOffsetX = tileLength / -2
         let tileBufferX = screenWidth / 6
         // Create tile lookup table
-        tileBankLocDict = [1: CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2)),
-                           2: CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2)),
-                           3: CGPoint(x: tileOffsetX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2)),
-                           4: CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2)),
-                           5: CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2)),
-                           6: CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2)),
-                           7: CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2)),
-                           8: CGPoint(x: tileOffsetX + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2)),
-                           9: CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2)),
-                           10: CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2)),
-                           11: CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2)),
-                           12: CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2)),
-                           13: CGPoint(x: tileOffsetX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2)),
-                           14: CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2)),
-                           15: CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))]
+        let origin1 = CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
+        let origin2 = CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
+        let origin3 = CGPoint(x: tileOffsetX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
+        let origin4 = CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
+        let origin5 = CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
+        let origin6 = CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2))
+        let origin7 = CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2))
+        let origin8 = CGPoint(x: tileOffsetX + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2))
+        let origin9 = CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2))
+        let origin10 = CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2))
+        let origin11 = CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
+        let origin12 = CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
+        let origin13 = CGPoint(x: tileOffsetX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
+        let origin14 = CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
+        let origin15 = CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
+        tileBankLocDict = [1: origin1,
+                           2: origin2,
+                           3: origin3,
+                           4: origin4,
+                           5: origin5,
+                           6: origin6,
+                           7: origin7,
+                           8: origin8,
+                           9: origin9,
+                           10: origin10,
+                           11: origin11,
+                           12: origin12,
+                           13: origin13,
+                           14: origin14,
+                           15: origin15]
         // Creates tiles to be used
         tile1 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
         tile1.position = tileBankLocDict[1]!
