@@ -41,6 +41,7 @@ class GameScene: SKScene {
     var tile13: SKShapeNode!
     var tile14: SKShapeNode!
     var tile15: SKShapeNode!
+    var submit: SKShapeNode!
     var tileLabel1: SKLabelNode!
     var tileLabel2: SKLabelNode!
     var tileLabel3: SKLabelNode!
@@ -56,15 +57,18 @@ class GameScene: SKScene {
     var tileLabel13: SKLabelNode!
     var tileLabel14: SKLabelNode!
     var tileLabel15: SKLabelNode!
+    var submitLabel: SKLabelNode!
     var nodeToMove: SKNode!
     var nodeLabelToMove: SKNode!
     var locationOld: CGPoint!
     var zPosUpdater: CGFloat!
     var nodeFound: Bool!
+    var makeSumbitVis: Bool = false
     var circleWidth: CGFloat!
     var bottomMargin: CGFloat!
     var midMargin: CGFloat!
     var tileBankLocDict: Dictionary<Int, CGPoint>!
+    var remainingInBank: Int = 15
     
     // Function runs on start of the aplication
     override func didMove(to view: SKView) {
@@ -81,7 +85,7 @@ class GameScene: SKScene {
             print(location)
             let touchedNode = self.nodes(at: location)
             for node in touchedNode {
-                if node.name == "tile" {
+                if node.name == "tile" && !node.hasActions(){
                     nodeToMove = node
                     locationOld = location
                     break
@@ -139,11 +143,23 @@ class GameScene: SKScene {
                     break
             }
             if nodeToMove != nil {
+                let castedNode:SKShapeNode = nodeToMove as! SKShapeNode
+                if castedNode.fillColor == SKColor(red: 1/2, green: 1, blue: 1, alpha: 1) {
+                    nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
+                    nodeLabelToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
+                }
+                if castedNode.fillColor == SKColor(red: 1, green: 1, blue: 1/2, alpha: 1) {
+                    nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
+                    nodeLabelToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
+                }
+            }
+            if nodeToMove != nil {
                 nodeToMove.zPosition = zPosUpdater
                 nodeLabelToMove.zPosition = zPosUpdater + 1
                 zPosUpdater = zPosUpdater + 2
                 nodeToMove.run(SKAction.scale(to: 1.4, duration: 0.2))
                 nodeLabelToMove.run(SKAction.scale(to: 1.4, duration: 0.2))
+                nodeFound = false
                 for node in touchedNode {
                     if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
                         if (node.name == "c_space") && (distance(location, p1) < circleWidth / 2) {
@@ -175,15 +191,11 @@ class GameScene: SKScene {
                             break
                         } else if node.name == "we_space" && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) && (location.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (location.x - weBar[3].x) + weBar[3].y)) {
                             // Enter locking logic
-                            nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
-                            nodeLabelToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
                             print("WE Bar Pick!")
                             nodeFound = true
                             break
                         } else if node.name == "ce_space" && (location.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (location.x - ceBar[3].x) + ceBar[3].y)) && (location.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) {
                             // Enter locking logic
-                            nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
-                            nodeLabelToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
                             print("CE Bar Pick!")
                             nodeFound = true
                             break
@@ -194,6 +206,17 @@ class GameScene: SKScene {
                         nodeFound = true
                         break
                     }
+                }
+                if !nodeFound{
+                    print("Bank pick!")
+                    remainingInBank = remainingInBank - 1
+                    if remainingInBank == 0 {
+                        makeSumbitVis = true
+                        submit.zPosition = zPosUpdater
+                        submitLabel.zPosition = zPosUpdater + 1
+                        zPosUpdater = zPosUpdater + 2
+                    }
+                    print(remainingInBank)
                 }
             }
         }
@@ -256,6 +279,7 @@ class GameScene: SKScene {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Add on-release functionality here
         if nodeToMove != nil {
+            let castedNode:SKShapeNode = nodeToMove as! SKShapeNode
             for touch in touches {
                 let locationEnd = touch.location(in: self)
                 let touchedNodeEnd = self.nodes(at: locationEnd)
@@ -266,6 +290,7 @@ class GameScene: SKScene {
                             // Enter locking logic
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                            castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
                             print("C Circle!")
                             nodeFound = true
                             break
@@ -273,6 +298,7 @@ class GameScene: SKScene {
                             // Enter locking logic
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                            castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
                             print("W Circle!")
                             nodeFound = true
                             break
@@ -280,6 +306,7 @@ class GameScene: SKScene {
                             // Enter locking logic
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                            castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
                             print("E Circle!")
                             nodeFound = true
                             break
@@ -288,6 +315,7 @@ class GameScene: SKScene {
                         // Enter locking logic
                         nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                         nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                        castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                         print("CWE Triangle!")
                         nodeFound = true
                         break
@@ -296,6 +324,7 @@ class GameScene: SKScene {
                             // Enter locking logic
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                            castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
                             print("CW Bar!")
                             nodeFound = true
                             break
@@ -305,6 +334,7 @@ class GameScene: SKScene {
                             nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
                             nodeLabelToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
+                            castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1/2, alpha: 1)
                             print("WE Bar!")
                             nodeFound = true
                             break
@@ -314,6 +344,7 @@ class GameScene: SKScene {
                             nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
                             nodeLabelToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
+                            castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1, alpha: 1)
                             print("CE Bar!")
                             nodeFound = true
                             break
@@ -322,6 +353,7 @@ class GameScene: SKScene {
                         // Enter locking logic
                         nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                         nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                        castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
                         print("None!")
                         nodeFound = true
                         break
@@ -394,10 +426,20 @@ class GameScene: SKScene {
                     case .some(_):
                         break
                     }
+                    castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                     nodeToMove.run(SKAction.scale(to: 1, duration: 0.2))
                     nodeLabelToMove.run(SKAction.scale(to: 1, duration: 0.2))
+                    remainingInBank = remainingInBank + 1
+                    submit.run(SKAction.fadeAlpha(to: 0, duration: 0.2))
+                    submitLabel.run(SKAction.fadeAlpha(to: 0, duration: 0.2))
+                    print(remainingInBank)
                     print("Bank!")
                 }
+            }
+            if makeSumbitVis && remainingInBank == 0 {
+                submit.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+                submitLabel.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+                makeSumbitVis = false
             }
             locationOld = nil
             nodeToMove = nil
@@ -961,5 +1003,20 @@ class GameScene: SKScene {
         self.addChild(tileLabel13)
         self.addChild(tileLabel14)
         self.addChild(tileLabel15)
+        submit = SKShapeNode.init(ellipseOf: CGSize.init(width: screenWidth/3, height: screenWidth/10))
+        submit.position = CGPoint(x: naBG.frame.midX, y: (naBG.frame.maxY + screenHeight/2)/2)
+        submit.zPosition = -5
+        submit.fillColor = SKColor.systemBlue
+        submit.alpha = 0
+        submit.strokeColor = SKColor.black
+        submitLabel = SKLabelNode(fontNamed: "ArialMT")
+        submitLabel.text = "SUBMIT"
+        submitLabel.fontColor = SKColor.white
+        submitLabel.zPosition = -5
+        submitLabel.alpha = 0
+        submitLabel.fontSize = 40 * ratio
+        submitLabel.position = CGPoint(x: submit.frame.midX, y: submit.frame.midY - submitLabel.frame.height/2)
+        self.addChild(submit)
+        self.addChild(submitLabel)
     }
 }
