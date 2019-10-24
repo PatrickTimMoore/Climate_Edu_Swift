@@ -196,26 +196,26 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0820;
-				LastUpgradeCheck = 1010;
+				LastUpgradeCheck = 1110;
 				ORGANIZATIONNAME = "Patrick Moore";
 				TargetAttributes = {
 					CD6B080C228D1BC700324EC8 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = KKLHSD835R;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1110;
 						ProvisioningStyle = Automatic;
 					};
 					CD6B0826228D1BC800324EC8 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = KKLHSD835R;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1110;
 						ProvisioningStyle = Automatic;
 						TestTargetID = CD6B080C228D1BC700324EC8;
 					};
 					CD6B0831228D1BC900324EC8 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = KKLHSD835R;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1110;
 						ProvisioningStyle = Automatic;
 						TestTargetID = CD6B080C228D1BC700324EC8;
 					};
@@ -223,7 +223,7 @@
 			};
 			buildConfigurationList = CD6B0808228D1BC700324EC8 /* Build configuration list for PBXProject "Climate Change Edu" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -335,6 +335,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -387,7 +388,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
@@ -396,6 +397,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -440,7 +442,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -457,7 +459,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "SearchingForHopeStudios.Climate-Change-Edu";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
@@ -473,7 +475,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "SearchingForHopeStudios.Climate-Change-Edu";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Release;
@@ -487,8 +489,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "SearchingForHopeStudios.Climate-Change-EduTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.2;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Climate Change Edu.app/Climate Change Edu";
 			};
 			name = Debug;
@@ -502,8 +504,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "SearchingForHopeStudios.Climate-Change-EduTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.2;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Climate Change Edu.app/Climate Change Edu";
 			};
 			name = Release;
@@ -516,8 +518,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "SearchingForHopeStudios.Climate-Change-EduUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.2;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = "Climate Change Edu";
 			};
 			name = Debug;
@@ -530,8 +532,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "SearchingForHopeStudios.Climate-Change-EduUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.2;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = "Climate Change Edu";
 			};
 			name = Release;
