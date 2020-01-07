@@ -20,7 +20,6 @@ class GameScene: SKScene {
     var ceBG: SKShapeNode!
     var cweBG: SKShapeNode!
     var naBG: SKShapeNode!
-    var cwBar: [CGPoint]!
     var ceBar: [CGPoint]!
     var weBar: [CGPoint]!
     var p1: CGPoint!
@@ -42,24 +41,7 @@ class GameScene: SKScene {
     var tile14: SKShapeNode!
     var tile15: SKShapeNode!
     var submit: SKShapeNode!
-    var tileLabel1: SKLabelNode!
-    var tileLabel2: SKLabelNode!
-    var tileLabel3: SKLabelNode!
-    var tileLabel4: SKLabelNode!
-    var tileLabel5: SKLabelNode!
-    var tileLabel6: SKLabelNode!
-    var tileLabel7: SKLabelNode!
-    var tileLabel8: SKLabelNode!
-    var tileLabel9: SKLabelNode!
-    var tileLabel10: SKLabelNode!
-    var tileLabel11: SKLabelNode!
-    var tileLabel12: SKLabelNode!
-    var tileLabel13: SKLabelNode!
-    var tileLabel14: SKLabelNode!
-    var tileLabel15: SKLabelNode!
-    var submitLabel: SKLabelNode!
     var nodeToMove: SKNode!
-    var nodeLabelToMove: SKNode!
     var locationOld: CGPoint!
     var zPosUpdater: CGFloat!
     var nodeFound: Bool!
@@ -69,6 +51,7 @@ class GameScene: SKScene {
     var midMargin: CGFloat!
     var tileBankLocDict: Dictionary<Int, CGPoint>!
     var remainingInBank: Int = 15
+    var dictLookup: Int!
     
     // Function runs on start of the aplication
     override func didMove(to view: SKView) {
@@ -91,74 +74,19 @@ class GameScene: SKScene {
                     break
                 }
             }
-            switch nodeToMove {
-                case tile1:
-                    nodeLabelToMove = tileLabel1
-                    break
-                case tile2:
-                    nodeLabelToMove = tileLabel2
-                    break
-                case tile3:
-                    nodeLabelToMove = tileLabel3
-                    break
-                case tile4:
-                    nodeLabelToMove = tileLabel4
-                    break
-                case tile5:
-                    nodeLabelToMove = tileLabel5
-                    break
-                case tile6:
-                    nodeLabelToMove = tileLabel6
-                    break
-                case tile7:
-                    nodeLabelToMove = tileLabel7
-                    break
-                case tile8:
-                    nodeLabelToMove = tileLabel8
-                    break
-                case tile9:
-                    nodeLabelToMove = tileLabel9
-                    break
-                case tile10:
-                    nodeLabelToMove = tileLabel10
-                    break
-                case tile11:
-                    nodeLabelToMove = tileLabel11
-                    break
-                case tile12:
-                    nodeLabelToMove = tileLabel12
-                    break
-                case tile13:
-                    nodeLabelToMove = tileLabel13
-                    break
-                case tile14:
-                    nodeLabelToMove = tileLabel14
-                    break
-                case tile15:
-                    nodeLabelToMove = tileLabel15
-                    break
-                case .none:
-                    break
-                case .some(_):
-                    break
-            }
             if nodeToMove != nil {
                 let castedNode:SKShapeNode = nodeToMove as! SKShapeNode
                 if castedNode.fillColor == SKColor(red: 1/2, green: 1, blue: 1, alpha: 1) {
                     nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
-                    nodeLabelToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
                 }
                 if castedNode.fillColor == SKColor(red: 1, green: 1, blue: 1/2, alpha: 1) {
                     nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
-                    nodeLabelToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
                 }
             }
             if nodeToMove != nil {
                 nodeToMove.zPosition = zPosUpdater
-                nodeLabelToMove.zPosition = zPosUpdater + 1
                 zPosUpdater = zPosUpdater + 2
                 nodeToMove.run(SKAction.scale(to: 1.4, duration: 0.2))
-                nodeLabelToMove.run(SKAction.scale(to: 1.4, duration: 0.2))
                 nodeFound = false
                 for node in touchedNode {
                     if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
@@ -213,7 +141,6 @@ class GameScene: SKScene {
                     if remainingInBank == 0 {
                         makeSumbitVis = true
                         submit.zPosition = zPosUpdater
-                        submitLabel.zPosition = zPosUpdater + 1
                         zPosUpdater = zPosUpdater + 2
                     }
                     print(remainingInBank)
@@ -229,7 +156,6 @@ class GameScene: SKScene {
             for touch in touches {
                 let location = touch.location(in: self)
                 nodeToMove.position = CGPoint(x: nodeToMove.position.x + location.x - locationOld.x, y: nodeToMove.position.y + location.y - locationOld.y)
-                nodeLabelToMove.position = CGPoint(x: nodeLabelToMove.position.x + location.x - locationOld.x, y: nodeLabelToMove.position.y + location.y - locationOld.y)
                 locationOld = location
                 let castedNode:SKShapeNode = nodeToMove as! SKShapeNode
                 let touchedNodeMid = self.nodes(at: location)
@@ -289,7 +215,6 @@ class GameScene: SKScene {
                         if (node.name == "c_space") && (distance(locationEnd, p1) < circleWidth / 2) {
                             // Enter locking logic
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                            nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
                             print("C Circle!")
                             nodeFound = true
@@ -297,7 +222,6 @@ class GameScene: SKScene {
                         } else if (node.name == "w_space") && (distance(locationEnd, p2) < circleWidth / 2) {
                             // Enter locking logic
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                            nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
                             print("W Circle!")
                             nodeFound = true
@@ -305,7 +229,6 @@ class GameScene: SKScene {
                         } else if (node.name == "e_space") && (distance(locationEnd, p3) < circleWidth / 2) {
                             // Enter locking logic
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                            nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
                             print("E Circle!")
                             nodeFound = true
@@ -314,7 +237,6 @@ class GameScene: SKScene {
                     } else if node.name == "cwe_space" && (locationEnd.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) {
                         // Enter locking logic
                         nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                        nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                         castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                         print("CWE Triangle!")
                         nodeFound = true
@@ -323,7 +245,6 @@ class GameScene: SKScene {
                         if node.name == "cw_space" {
                             // Enter locking logic
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                            nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
                             print("CW Bar!")
                             nodeFound = true
@@ -331,9 +252,7 @@ class GameScene: SKScene {
                         } else if node.name == "we_space" && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) && (locationEnd.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (locationEnd.x - weBar[3].x) + weBar[3].y)) {
                             // Enter locking logic
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                            nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
-                            nodeLabelToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1/2, alpha: 1)
                             print("WE Bar!")
                             nodeFound = true
@@ -341,9 +260,7 @@ class GameScene: SKScene {
                         } else if node.name == "ce_space" && (locationEnd.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (locationEnd.x - ceBar[3].x) + ceBar[3].y)) && (locationEnd.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) {
                             // Enter locking logic
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                            nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
-                            nodeLabelToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1, alpha: 1)
                             print("CE Bar!")
                             nodeFound = true
@@ -352,7 +269,6 @@ class GameScene: SKScene {
                     } else if node.name == "na_space" {
                         // Enter locking logic
                         nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                        nodeLabelToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                         castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
                         print("None!")
                         nodeFound = true
@@ -362,88 +278,72 @@ class GameScene: SKScene {
                 if !nodeFound {
                     switch nodeToMove {
                     case tile1:
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[1]!.x - (nodeToMove.position.x), dy: tileBankLocDict[1]!.y - (nodeToMove.position.y)), duration: 0.3))
-                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[1]!.x - (nodeToMove.position.x), dy: tileBankLocDict[1]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = 1
                         break
                     case tile2:
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[2]!.x - (nodeToMove.position.x), dy: tileBankLocDict[2]!.y - (nodeToMove.position.y)), duration: 0.3))
-                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[2]!.x - (nodeToMove.position.x), dy: tileBankLocDict[2]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = 2
                         break
                     case tile3:
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[3]!.x - (nodeToMove.position.x), dy: tileBankLocDict[3]!.y - (nodeToMove.position.y)), duration: 0.3))
-                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[3]!.x - (nodeToMove.position.x), dy: tileBankLocDict[3]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = 3
                         break
                     case tile4:
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[4]!.x - (nodeToMove.position.x), dy: tileBankLocDict[4]!.y - (nodeToMove.position.y)), duration: 0.3))
-                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[4]!.x - (nodeToMove.position.x), dy: tileBankLocDict[4]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = 4
                         break
                     case tile5:
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[5]!.x - (nodeToMove.position.x), dy: tileBankLocDict[5]!.y - (nodeToMove.position.y)), duration: 0.3))
-                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[5]!.x - (nodeToMove.position.x), dy: tileBankLocDict[5]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = 5
                         break
                     case tile6:
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[6]!.x - (nodeToMove.position.x), dy: tileBankLocDict[6]!.y - (nodeToMove.position.y)), duration: 0.3))
-                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[6]!.x - (nodeToMove.position.x), dy: tileBankLocDict[6]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = 6
                         break
                     case tile7:
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[7]!.x - (nodeToMove.position.x), dy: tileBankLocDict[7]!.y - (nodeToMove.position.y)), duration: 0.3))
-                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[7]!.x - (nodeToMove.position.x), dy: tileBankLocDict[7]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = 7
                         break
                     case tile8:
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[8]!.x - (nodeToMove.position.x), dy: tileBankLocDict[8]!.y - (nodeToMove.position.y)), duration: 0.3))
-                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[8]!.x - (nodeToMove.position.x), dy: tileBankLocDict[8]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = 8
                         break
                     case tile9:
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[9]!.x - (nodeToMove.position.x), dy: tileBankLocDict[9]!.y - (nodeToMove.position.y)), duration: 0.3))
-                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[9]!.x - (nodeToMove.position.x), dy: tileBankLocDict[9]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = 9
                         break
                     case tile10:
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[10]!.x - (nodeToMove.position.x), dy: tileBankLocDict[10]!.y - (nodeToMove.position.y)), duration: 0.3))
-                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[10]!.x - (nodeToMove.position.x), dy: tileBankLocDict[10]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = 10
                         break
                     case tile11:
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[11]!.x - (nodeToMove.position.x), dy: tileBankLocDict[11]!.y - (nodeToMove.position.y)), duration: 0.3))
-                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[11]!.x - (nodeToMove.position.x), dy: tileBankLocDict[11]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = 11
                         break
                     case tile12:
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[12]!.x - (nodeToMove.position.x), dy: tileBankLocDict[12]!.y - (nodeToMove.position.y)), duration: 0.3))
-                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[12]!.x - (nodeToMove.position.x), dy: tileBankLocDict[12]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = 12
                         break
                     case tile13:
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[13]!.x - (nodeToMove.position.x), dy: tileBankLocDict[13]!.y - (nodeToMove.position.y)), duration: 0.3))
-                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[13]!.x - (nodeToMove.position.x), dy: tileBankLocDict[13]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = 13
                         break
                     case tile14:
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[14]!.x - (nodeToMove.position.x), dy: tileBankLocDict[14]!.y - (nodeToMove.position.y)), duration: 0.3))
-                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[14]!.x - (nodeToMove.position.x), dy: tileBankLocDict[14]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = 14
                         break
                     case tile15:
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[15]!.x - (nodeToMove.position.x), dy: tileBankLocDict[15]!.y - (nodeToMove.position.y)), duration: 0.3))
-                        nodeLabelToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[15]!.x - (nodeToMove.position.x), dy: tileBankLocDict[15]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = 15
                         break
                     case .none:
+                        dictLookup = 1
                         break
                     case .some(_):
+                        dictLookup = 1
                         break
                     }
+                    nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[dictLookup]!.x - (nodeToMove.position.x), dy: tileBankLocDict[dictLookup]!.y - (nodeToMove.position.y)), duration: 0.3))
                     castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                     nodeToMove.run(SKAction.scale(to: 1, duration: 0.2))
-                    nodeLabelToMove.run(SKAction.scale(to: 1, duration: 0.2))
                     remainingInBank = remainingInBank + 1
                     submit.run(SKAction.fadeAlpha(to: 0, duration: 0.2))
-                    submitLabel.run(SKAction.fadeAlpha(to: 0, duration: 0.2))
                     print(remainingInBank)
                     print("Bank!")
                 }
             }
             if makeSumbitVis && remainingInBank == 0 {
                 submit.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
-                submitLabel.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
                 makeSumbitVis = false
             }
             locationOld = nil
             nodeToMove = nil
-            nodeLabelToMove = nil
         }
     }
     
@@ -460,8 +360,9 @@ class GameScene: SKScene {
         bottomMargin = ((screenHeight / -2) + (0.6 * circleWidth))
         midMargin = ((3 / 4) * barLength * barLength).squareRoot()
         // Declares size of tiles
-        let tileLength: CGFloat = ((1/9) * 850 * ratio)
-        let tileHeight: CGFloat = (tileLength / 2)
+        let tileLengthOriginal: CGFloat = ((1/9) * 850 * ratio)
+        let tileHeight: CGFloat = (tileLengthOriginal / 2)
+        let tileLength = tileLengthOriginal + tileHeight
         // Declares center of the 3 circles as anchor points
         p1 = CGPoint(x: (barLength / -2), y: bottomMargin + midMargin)
         p2 = CGPoint(x: (barLength / 2), y: bottomMargin + midMargin)
@@ -495,7 +396,7 @@ class GameScene: SKScene {
         cwBG.position = CGPoint(x: 0, y: 0)
         cwBG.zPosition = 3
         let path2 = CGMutablePath()
-        cwBar = [CGPoint(x: p1.x, y: p1.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y - (barWidth / 2)), CGPoint(x: p1.x, y: p1.y - (barWidth / 2))]
+        let cwBar = [CGPoint(x: p1.x, y: p1.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y - (barWidth / 2)), CGPoint(x: p1.x, y: p1.y - (barWidth / 2))]
         path2.addLines(between: [cwBar[0], cwBar[1], cwBar[2], cwBar[3], cwBar[0]])
         cwBG.path = path2
         cwBG.fillColor = SKColor.magenta
@@ -684,7 +585,7 @@ class GameScene: SKScene {
         let tileMin = bottomMargin + midMargin + (0.6 * circleWidth)
         let tileMax = screenHeight / 2
         let tileOffsetX = tileLength / -2
-        let tileBufferX = screenWidth / 6
+        let tileBufferX = screenWidth / 5.2
         // Create tile lookup table
         let origin1 = CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
         let origin2 = CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
@@ -795,7 +696,23 @@ class GameScene: SKScene {
         tile13.strokeColor = SKColor.black
         tile14.strokeColor = SKColor.black
         tile15.strokeColor = SKColor.black
-        // make tile always visable
+        // Size outline tile
+        tile1.lineWidth = 2 * ratio
+        tile2.lineWidth = 2 * ratio
+        tile3.lineWidth = 2 * ratio
+        tile4.lineWidth = 2 * ratio
+        tile5.lineWidth = 2 * ratio
+        tile6.lineWidth = 2 * ratio
+        tile7.lineWidth = 2 * ratio
+        tile8.lineWidth = 2 * ratio
+        tile9.lineWidth = 2 * ratio
+        tile10.lineWidth = 2 * ratio
+        tile11.lineWidth = 2 * ratio
+        tile12.lineWidth = 2 * ratio
+        tile13.lineWidth = 2 * ratio
+        tile14.lineWidth = 2 * ratio
+        tile15.lineWidth = 2 * ratio
+        // make tile always visable lineWidth
         tile1.zPosition = 6
         tile2.zPosition = 6
         tile3.zPosition = 6
@@ -812,21 +729,21 @@ class GameScene: SKScene {
         tile14.zPosition = 6
         tile15.zPosition = 6
         // Create labels
-        tileLabel1 = SKLabelNode(fontNamed: "ArialMT")
-        tileLabel2 = SKLabelNode(fontNamed: "ArialMT")
-        tileLabel3 = SKLabelNode(fontNamed: "ArialMT")
-        tileLabel4 = SKLabelNode(fontNamed: "ArialMT")
-        tileLabel5 = SKLabelNode(fontNamed: "ArialMT")
-        tileLabel6 = SKLabelNode(fontNamed: "ArialMT")
-        tileLabel7 = SKLabelNode(fontNamed: "ArialMT")
-        tileLabel8 = SKLabelNode(fontNamed: "ArialMT")
-        tileLabel9 = SKLabelNode(fontNamed: "ArialMT")
-        tileLabel10 = SKLabelNode(fontNamed: "ArialMT")
-        tileLabel11 = SKLabelNode(fontNamed: "ArialMT")
-        tileLabel12 = SKLabelNode(fontNamed: "ArialMT")
-        tileLabel13 = SKLabelNode(fontNamed: "ArialMT")
-        tileLabel14 = SKLabelNode(fontNamed: "ArialMT")
-        tileLabel15 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel1 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel2 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel3 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel4 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel5 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel6 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel7 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel8 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel9 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel10 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel11 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel12 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel13 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel14 = SKLabelNode(fontNamed: "ArialMT")
+        let tileLabel15 = SKLabelNode(fontNamed: "ArialMT")
         // Placeholder labels
         tileLabel1.text = "Cooling\n temps "
         tileLabel2.text = "Warming\n  temps "
@@ -875,50 +792,50 @@ class GameScene: SKScene {
         tileLabel15.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
         if #available(iOS 11.0, *) {
             tileLabel1.numberOfLines = 3
-            tileLabel1.preferredMaxLayoutWidth = tileLength
-            tileLabel1.fontSize = tileLength / 6
+            tileLabel1.preferredMaxLayoutWidth = tileLengthOriginal
+            tileLabel1.fontSize = tileLengthOriginal / 6
             tileLabel2.numberOfLines = 3
-            tileLabel2.preferredMaxLayoutWidth = tileLength
-            tileLabel2.fontSize = tileLength / 6
+            tileLabel2.preferredMaxLayoutWidth = tileLengthOriginal
+            tileLabel2.fontSize = tileLengthOriginal / 6
             tileLabel3.numberOfLines = 3
-            tileLabel3.preferredMaxLayoutWidth = tileLength
-            tileLabel3.fontSize = tileLength / 6
+            tileLabel3.preferredMaxLayoutWidth = tileLengthOriginal
+            tileLabel3.fontSize = tileLengthOriginal / 6
             tileLabel4.numberOfLines = 3
-            tileLabel4.preferredMaxLayoutWidth = tileLength
-            tileLabel4.fontSize = tileLength / 6
+            tileLabel4.preferredMaxLayoutWidth = tileLengthOriginal
+            tileLabel4.fontSize = tileLengthOriginal / 6
             tileLabel5.numberOfLines = 3
-            tileLabel5.preferredMaxLayoutWidth = tileLength
-            tileLabel5.fontSize = tileLength / 6
+            tileLabel5.preferredMaxLayoutWidth = tileLengthOriginal
+            tileLabel5.fontSize = tileLengthOriginal / 6
             tileLabel6.numberOfLines = 3
-            tileLabel6.preferredMaxLayoutWidth = tileLength
-            tileLabel6.fontSize = tileLength / 6
+            tileLabel6.preferredMaxLayoutWidth = tileLengthOriginal
+            tileLabel6.fontSize = tileLengthOriginal / 6
             tileLabel7.numberOfLines = 3
-            tileLabel7.preferredMaxLayoutWidth = tileLength
-            tileLabel7.fontSize = tileLength / 6
+            tileLabel7.preferredMaxLayoutWidth = tileLengthOriginal
+            tileLabel7.fontSize = tileLengthOriginal / 6
             tileLabel8.numberOfLines = 3
-            tileLabel8.preferredMaxLayoutWidth = tileLength
-            tileLabel8.fontSize = tileLength / 6
+            tileLabel8.preferredMaxLayoutWidth = tileLengthOriginal
+            tileLabel8.fontSize = tileLengthOriginal / 6
             tileLabel9.numberOfLines = 3
-            tileLabel9.preferredMaxLayoutWidth = tileLength
-            tileLabel9.fontSize = tileLength / 6
+            tileLabel9.preferredMaxLayoutWidth = tileLengthOriginal
+            tileLabel9.fontSize = tileLengthOriginal / 6
             tileLabel10.numberOfLines = 3
-            tileLabel10.preferredMaxLayoutWidth = tileLength
-            tileLabel10.fontSize = tileLength / 6
+            tileLabel10.preferredMaxLayoutWidth = tileLengthOriginal
+            tileLabel10.fontSize = tileLengthOriginal / 6
             tileLabel11.numberOfLines = 3
-            tileLabel11.preferredMaxLayoutWidth = tileLength
-            tileLabel11.fontSize = tileLength / 6
+            tileLabel11.preferredMaxLayoutWidth = tileLengthOriginal
+            tileLabel11.fontSize = tileLengthOriginal / 6
             tileLabel12.numberOfLines = 3
-            tileLabel12.preferredMaxLayoutWidth = tileLength
-            tileLabel12.fontSize = tileLength / 6
+            tileLabel12.preferredMaxLayoutWidth = tileLengthOriginal
+            tileLabel12.fontSize = tileLengthOriginal / 6
             tileLabel13.numberOfLines = 3
-            tileLabel13.preferredMaxLayoutWidth = tileLength
-            tileLabel13.fontSize = tileLength / 6
+            tileLabel13.preferredMaxLayoutWidth = tileLengthOriginal
+            tileLabel13.fontSize = tileLengthOriginal / 6
             tileLabel14.numberOfLines = 3
-            tileLabel14.preferredMaxLayoutWidth = tileLength
-            tileLabel14.fontSize = tileLength / 6
+            tileLabel14.preferredMaxLayoutWidth = tileLengthOriginal
+            tileLabel14.fontSize = tileLengthOriginal / 6
             tileLabel15.numberOfLines = 3
-            tileLabel15.preferredMaxLayoutWidth = tileLength
-            tileLabel15.fontSize = tileLength / 6
+            tileLabel15.preferredMaxLayoutWidth = tileLengthOriginal
+            tileLabel15.fontSize = tileLengthOriginal / 6
         } else {
             // Fallback on earlier versions
             // FIX IN FUTURE UPDATE
@@ -940,21 +857,21 @@ class GameScene: SKScene {
         self.addChild(tile14)
         self.addChild(tile15)
         // Place Labels in center of tiles
-        tileLabel1.position = CGPoint(x: tile1.frame.midX, y: tile1.frame.midY)
-        tileLabel2.position = CGPoint(x: tile2.frame.midX, y: tile2.frame.midY)
-        tileLabel3.position = CGPoint(x: tile3.frame.midX, y: tile3.frame.midY)
-        tileLabel4.position = CGPoint(x: tile4.frame.midX, y: tile4.frame.midY)
-        tileLabel5.position = CGPoint(x: tile5.frame.midX, y: tile5.frame.midY)
-        tileLabel6.position = CGPoint(x: tile6.frame.midX, y: tile6.frame.midY)
-        tileLabel7.position = CGPoint(x: tile7.frame.midX, y: tile7.frame.midY)
-        tileLabel8.position = CGPoint(x: tile8.frame.midX, y: tile8.frame.midY)
-        tileLabel9.position = CGPoint(x: tile9.frame.midX, y: tile9.frame.midY)
-        tileLabel10.position = CGPoint(x: tile10.frame.midX, y: tile10.frame.midY)
-        tileLabel11.position = CGPoint(x: tile11.frame.midX, y: tile11.frame.midY)
-        tileLabel12.position = CGPoint(x: tile12.frame.midX, y: tile12.frame.midY)
-        tileLabel13.position = CGPoint(x: tile13.frame.midX, y: tile13.frame.midY)
-        tileLabel14.position = CGPoint(x: tile14.frame.midX, y: tile14.frame.midY)
-        tileLabel15.position = CGPoint(x: tile15.frame.midX, y: tile15.frame.midY)
+        tileLabel1.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tileLabel2.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tileLabel3.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tileLabel4.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tileLabel5.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tileLabel6.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tileLabel7.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tileLabel8.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tileLabel9.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tileLabel10.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tileLabel11.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tileLabel12.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tileLabel13.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tileLabel14.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tileLabel15.position = CGPoint(x: (tileHeight / 2), y: 0)
         // Color text
         tileLabel1.fontColor = SKColor.black
         tileLabel2.fontColor = SKColor.black
@@ -972,51 +889,130 @@ class GameScene: SKScene {
         tileLabel14.fontColor = SKColor.black
         tileLabel15.fontColor = SKColor.black
         // Make labels appear over tiles
-        tileLabel1.zPosition = 7
-        tileLabel2.zPosition = 7
-        tileLabel3.zPosition = 7
-        tileLabel4.zPosition = 7
-        tileLabel5.zPosition = 7
-        tileLabel6.zPosition = 7
-        tileLabel7.zPosition = 7
-        tileLabel8.zPosition = 7
-        tileLabel9.zPosition = 7
-        tileLabel10.zPosition = 7
-        tileLabel11.zPosition = 7
-        tileLabel12.zPosition = 7
-        tileLabel13.zPosition = 7
-        tileLabel14.zPosition = 7
-        tileLabel15.zPosition = 7
+        tileLabel1.zPosition = 1
+        tileLabel2.zPosition = 1
+        tileLabel3.zPosition = 1
+        tileLabel4.zPosition = 1
+        tileLabel5.zPosition = 1
+        tileLabel6.zPosition = 1
+        tileLabel7.zPosition = 1
+        tileLabel8.zPosition = 1
+        tileLabel9.zPosition = 1
+        tileLabel10.zPosition = 1
+        tileLabel11.zPosition = 1
+        tileLabel12.zPosition = 1
+        tileLabel13.zPosition = 1
+        tileLabel14.zPosition = 1
+        tileLabel15.zPosition = 1
         // Add labels  to screen
-        self.addChild(tileLabel1)
-        self.addChild(tileLabel2)
-        self.addChild(tileLabel3)
-        self.addChild(tileLabel4)
-        self.addChild(tileLabel5)
-        self.addChild(tileLabel6)
-        self.addChild(tileLabel7)
-        self.addChild(tileLabel8)
-        self.addChild(tileLabel9)
-        self.addChild(tileLabel10)
-        self.addChild(tileLabel11)
-        self.addChild(tileLabel12)
-        self.addChild(tileLabel13)
-        self.addChild(tileLabel14)
-        self.addChild(tileLabel15)
+        tile1.addChild(tileLabel1)
+        tile2.addChild(tileLabel2)
+        tile3.addChild(tileLabel3)
+        tile4.addChild(tileLabel4)
+        tile5.addChild(tileLabel5)
+        tile6.addChild(tileLabel6)
+        tile7.addChild(tileLabel7)
+        tile8.addChild(tileLabel8)
+        tile9.addChild(tileLabel9)
+        tile10.addChild(tileLabel10)
+        tile11.addChild(tileLabel11)
+        tile12.addChild(tileLabel12)
+        tile13.addChild(tileLabel13)
+        tile14.addChild(tileLabel14)
+        tile15.addChild(tileLabel15)
+        // Create Sprites!
+        let spriteOffset = (((tileHeight - (2 * ratio)) - tile1.frame.width) / 2) + (3 * ratio)
+        let spritePos = CGPoint(x: spriteOffset, y: 0)
+        let spriteSize = CGSize(width: tileHeight - (2 * ratio), height: tileHeight - (2 * ratio))
+        let tileSprite1 = SKSpriteNode(imageNamed: "SampleSprite")
+        let tileSprite2 = SKSpriteNode(imageNamed: "SampleSprite")
+        let tileSprite3 = SKSpriteNode(imageNamed: "SampleSprite")
+        let tileSprite4 = SKSpriteNode(imageNamed: "SampleSprite")
+        let tileSprite5 = SKSpriteNode(imageNamed: "SampleSprite")
+        let tileSprite6 = SKSpriteNode(imageNamed: "SampleSprite")
+        let tileSprite7 = SKSpriteNode(imageNamed: "SampleSprite")
+        let tileSprite8 = SKSpriteNode(imageNamed: "SampleSprite")
+        let tileSprite9 = SKSpriteNode(imageNamed: "SampleSprite")
+        let tileSprite10 = SKSpriteNode(imageNamed: "SampleSprite")
+        let tileSprite11 = SKSpriteNode(imageNamed: "SampleSprite")
+        let tileSprite12 = SKSpriteNode(imageNamed: "SampleSprite")
+        let tileSprite13 = SKSpriteNode(imageNamed: "SampleSprite")
+        let tileSprite14 = SKSpriteNode(imageNamed: "SampleSprite")
+        let tileSprite15 = SKSpriteNode(imageNamed: "SampleSprite")
+        tileSprite1.size = spriteSize
+        tileSprite2.size = spriteSize
+        tileSprite3.size = spriteSize
+        tileSprite4.size = spriteSize
+        tileSprite5.size = spriteSize
+        tileSprite6.size = spriteSize
+        tileSprite7.size = spriteSize
+        tileSprite8.size = spriteSize
+        tileSprite9.size = spriteSize
+        tileSprite10.size = spriteSize
+        tileSprite11.size = spriteSize
+        tileSprite12.size = spriteSize
+        tileSprite13.size = spriteSize
+        tileSprite14.size = spriteSize
+        tileSprite15.size = spriteSize
+        tileSprite1.position = spritePos
+        tileSprite2.position = spritePos
+        tileSprite3.position = spritePos
+        tileSprite4.position = spritePos
+        tileSprite5.position = spritePos
+        tileSprite6.position = spritePos
+        tileSprite7.position = spritePos
+        tileSprite8.position = spritePos
+        tileSprite9.position = spritePos
+        tileSprite10.position = spritePos
+        tileSprite11.position = spritePos
+        tileSprite12.position = spritePos
+        tileSprite13.position = spritePos
+        tileSprite14.position = spritePos
+        tileSprite15.position = spritePos
+        tileSprite1.zPosition = 1
+        tileSprite2.zPosition = 1
+        tileSprite3.zPosition = 1
+        tileSprite4.zPosition = 1
+        tileSprite5.zPosition = 1
+        tileSprite6.zPosition = 1
+        tileSprite7.zPosition = 1
+        tileSprite8.zPosition = 1
+        tileSprite9.zPosition = 1
+        tileSprite10.zPosition = 1
+        tileSprite11.zPosition = 1
+        tileSprite12.zPosition = 1
+        tileSprite13.zPosition = 1
+        tileSprite14.zPosition = 1
+        tileSprite15.zPosition = 1
+        tile1.addChild(tileSprite1)
+        tile2.addChild(tileSprite2)
+        tile3.addChild(tileSprite3)
+        tile4.addChild(tileSprite4)
+        tile5.addChild(tileSprite5)
+        tile6.addChild(tileSprite6)
+        tile7.addChild(tileSprite7)
+        tile8.addChild(tileSprite8)
+        tile9.addChild(tileSprite9)
+        tile10.addChild(tileSprite10)
+        tile11.addChild(tileSprite11)
+        tile12.addChild(tileSprite12)
+        tile13.addChild(tileSprite13)
+        tile14.addChild(tileSprite14)
+        tile15.addChild(tileSprite15)
+        // Submit button
         submit = SKShapeNode.init(ellipseOf: CGSize.init(width: screenWidth/3, height: screenWidth/10))
         submit.position = CGPoint(x: naBG.frame.midX, y: (naBG.frame.maxY + screenHeight/2)/2)
         submit.zPosition = -5
         submit.fillColor = SKColor.systemBlue
         submit.alpha = 0
         submit.strokeColor = SKColor.black
-        submitLabel = SKLabelNode(fontNamed: "ArialMT")
+        self.addChild(submit)
+        let submitLabel = SKLabelNode(fontNamed: "ArialMT")
         submitLabel.text = "SUBMIT"
         submitLabel.fontColor = SKColor.white
-        submitLabel.zPosition = -5
-        submitLabel.alpha = 0
+        submitLabel.zPosition = 1
         submitLabel.fontSize = 40 * ratio
-        submitLabel.position = CGPoint(x: submit.frame.midX, y: submit.frame.midY - submitLabel.frame.height/2)
-        self.addChild(submit)
-        self.addChild(submitLabel)
+        submitLabel.position = CGPoint(x: 0, y: -submitLabel.frame.height / 2)
+        submit.addChild(submitLabel)
     }
 }
