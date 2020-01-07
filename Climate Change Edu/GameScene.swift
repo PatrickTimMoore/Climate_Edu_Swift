@@ -10,7 +10,7 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
-    //declaring varables used to stare game-data
+    //declaring varables used between initialization and in-game data
     var game: GameManager!
     var climateBG: SKShapeNode!
     var weatherBG: SKShapeNode!
@@ -65,8 +65,11 @@ class GameScene: SKScene {
         // Add on-click functionality here
         for touch in touches {
             let location = touch.location(in: self)
+            // Prints touch location (x, y)
             print(location)
+            // Creates list of nodes sorted by Z-value at touch location
             let touchedNode = self.nodes(at: location)
+            // Checks for first 'tile' node
             for node in touchedNode {
                 if node.name == "tile" && !node.hasActions(){
                     nodeToMove = node
@@ -74,6 +77,7 @@ class GameScene: SKScene {
                     break
                 }
             }
+            // Resets node to be of regular angle if not
             if nodeToMove != nil {
                 let castedNode:SKShapeNode = nodeToMove as! SKShapeNode
                 if castedNode.fillColor == SKColor(red: 1/2, green: 1, blue: 1, alpha: 1) {
@@ -83,66 +87,74 @@ class GameScene: SKScene {
                     nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
                 }
             }
+            // Checks if a tile node is found
             if nodeToMove != nil {
+                // Updates z Position so that selected nodes always appear on top
                 nodeToMove.zPosition = zPosUpdater
                 zPosUpdater = zPosUpdater + 2
+                // Increases size of selected tile
                 nodeToMove.run(SKAction.scale(to: 1.4, duration: 0.2))
+                // Searches for underlying zone
                 nodeFound = false
                 for node in touchedNode {
                     if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
                         if (node.name == "c_space") && (distance(location, p1) < circleWidth / 2) {
-                            // Enter locking logic
+                            // Prints underlying location
                             print("C Circle Pick!")
                             nodeFound = true
                             break
                         } else if (node.name == "w_space") && (distance(location, p2) < circleWidth / 2) {
-                            // Enter locking logic
+                            // Prints underlying location
                             print("W Circle Pick!")
                             nodeFound = true
                             break
                         } else if (node.name == "e_space") && (distance(location, p3) < circleWidth / 2) {
-                            // Enter locking logic
+                            // Prints underlying location
                             print("E Circle Pick!")
                             nodeFound = true
                             break
                         }
                     } else if node.name == "cwe_space" && (location.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) {
-                        // Enter locking logic
+                        // Prints underlying location
                         print("CWE Triangle Pick!")
                         nodeFound = true
                         break
                     } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
                         if node.name == "cw_space" {
-                            // Enter locking logic
+                            // Prints underlying location
                             print("CW Bar Pick!")
                             nodeFound = true
                             break
                         } else if node.name == "we_space" && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) && (location.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (location.x - weBar[3].x) + weBar[3].y)) {
-                            // Enter locking logic
+                            // Prints underlying location
                             print("WE Bar Pick!")
                             nodeFound = true
                             break
                         } else if node.name == "ce_space" && (location.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (location.x - ceBar[3].x) + ceBar[3].y)) && (location.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) {
-                            // Enter locking logic
+                            // Prints underlying location
                             print("CE Bar Pick!")
                             nodeFound = true
                             break
                         }
                     } else if node.name == "na_space" {
-                        // Enter locking logic
+                        // Prints underlying location
                         print("None Pick!")
                         nodeFound = true
                         break
                     }
                 }
                 if !nodeFound{
+                    // Prints underlying location
                     print("Bank pick!")
+                    // Updates the count in the Bank
                     remainingInBank = remainingInBank - 1
+                    // Displays submit option if Bank is empty
                     if remainingInBank == 0 {
                         makeSumbitVis = true
                         submit.zPosition = zPosUpdater
                         zPosUpdater = zPosUpdater + 2
                     }
+                    // Prints remaining bank count
                     print(remainingInBank)
                 }
             }
@@ -152,13 +164,17 @@ class GameScene: SKScene {
     // Function runs on dragging screen touch
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Add on-drag functionality here
+        // Checks if a node is currently selected
         if nodeToMove != nil {
+            // Break statements stop from multi-touch
             for touch in touches {
+                // Finds selected tile and updates position
                 let location = touch.location(in: self)
                 nodeToMove.position = CGPoint(x: nodeToMove.position.x + location.x - locationOld.x, y: nodeToMove.position.y + location.y - locationOld.y)
                 locationOld = location
                 let castedNode:SKShapeNode = nodeToMove as! SKShapeNode
                 let touchedNodeMid = self.nodes(at: location)
+                // The following updates the tile color!
                 for node in touchedNodeMid {
                     if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
                         if (node.name == "c_space") && (distance(location, p1) < circleWidth / 2) {
@@ -196,38 +212,42 @@ class GameScene: SKScene {
         }
     }
     
+    // This function is used to determine distance between two CGPoints
     func distance(_ a: CGPoint, _ b: CGPoint) -> CGFloat {
         let xDist = a.x - b.x
         let yDist = a.y - b.y
         return CGFloat(sqrt(xDist * xDist + yDist * yDist))
     }
     
+    // Runs upon touch release
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Add on-release functionality here
         if nodeToMove != nil {
             let castedNode:SKShapeNode = nodeToMove as! SKShapeNode
+            // Finds locaion of selected tile
             for touch in touches {
                 let locationEnd = touch.location(in: self)
                 let touchedNodeEnd = self.nodes(at: locationEnd)
                 nodeFound = false
                 for node in touchedNodeEnd {
+                    // Performs the resizing, recoloring, and reangling!
                     if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
                         if (node.name == "c_space") && (distance(locationEnd, p1) < circleWidth / 2) {
-                            // Enter locking logic
+                            // Prints underlying location
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
                             print("C Circle!")
                             nodeFound = true
                             break
                         } else if (node.name == "w_space") && (distance(locationEnd, p2) < circleWidth / 2) {
-                            // Enter locking logic
+                            // Prints underlying location
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
                             print("W Circle!")
                             nodeFound = true
                             break
                         } else if (node.name == "e_space") && (distance(locationEnd, p3) < circleWidth / 2) {
-                            // Enter locking logic
+                            // Prints underlying location
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
                             print("E Circle!")
@@ -235,7 +255,7 @@ class GameScene: SKScene {
                             break
                         }
                     } else if node.name == "cwe_space" && (locationEnd.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) {
-                        // Enter locking logic
+                        // Prints underlying location
                         nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                         castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                         print("CWE Triangle!")
@@ -243,14 +263,14 @@ class GameScene: SKScene {
                         break
                     } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
                         if node.name == "cw_space" {
-                            // Enter locking logic
+                            // Prints underlying location
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
                             print("CW Bar!")
                             nodeFound = true
                             break
                         } else if node.name == "we_space" && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) && (locationEnd.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (locationEnd.x - weBar[3].x) + weBar[3].y)) {
-                            // Enter locking logic
+                            // Prints underlying location
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1/2, alpha: 1)
@@ -258,7 +278,7 @@ class GameScene: SKScene {
                             nodeFound = true
                             break
                         } else if node.name == "ce_space" && (locationEnd.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (locationEnd.x - ceBar[3].x) + ceBar[3].y)) && (locationEnd.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) {
-                            // Enter locking logic
+                            // Prints underlying location
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1, alpha: 1)
@@ -267,7 +287,7 @@ class GameScene: SKScene {
                             break
                         }
                     } else if node.name == "na_space" {
-                        // Enter locking logic
+                        // Prints underlying location
                         nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                         castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
                         print("None!")
@@ -275,6 +295,7 @@ class GameScene: SKScene {
                         break
                     }
                 }
+                // Finds dictionary entry for the bank location
                 if !nodeFound {
                     switch nodeToMove {
                     case tile1:
@@ -329,15 +350,20 @@ class GameScene: SKScene {
                         dictLookup = 1
                         break
                     }
+                    // Returns tile to it's proper bank location
                     nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[dictLookup]!.x - (nodeToMove.position.x), dy: tileBankLocDict[dictLookup]!.y - (nodeToMove.position.y)), duration: 0.3))
                     castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
+                    // Returns tile to normal side
                     nodeToMove.run(SKAction.scale(to: 1, duration: 0.2))
+                    // Updates bank count
                     remainingInBank = remainingInBank + 1
+                    // Hides submit if submit is a tile is selected
                     submit.run(SKAction.fadeAlpha(to: 0, duration: 0.2))
                     print(remainingInBank)
                     print("Bank!")
                 }
             }
+            // Displays submit if bank is empty
             if makeSumbitVis && remainingInBank == 0 {
                 submit.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
                 makeSumbitVis = false
@@ -602,6 +628,7 @@ class GameScene: SKScene {
         let origin13 = CGPoint(x: tileOffsetX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
         let origin14 = CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
         let origin15 = CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
+        // Creates dictionary to relate positions
         tileBankLocDict = [1: origin1,
                            2: origin2,
                            3: origin3,
@@ -744,7 +771,7 @@ class GameScene: SKScene {
         let tileLabel13 = SKLabelNode(fontNamed: "ArialMT")
         let tileLabel14 = SKLabelNode(fontNamed: "ArialMT")
         let tileLabel15 = SKLabelNode(fontNamed: "ArialMT")
-        // Placeholder labels
+        // Labels and associated position
         tileLabel1.text = "Cooling\n temps "
         tileLabel2.text = "Warming\n  temps "
         tileLabel3.text = "   Daily\nchanges"
@@ -791,6 +818,7 @@ class GameScene: SKScene {
         tileLabel14.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
         tileLabel15.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
         if #available(iOS 11.0, *) {
+            // OLD iOS code just incase (^_~)
             tileLabel1.numberOfLines = 3
             tileLabel1.preferredMaxLayoutWidth = tileLengthOriginal
             tileLabel1.fontSize = tileLengthOriginal / 6
@@ -920,10 +948,11 @@ class GameScene: SKScene {
         tile13.addChild(tileLabel13)
         tile14.addChild(tileLabel14)
         tile15.addChild(tileLabel15)
-        // Create Sprites!
+        // Create Sprite constants
         let spriteOffset = (((tileHeight - (2 * ratio)) - tile1.frame.width) / 2) + (3 * ratio)
         let spritePos = CGPoint(x: spriteOffset, y: 0)
         let spriteSize = CGSize(width: tileHeight - (2 * ratio), height: tileHeight - (2 * ratio))
+        // Initialize sprites to images
         let tileSprite1 = SKSpriteNode(imageNamed: "SampleSprite")
         let tileSprite2 = SKSpriteNode(imageNamed: "SampleSprite")
         let tileSprite3 = SKSpriteNode(imageNamed: "SampleSprite")
@@ -939,6 +968,7 @@ class GameScene: SKScene {
         let tileSprite13 = SKSpriteNode(imageNamed: "SampleSprite")
         let tileSprite14 = SKSpriteNode(imageNamed: "SampleSprite")
         let tileSprite15 = SKSpriteNode(imageNamed: "SampleSprite")
+        // Sets sprite size
         tileSprite1.size = spriteSize
         tileSprite2.size = spriteSize
         tileSprite3.size = spriteSize
@@ -969,6 +999,7 @@ class GameScene: SKScene {
         tileSprite13.position = spritePos
         tileSprite14.position = spritePos
         tileSprite15.position = spritePos
+        // sets sprite on top of tile
         tileSprite1.zPosition = 1
         tileSprite2.zPosition = 1
         tileSprite3.zPosition = 1
@@ -984,6 +1015,7 @@ class GameScene: SKScene {
         tileSprite13.zPosition = 1
         tileSprite14.zPosition = 1
         tileSprite15.zPosition = 1
+        // Adds sprite to tile
         tile1.addChild(tileSprite1)
         tile2.addChild(tileSprite2)
         tile3.addChild(tileSprite3)
@@ -1007,6 +1039,7 @@ class GameScene: SKScene {
         submit.alpha = 0
         submit.strokeColor = SKColor.black
         self.addChild(submit)
+        // Creates text to lay on button
         let submitLabel = SKLabelNode(fontNamed: "ArialMT")
         submitLabel.text = "SUBMIT"
         submitLabel.fontColor = SKColor.white
