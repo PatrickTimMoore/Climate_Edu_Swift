@@ -6,20 +6,118 @@
 //  Copyright © 2019 Patrick Moore. All rights reserved.
 //
 
+import UIKit
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
+
+protocol TransitionDelegate: SKSceneDelegate {
+    func showAlert(title:String,message:String)
+    func handleLoginBtn(username:String,password:String)
+}
+
+class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
+    //UIPicker setup
+    var school = ["Currently Unavailable"]
+    var grade = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+    var age = ["6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"]
+    var race = ["White", "Black or African American", "American Indian", "Asian", "Mixed", "Other"]
+    var gender = ["M", "F"]
+    var textField1:UITextField!
+    var textField2:UITextField!
+    var textField3:UITextField!
+    var textField4:UITextField!
+    var textField5:UITextField!
+    var picker1:UIPickerView!
+    var picker2:UIPickerView!
+    var picker3:UIPickerView!
+    var picker4:UIPickerView!
+    var picker5:UIPickerView!
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if pickerView == picker1 {
+            return school.count
+        } else if pickerView == picker2 {
+            return grade.count
+        } else if pickerView == picker3 {
+            return age.count
+        } else if pickerView == picker4 {
+            return race.count
+        } else if pickerView == picker5 {
+            return gender.count
+        } else {
+            return 0
+        }
+    }
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if pickerView == picker1 {
+            return school[row]
+        } else if pickerView == picker2 {
+            return grade[row]
+        } else if pickerView == picker3 {
+            return age[row]
+        } else if pickerView == picker4 {
+            return race[row]
+        } else if pickerView == picker5 {
+            return gender[row]
+        } else {
+            return "0"
+        }
+    }
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if pickerView == picker1 {
+            textField1.text = school[row]
+            picker1.isHidden = true;
+        } else if pickerView == picker2 {
+            textField2.text = grade[row]
+            picker2.isHidden = true;
+        } else if pickerView == picker3 {
+            textField3.text = age[row]
+            picker3.isHidden = true;
+        } else if pickerView == picker4 {
+            textField4.text = race[row]
+            picker4.isHidden = true;
+        } else if pickerView == picker5 {
+            textField5.text = gender[row]
+            picker5.isHidden = true;
+        } else {
+            return
+        }
+    }
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        if textField == textField1 {
+            picker1.isHidden = false
+            return false
+        } else if textField == textField2 {
+            picker2.isHidden = false
+            return false
+        } else if textField == textField3 {
+            picker3.isHidden = false
+            return false
+        } else if textField == textField4 {
+            picker4.isHidden = false
+            return false
+        } else if textField == textField5 {
+            picker5.isHidden = false
+            return false
+        } else {
+            return true
+        }
+    }
+    
     //declaring varables used between initialization and in-game data
     var game: GameManager!
-    var climateBG: SKShapeNode!
-    var weatherBG: SKShapeNode!
-    var enviromBG: SKShapeNode!
-    var cwBG: SKShapeNode!
-    var weBG: SKShapeNode!
-    var ceBG: SKShapeNode!
-    var cweBG: SKShapeNode!
-    var naBG: SKShapeNode!
+    var gameBG: SKShapeNode!
+    //var climateBG: SKShapeNode!
+    //var weatherBG: SKShapeNode!
+    //var enviromBG: SKShapeNode!
+    //var naBG: SKShapeNode!
+    //var cwBG: SKShapeNode!
+    //var weBG: SKShapeNode!
+    //var ceBG: SKShapeNode!
+    //var cweBG: SKShapeNode!
     var ceBar: [CGPoint]!
     var weBar: [CGPoint]!
     var p1: CGPoint!
@@ -40,7 +138,11 @@ class GameScene: SKScene {
     var tile13: SKShapeNode!
     var tile14: SKShapeNode!
     var tile15: SKShapeNode!
+    var form: SKShapeNode!
+    var passScreen: SKShapeNode!
     var submit: SKShapeNode!
+    var submitLabel: SKLabelNode!
+    var contBtn: SKShapeNode!
     var nodeToMove: SKNode!
     var locationOld: CGPoint!
     var zPosUpdater: CGFloat!
@@ -52,6 +154,199 @@ class GameScene: SKScene {
     var tileBankLocDict: Dictionary<Int, CGPoint>!
     var remainingInBank: Int = 15
     var dictLookup: Int!
+    var sequenceApp: Int = 1
+    
+    // UIKit Intergration
+    var loginBtn:SKShapeNode!
+    func customize(textField:UITextField, placeholder:String , isSecureTextEntry:Bool = false) {
+        let paddingView = UIView(frame:CGRect(x:0,y: 0,width: 10,height: 30))
+        textField.leftView = paddingView
+        textField.keyboardType = UIKeyboardType.emailAddress
+        textField.leftViewMode = UITextField.ViewMode.always
+        textField.attributedPlaceholder = NSAttributedString(string: placeholder,attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
+        textField.autocapitalizationType = .none
+        textField.autocorrectionType = .no
+        textField.layer.borderColor = UIColor.gray.cgColor
+        textField.layer.borderWidth = 0.5
+        textField.layer.cornerRadius = 4.0
+        textField.textColor = .black
+        textField.isSecureTextEntry = isSecureTextEntry
+        textField.delegate = self
+    }
+    @objc func textFieldDidChange(textField: UITextField) {
+        //print("everytime you type something this is fired..")
+    }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        return true
+    }
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if textField == textField1 { // validate email syntax
+            let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+            let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+            let result = emailTest.evaluate(with: textField.text)
+            let title = "Alert title"
+            let message = result ? "This is a correct email" : "Wrong email syntax"
+            if !result {
+                self.run(SKAction.wait(forDuration: 0.01),completion:{[unowned self] in
+                    guard let delegate = self.delegate else { return }
+                    (delegate as! TransitionDelegate).showAlert(title:title,message: message)
+                })
+            }
+        }
+    }
+    func getButton(frame:CGRect,fillColor:SKColor,title:String = "",logo:SKSpriteNode!,name:String)->SKShapeNode {
+        let btn = SKShapeNode(rect: frame, cornerRadius: 10)
+        btn.fillColor = fillColor
+        btn.strokeColor = fillColor
+        if let l = logo {
+            btn.addChild(l)
+            l.zPosition = 2
+            l.position = CGPoint(x:frame.origin.x+(frame.size.width/2),y:frame.origin.y+(frame.size.height/2))
+            l.name = name
+        }
+        if !title.isEmpty {
+            let label = SKLabelNode.init(fontNamed: "AppleSDGothicNeo-Regular")
+            label.text = title; label.fontSize = 25
+            label.fontColor = .white
+            btn.addChild(label)
+            label.zPosition = 3
+            label.position = CGPoint(x:frame.origin.x+(frame.size.width/2),y:frame.origin.y+(frame.size.height/4))
+            label.name = name
+        }
+        btn.name = name
+        return btn
+    }
+    
+    // API Calls
+    var SESSIONID:Int!
+    var INSTRUCTID:String = "0"
+    var SCHOOLID:String = "0"
+    var ETHNICID:String = "0"
+    var SEXID:String = "0"
+    var AGEID:String = "0"
+    var GRADEID:String = "0"
+    func API1(){
+        let endpoint1:String = "http://epsyapi.us-west-2.elasticbeanstalk.com/api/v1/session"
+        guard let URL1 = URL(string: endpoint1) else {
+            print("Error: Cannot create URL.")
+            return
+        }
+        var URLRequest1 = URLRequest(url: URL1)
+        URLRequest1.httpMethod = "POST"
+        let newPost1: [String: Any] = ["instructor_id": INSTRUCTID, "school_id": SCHOOLID, "ethnicity_id": ETHNICID, "sex": SEXID, "age": AGEID, "grade": GRADEID]
+        var jsonPost1:Data
+        do {
+            jsonPost1 = try JSONSerialization.data(withJSONObject: newPost1, options: [])
+            URLRequest1.httpBody = jsonPost1
+        } catch {
+            print("Error: cannot create JSON")
+            return
+        }
+        let session = URLSession.shared
+        let task = session.dataTask(with: URLRequest1){
+            (data, response, error) in
+            guard error == nil else {
+                print("Error: error in calling Post1")
+                print(error ?? 0)
+                return
+            }
+            guard let responseData = data else {
+                print("Error: did not recieve data from Post1")
+                return
+            }
+            // Parse responce
+            do {
+                guard let receivedPost1:[String: Any] = try JSONSerialization.jsonObject(with: responseData, options: .allowFragments) as? [String: Any] else {
+                    print("Error: could not make response from Post1 into a dictionary")
+                    return
+                }
+                print("json: \(receivedPost1)")
+                guard let post1ID = receivedPost1["id"] as? Int else {
+                    print("Error: could not recieve the session ID")
+                    return
+                }
+                self.SESSIONID = post1ID
+                print("Session ID is: \(post1ID)")
+            } catch let error {
+                print("Error: error parsing response from Post1")
+                print(error)
+                return
+            }
+        }
+        task.resume()
+    }
+    
+    // API Validators
+    func validate1(){
+        // Validate submit info and then send to SQL server
+        // TODO
+        // Then set up game
+        if(textField1.text == "" || textField2.text == "" || textField3.text == "" || textField4.text == "" || textField5.text == ""){
+            return
+        }
+        if(textField4.text == race[0]){
+            ETHNICID = "1"
+        } else if(textField4.text == race[1]){
+            ETHNICID = "2"
+        } else if(textField4.text == race[2]){
+            ETHNICID = "3"
+        } else if(textField4.text == race[3]){
+            ETHNICID = "4"
+        } else if(textField4.text == race[4]){
+            ETHNICID = "5"
+        } else if(textField4.text == race[5]){
+            ETHNICID = "6"
+        }
+        INSTRUCTID = "1" //TODO
+        SCHOOLID = "0" //TODO
+        ETHNICID = textField4.text ?? "0"
+        SEXID = textField5.text ?? "0"
+        AGEID = textField3.text ?? "0"
+        GRADEID = textField2.text ?? "0"
+        form.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
+        textField1.isHidden = true
+        textField2.isHidden = true
+        textField3.isHidden = true
+        textField4.isHidden = true
+        textField5.isHidden = true
+        picker1.isHidden = true
+        picker2.isHidden = true
+        picker3.isHidden = true
+        picker4.isHidden = true
+        picker5.isHidden = true
+        API1()
+        sequenceApp = sequenceApp + 1
+    }
+    
+    func stepForward1(){
+        passScreen.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
+        sequenceApp = sequenceApp + 1
+    }
+    
+    func stepForward2(){
+        passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
+        //API2()
+        sequenceApp = sequenceApp + 1
+        if submitLabel.text == "SUBMIT" {
+            submitLabel.text = "FINISH"
+        } else {
+            submitLabel.text = "SUBMIT"
+        }
+        if sequenceApp == 6 {
+            stepBackward2()
+        }
+    }
+    
+    func stepBackward1(){
+        passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
+        sequenceApp = sequenceApp - 1
+    }
+    
+    func stepBackward2(){
+        passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
+        form.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
+        sequenceApp = 1
+    }
     
     // Function runs on start of the aplication
     override func didMove(to view: SKView) {
@@ -63,99 +358,137 @@ class GameScene: SKScene {
     // Function runs on initial screen touch
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Add on-click functionality here
-        for touch in touches {
-            let location = touch.location(in: self)
-            // Prints touch location (x, y)
-            print(location)
-            // Creates list of nodes sorted by Z-value at touch location
-            let touchedNode = self.nodes(at: location)
-            // Checks for first 'tile' node
-            for node in touchedNode {
-                if node.name == "tile" && !node.hasActions(){
-                    nodeToMove = node
-                    locationOld = location
-                    break
-                }
-            }
-            // Resets node to be of regular angle if not
-            if nodeToMove != nil {
-                let castedNode:SKShapeNode = nodeToMove as! SKShapeNode
-                if castedNode.fillColor == SKColor(red: 1/2, green: 1, blue: 1, alpha: 1) {
-                    nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
-                }
-                if castedNode.fillColor == SKColor(red: 1, green: 1, blue: 1/2, alpha: 1) {
-                    nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
-                }
-            }
-            // Checks if a tile node is found
-            if nodeToMove != nil {
-                // Updates z Position so that selected nodes always appear on top
-                nodeToMove.zPosition = zPosUpdater
-                zPosUpdater = zPosUpdater + 2
-                // Increases size of selected tile
-                nodeToMove.run(SKAction.scale(to: 1.4, duration: 0.2))
-                // Searches for underlying zone
-                nodeFound = false
+        if sequenceApp == 1 {
+            for touch in touches {
+                let location = touch.location(in: self)
+                // Creates list of nodes sorted by Z-value at touch location
+                let touchedNode = self.nodes(at: location)
+                // Checks for first 'tile' node
                 for node in touchedNode {
-                    if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
-                        if (node.name == "c_space") && (distance(location, p1) < circleWidth / 2) {
-                            // Prints underlying location
-                            print("C Circle Pick!")
-                            nodeFound = true
-                            break
-                        } else if (node.name == "w_space") && (distance(location, p2) < circleWidth / 2) {
-                            // Prints underlying location
-                            print("W Circle Pick!")
-                            nodeFound = true
-                            break
-                        } else if (node.name == "e_space") && (distance(location, p3) < circleWidth / 2) {
-                            // Prints underlying location
-                            print("E Circle Pick!")
-                            nodeFound = true
-                            break
-                        }
-                    } else if node.name == "cwe_space" && (location.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) {
-                        // Prints underlying location
-                        print("CWE Triangle Pick!")
-                        nodeFound = true
-                        break
-                    } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
-                        if node.name == "cw_space" {
-                            // Prints underlying location
-                            print("CW Bar Pick!")
-                            nodeFound = true
-                            break
-                        } else if node.name == "we_space" && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) && (location.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (location.x - weBar[3].x) + weBar[3].y)) {
-                            // Prints underlying location
-                            print("WE Bar Pick!")
-                            nodeFound = true
-                            break
-                        } else if node.name == "ce_space" && (location.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (location.x - ceBar[3].x) + ceBar[3].y)) && (location.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) {
-                            // Prints underlying location
-                            print("CE Bar Pick!")
-                            nodeFound = true
-                            break
-                        }
-                    } else if node.name == "na_space" {
-                        // Prints underlying location
-                        print("None Pick!")
-                        nodeFound = true
+                    if node.name == "loginBtn" && !node.hasActions(){
+                        validate1()
                         break
                     }
                 }
-                if !nodeFound{
-                    // Prints underlying location
-                    print("Bank pick!")
-                    // Updates the count in the Bank
-                    remainingInBank = remainingInBank - 1
-                    // Displays submit option if Bank is empty
-                    if remainingInBank == 0 {
-                        makeSumbitVis = true
-                        submit.zPosition = zPosUpdater
-                        zPosUpdater = zPosUpdater + 2
+            }
+        } else if (sequenceApp == 2) || (sequenceApp == 4) {
+            for touch in touches {
+                let location = touch.location(in: self)
+                // Prints touch location (x, y)
+                print(location)
+                // Creates list of nodes sorted by Z-value at touch location
+                let touchedNode = self.nodes(at: location)
+                // Checks for first 'tile' node
+                for node in touchedNode {
+                    if (node.name == "tile" || node.name == "submit") && !node.hasActions(){
+                        nodeToMove = node
+                        locationOld = location
+                        break
                     }
-                    // Prints remaining bank count
-                    print(remainingInBank)
+                }
+                // Resets node to be of regular angle if not
+                if nodeToMove != nil {
+                    let castedNode:SKShapeNode = nodeToMove as! SKShapeNode
+                    if castedNode.fillColor == SKColor(red: 1/2, green: 1, blue: 1, alpha: 1) {
+                        nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
+                    }
+                    if castedNode.fillColor == SKColor(red: 1, green: 1, blue: 1/2, alpha: 1) {
+                        nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
+                    }
+                }
+                // Checks if a tile node is found
+                if nodeToMove != nil {
+                    // Updates z Position so that selected nodes always appear on top
+                    nodeToMove.zPosition = zPosUpdater
+                    zPosUpdater = zPosUpdater + 2
+                    // Increases size of selected tile
+                    nodeToMove.run(SKAction.scale(to: 1.4, duration: 0.2))
+                    // Searches for underlying zone
+                    nodeFound = false
+                    for node in touchedNode {
+                        print(node.name ?? "No Name")
+                        if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
+                            if (node.name == "c_space") && (distance(location, p1) < circleWidth / 2) {
+                                // Prints underlying location
+                                print("C Circle Pick!")
+                                nodeFound = true
+                                break
+                            } else if (node.name == "w_space") && (distance(location, p2) < circleWidth / 2) {
+                                // Prints underlying location
+                                print("W Circle Pick!")
+                                nodeFound = true
+                                break
+                            } else if (node.name == "e_space") && (distance(location, p3) < circleWidth / 2) {
+                                // Prints underlying location
+                                print("E Circle Pick!")
+                                nodeFound = true
+                                break
+                            }
+                        } else if node.name == "cwe_space" && (location.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) {
+                            // Prints underlying location
+                            print("CWE Triangle Pick!")
+                            nodeFound = true
+                            break
+                        } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
+                            if node.name == "cw_space" {
+                                // Prints underlying location
+                                print("CW Bar Pick!")
+                                nodeFound = true
+                                break
+                            } else if node.name == "we_space" && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) && (location.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (location.x - weBar[3].x) + weBar[3].y)) {
+                                // Prints underlying location
+                                print("WE Bar Pick!")
+                                nodeFound = true
+                                break
+                            } else if node.name == "ce_space" && (location.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (location.x - ceBar[3].x) + ceBar[3].y)) && (location.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) {
+                                // Prints underlying location
+                                print("CE Bar Pick!")
+                                nodeFound = true
+                                break
+                            }
+                        } else if node.name == "na_space" {
+                            // Prints underlying location
+                            print("None Pick!")
+                            nodeFound = true
+                            break
+                        } else if node.name == "submit" {
+                            print("Submit!")
+                            stepForward1()
+                            nodeFound = true
+                            break
+                        }
+                    }
+                    if !nodeFound{
+                        // Prints underlying location
+                        print("Bank pick!")
+                        // Updates the count in the Bank
+                        remainingInBank = remainingInBank - 1
+                        // Displays submit option if Bank is empty
+                        if remainingInBank == 0 {
+                            makeSumbitVis = true
+                            submit.zPosition = zPosUpdater
+                            zPosUpdater = zPosUpdater + 2
+                        }
+                        // Prints remaining bank count
+                        print(remainingInBank)
+                    }
+                }
+            }
+        } else if (sequenceApp == 3) || (sequenceApp == 5) {
+            for touch in touches {
+                let location = touch.location(in: self)
+                // Creates list of nodes sorted by Z-value at touch location
+                let touchedNode = self.nodes(at: location)
+                // Checks for first 'tile' node
+                for node in touchedNode {
+                    if node.name == "contBtn" && !node.hasActions(){
+                        stepForward2()
+                        break
+                    } else if node.name == "pass" {
+                        break
+                    } else {
+                        stepBackward1()
+                    }
                 }
             }
         }
@@ -293,6 +626,9 @@ class GameScene: SKScene {
                         print("None!")
                         nodeFound = true
                         break
+                    } else if node.name == "submit" {
+                        nodeFound = true
+                        break
                     }
                 }
                 // Finds dictionary entry for the bank location
@@ -358,7 +694,9 @@ class GameScene: SKScene {
                     // Updates bank count
                     remainingInBank = remainingInBank + 1
                     // Hides submit if submit is a tile is selected
-                    submit.run(SKAction.fadeAlpha(to: 0, duration: 0.2))
+                    if remainingInBank == 1 {
+                        submit.run(SKAction.fadeAlpha(to: 0, duration: 0.2))
+                    }
                     print(remainingInBank)
                     print("Bank!")
                 }
@@ -378,6 +716,8 @@ class GameScene: SKScene {
         let screenSize: CGRect = UIScreen.main.bounds
         let screenWidth = screenSize.width
         let screenHeight = screenSize.height
+        gameBG = SKShapeNode()
+        self.addChild(gameBG)
         // Determines ratio
         let ratio: CGFloat = (screenWidth / CGFloat(850))
         circleWidth = (ratio * CGFloat(270))
@@ -394,7 +734,7 @@ class GameScene: SKScene {
         p2 = CGPoint(x: (barLength / 2), y: bottomMargin + midMargin)
         p3 = CGPoint(x: 0, y: bottomMargin)
         // Create N/A Area
-        naBG = SKShapeNode()
+        let naBG = SKShapeNode()
         naBG.position = CGPoint(x: 0, y: 0)
         naBG.zPosition = 1
         let path5 = CGMutablePath()
@@ -406,9 +746,9 @@ class GameScene: SKScene {
         naBG.strokeColor = SKColor.black
         naBG.lineWidth = 4 * ratio
         naBG.name = "na_space"
-        self.addChild(naBG)
+        gameBG.addChild(naBG)
         // Create Common Area
-        cweBG = SKShapeNode()
+        let cweBG = SKShapeNode()
         cweBG.position = CGPoint(x: 0, y: 0)
         cweBG.zPosition = 2
         let path1 = CGMutablePath()
@@ -416,9 +756,9 @@ class GameScene: SKScene {
         cweBG.path = path1
         cweBG.fillColor = SKColor.white
         cweBG.name = "cwe_space"
-        self.addChild(cweBG)
+        gameBG.addChild(cweBG)
         // Create Combo Area
-        cwBG = SKShapeNode()
+        let cwBG = SKShapeNode()
         cwBG.position = CGPoint(x: 0, y: 0)
         cwBG.zPosition = 3
         let path2 = CGMutablePath()
@@ -429,9 +769,9 @@ class GameScene: SKScene {
         cwBG.strokeColor = SKColor.black
         cwBG.lineWidth = 4 * ratio
         cwBG.name = "cw_space"
-        self.addChild(cwBG)
+        gameBG.addChild(cwBG)
         // Create Combo Area
-        ceBG = SKShapeNode()
+        let ceBG = SKShapeNode()
         ceBG.position = CGPoint(x: 0, y: 0)
         ceBG.zPosition = 3
         let path3 = CGMutablePath()
@@ -442,9 +782,9 @@ class GameScene: SKScene {
         ceBG.strokeColor = SKColor.black
         ceBG.lineWidth = 4 * ratio
         ceBG.name = "ce_space"
-        self.addChild(ceBG)
+        gameBG.addChild(ceBG)
         // Create Combo Area
-        weBG = SKShapeNode()
+        let weBG = SKShapeNode()
         weBG.position = CGPoint(x: 0, y: 0)
         weBG.zPosition = 3
         let path4 = CGMutablePath()
@@ -455,34 +795,34 @@ class GameScene: SKScene {
         weBG.strokeColor = SKColor.black
         weBG.lineWidth = 4 * ratio
         weBG.name = "we_space"
-        self.addChild(weBG)
+        gameBG.addChild(weBG)
         // Create Climate Circle
-        climateBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
+        let climateBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
         climateBG.position = p1
         climateBG.zPosition = 4
         climateBG.fillColor = SKColor.blue
         climateBG.strokeColor = SKColor.black
         climateBG.lineWidth = 4 * ratio
         climateBG.name = "c_space"
-        self.addChild(climateBG)
+        gameBG.addChild(climateBG)
         // Create Weather Circle
-        weatherBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
+        let weatherBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
         weatherBG.position = p2
         weatherBG.zPosition = 4
         weatherBG.fillColor = SKColor.red
         weatherBG.strokeColor = SKColor.black
         weatherBG.lineWidth = 4 * ratio
         weatherBG.name = "w_space"
-        self.addChild(weatherBG)
+        gameBG.addChild(weatherBG)
         // Create Enviroment Circle
-        enviromBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
+        let enviromBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
         enviromBG.position = p3
         enviromBG.zPosition = 4
         enviromBG.fillColor = SKColor.green
         enviromBG.strokeColor = SKColor.black
         enviromBG.lineWidth = 4 * ratio
         enviromBG.name = "e_space"
-        self.addChild(enviromBG)
+        gameBG.addChild(enviromBG)
         // Create Immobile Bank Label
         let bankLabel = SKLabelNode(fontNamed: "ArialMT")
         bankLabel.text = "Word Bank"
@@ -490,7 +830,7 @@ class GameScene: SKScene {
         bankLabel.zPosition = 2
         bankLabel.position = CGPoint(x: naBG.frame.midX, y: naBG.frame.maxY + (25 * ratio))
         bankLabel.fontColor = SKColor.black
-        self.addChild(bankLabel)
+        gameBG.addChild(bankLabel)
         // Create Immobile Circle Labels
         let cLabel = SKLabelNode(fontNamed: "ArialMT")
         let wLabel = SKLabelNode(fontNamed: "ArialMT")
@@ -507,9 +847,9 @@ class GameScene: SKScene {
         cLabel.zPosition = 5
         wLabel.zPosition = 5
         eLabel.zPosition = 5
-        self.addChild(cLabel)
-        self.addChild(wLabel)
-        self.addChild(eLabel)
+        gameBG.addChild(cLabel)
+        gameBG.addChild(wLabel)
+        gameBG.addChild(eLabel)
         // Create Immobile Bar Labels
         let cwLabel1 = SKLabelNode(fontNamed: "ArialMT")
         let cwLabel2 = SKLabelNode(fontNamed: "ArialMT")
@@ -523,8 +863,8 @@ class GameScene: SKScene {
         cwLabel2.zPosition = 5
         cwLabel1.fontColor = SKColor.black
         cwLabel2.fontColor = SKColor.black
-        self.addChild(cwLabel1)
-        self.addChild(cwLabel2)
+        gameBG.addChild(cwLabel1)
+        gameBG.addChild(cwLabel2)
         let ceLabel1 = SKLabelNode(fontNamed: "ArialMT")
         let ceLabel2 = SKLabelNode(fontNamed: "ArialMT")
         ceLabel1.text = "Climate and"
@@ -539,8 +879,8 @@ class GameScene: SKScene {
         ceLabel2.fontColor = SKColor.black
         ceLabel1.zRotation = -60 * CGFloat.pi / 180
         ceLabel2.zRotation = -60 * CGFloat.pi / 180
-        self.addChild(ceLabel1)
-        self.addChild(ceLabel2)
+        gameBG.addChild(ceLabel1)
+        gameBG.addChild(ceLabel2)
         let weLabel1 = SKLabelNode(fontNamed: "ArialMT")
         let weLabel2 = SKLabelNode(fontNamed: "ArialMT")
         weLabel1.text = "Enviroment"
@@ -555,8 +895,8 @@ class GameScene: SKScene {
         weLabel2.fontColor = SKColor.black
         weLabel1.zRotation = 60 * CGFloat.pi / 180
         weLabel2.zRotation = 60 * CGFloat.pi / 180
-        self.addChild(weLabel1)
-        self.addChild(weLabel2)
+        gameBG.addChild(weLabel1)
+        gameBG.addChild(weLabel2)
         let cweLabel1 = SKLabelNode(fontNamed: "ArialMT")
         let cweLabel2 = SKLabelNode(fontNamed: "ArialMT")
         let cweLabel3 = SKLabelNode(fontNamed: "ArialMT")
@@ -575,9 +915,9 @@ class GameScene: SKScene {
         cweLabel1.fontColor = SKColor.black
         cweLabel2.fontColor = SKColor.black
         cweLabel3.fontColor = SKColor.black
-        self.addChild(cweLabel1)
-        self.addChild(cweLabel2)
-        self.addChild(cweLabel3)
+        gameBG.addChild(cweLabel1)
+        gameBG.addChild(cweLabel2)
+        gameBG.addChild(cweLabel3)
         let naLabel1 = SKLabelNode(fontNamed: "ArialMT")
         let naLabel2 = SKLabelNode(fontNamed: "ArialMT")
         let naLabel3 = SKLabelNode(fontNamed: "ArialMT")
@@ -602,10 +942,10 @@ class GameScene: SKScene {
         naLabel2.fontColor = SKColor.black
         naLabel3.fontColor = SKColor.black
         naLabel4.fontColor = SKColor.black
-        self.addChild(naLabel1)
-        self.addChild(naLabel2)
-        self.addChild(naLabel3)
-        self.addChild(naLabel4)
+        gameBG.addChild(naLabel1)
+        gameBG.addChild(naLabel2)
+        gameBG.addChild(naLabel3)
+        gameBG.addChild(naLabel4)
         // Establish draggable tiles in bulk
         // Dimentional variables
         let tileMin = bottomMargin + midMargin + (0.6 * circleWidth)
@@ -774,9 +1114,9 @@ class GameScene: SKScene {
         // Labels and associated position
         tileLabel1.text = "Cooling\n temps "
         tileLabel2.text = "Warming\n  temps "
-        tileLabel3.text = "   Daily\nchanges"
-        tileLabel4.text = "  Yearly\nchanges"
-        tileLabel5.text = ">30 year\n changes "
+        tileLabel3.text = "   Fast \nchanges"
+        tileLabel4.text = "Moderate\nchanges"
+        tileLabel5.text = "   Slow \nchanges"
         tileLabel6.text = "Farming"
         tileLabel7.text = "Industry"
         tileLabel8.text = "Local"
@@ -869,21 +1209,21 @@ class GameScene: SKScene {
             // FIX IN FUTURE UPDATE
         }
         // add tiles to screen
-        self.addChild(tile1)
-        self.addChild(tile2)
-        self.addChild(tile3)
-        self.addChild(tile4)
-        self.addChild(tile5)
-        self.addChild(tile6)
-        self.addChild(tile7)
-        self.addChild(tile8)
-        self.addChild(tile9)
-        self.addChild(tile10)
-        self.addChild(tile11)
-        self.addChild(tile12)
-        self.addChild(tile13)
-        self.addChild(tile14)
-        self.addChild(tile15)
+        gameBG.addChild(tile1)
+        gameBG.addChild(tile2)
+        gameBG.addChild(tile3)
+        gameBG.addChild(tile4)
+        gameBG.addChild(tile5)
+        gameBG.addChild(tile6)
+        gameBG.addChild(tile7)
+        gameBG.addChild(tile8)
+        gameBG.addChild(tile9)
+        gameBG.addChild(tile10)
+        gameBG.addChild(tile11)
+        gameBG.addChild(tile12)
+        gameBG.addChild(tile13)
+        gameBG.addChild(tile14)
+        gameBG.addChild(tile15)
         // Place Labels in center of tiles
         tileLabel1.position = CGPoint(x: (tileHeight / 2), y: 0)
         tileLabel2.position = CGPoint(x: (tileHeight / 2), y: 0)
@@ -953,21 +1293,21 @@ class GameScene: SKScene {
         let spritePos = CGPoint(x: spriteOffset, y: 0)
         let spriteSize = CGSize(width: tileHeight - (2 * ratio), height: tileHeight - (2 * ratio))
         // Initialize sprites to images
-        let tileSprite1 = SKSpriteNode(imageNamed: "SampleSprite")
-        let tileSprite2 = SKSpriteNode(imageNamed: "SampleSprite")
-        let tileSprite3 = SKSpriteNode(imageNamed: "SampleSprite")
-        let tileSprite4 = SKSpriteNode(imageNamed: "SampleSprite")
-        let tileSprite5 = SKSpriteNode(imageNamed: "SampleSprite")
-        let tileSprite6 = SKSpriteNode(imageNamed: "SampleSprite")
-        let tileSprite7 = SKSpriteNode(imageNamed: "SampleSprite")
-        let tileSprite8 = SKSpriteNode(imageNamed: "SampleSprite")
-        let tileSprite9 = SKSpriteNode(imageNamed: "SampleSprite")
-        let tileSprite10 = SKSpriteNode(imageNamed: "SampleSprite")
-        let tileSprite11 = SKSpriteNode(imageNamed: "SampleSprite")
-        let tileSprite12 = SKSpriteNode(imageNamed: "SampleSprite")
-        let tileSprite13 = SKSpriteNode(imageNamed: "SampleSprite")
-        let tileSprite14 = SKSpriteNode(imageNamed: "SampleSprite")
-        let tileSprite15 = SKSpriteNode(imageNamed: "SampleSprite")
+        let tileSprite1 = SKSpriteNode(imageNamed: "TileSprite-1")
+        let tileSprite2 = SKSpriteNode(imageNamed: "TileSprite-2")
+        let tileSprite3 = SKSpriteNode(imageNamed: "TileSprite-3")
+        let tileSprite4 = SKSpriteNode(imageNamed: "TileSprite-4")
+        let tileSprite5 = SKSpriteNode(imageNamed: "TileSprite-5")
+        let tileSprite6 = SKSpriteNode(imageNamed: "TileSprite-6")
+        let tileSprite7 = SKSpriteNode(imageNamed: "TileSprite-7")
+        let tileSprite8 = SKSpriteNode(imageNamed: "TileSprite-8")
+        let tileSprite9 = SKSpriteNode(imageNamed: "TileSprite-9")
+        let tileSprite10 = SKSpriteNode(imageNamed: "TileSprite-10")
+        let tileSprite11 = SKSpriteNode(imageNamed: "TileSprite-11")
+        let tileSprite12 = SKSpriteNode(imageNamed: "TileSprite-12")
+        let tileSprite13 = SKSpriteNode(imageNamed: "TileSprite-13")
+        let tileSprite14 = SKSpriteNode(imageNamed: "TileSprite-14")
+        let tileSprite15 = SKSpriteNode(imageNamed: "TileSprite-15")
         // Sets sprite size
         tileSprite1.size = spriteSize
         tileSprite2.size = spriteSize
@@ -1038,14 +1378,84 @@ class GameScene: SKScene {
         submit.fillColor = SKColor.systemBlue
         submit.alpha = 0
         submit.strokeColor = SKColor.black
-        self.addChild(submit)
+        submit.name = "submit"
+        gameBG.addChild(submit)
         // Creates text to lay on button
-        let submitLabel = SKLabelNode(fontNamed: "ArialMT")
+        submitLabel = SKLabelNode(fontNamed: "ArialMT")
         submitLabel.text = "SUBMIT"
         submitLabel.fontColor = SKColor.white
         submitLabel.zPosition = 1
         submitLabel.fontSize = 40 * ratio
         submitLabel.position = CGPoint(x: 0, y: -submitLabel.frame.height / 2)
         submit.addChild(submitLabel)
+        // Initial screen mode
+        form = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
+        form.name = "form"
+        form.fillColor = SKColor.white
+        form.strokeColor = SKColor.black
+        form.zPosition = 8000
+        self.addChild(form)
+        // Middle screen mode
+        passScreen = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
+        passScreen.name = "pass"
+        passScreen.fillColor = SKColor.white
+        passScreen.strokeColor = SKColor.black
+        passScreen.zPosition = 8000
+        self.addChild(passScreen)
+        passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
+        contBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50),fillColor:SKColor.blue,title:"Continue Session",logo:nil,name:"contBtn")
+        contBtn.zPosition = 9000
+        passScreen.addChild(contBtn)
+        // Add text fields
+        guard let view = self.view else { return }
+        let originX = (view.frame.size.width - view.frame.size.width/1.5)/2
+        picker1  = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
+        picker1.dataSource = self
+        picker1.delegate = self
+        picker1.backgroundColor = UIColor.white
+        picker1.isHidden = true;
+        view.addSubview(picker1)
+        picker2  = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
+        picker2.dataSource = self
+        picker2.delegate = self
+        picker2.backgroundColor = UIColor.white
+        picker2.isHidden = true;
+        view.addSubview(picker2)
+        picker3  = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
+        picker3.dataSource = self
+        picker3.delegate = self
+        picker3.backgroundColor = UIColor.white
+        picker3.isHidden = true;
+        view.addSubview(picker3)
+        picker4  = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
+        picker4.dataSource = self
+        picker4.delegate = self
+        picker4.backgroundColor = UIColor.white
+        picker4.isHidden = true;
+        view.addSubview(picker4)
+        picker5  = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
+        picker5.dataSource = self
+        picker5.delegate = self
+        picker5.backgroundColor = UIColor.white
+        picker5.isHidden = true;
+        view.addSubview(picker5)
+        textField1 = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5, width: view.frame.size.width/1.5, height: 30))
+        customize(textField: textField1, placeholder: "School Code")
+        view.addSubview(textField1)
+        textField2 = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5+60, width: view.frame.size.width/1.5, height: 30))
+        customize(textField: textField2, placeholder: "Grade")
+        view.addSubview(textField2)
+        textField3 = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5+120, width: view.frame.size.width/1.5, height: 30))
+        customize(textField: textField3, placeholder: "Age")
+        view.addSubview(textField3)
+        textField4 = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5+180, width: view.frame.size.width/1.5, height: 30))
+        customize(textField: textField4, placeholder: "Race")
+        view.addSubview(textField4)
+        textField5 = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5+240, width: view.frame.size.width/1.5, height: 30))
+        customize(textField: textField5, placeholder: "Gender")
+        view.addSubview(textField5)
+        loginBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50),fillColor:SKColor.blue,title:"Begin Session",logo:nil,name:"loginBtn")
+        loginBtn.zPosition = 9000
+        form.addChild(loginBtn)
     }
 }
