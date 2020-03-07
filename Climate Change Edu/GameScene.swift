@@ -138,6 +138,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var tile13: SKShapeNode!
     var tile14: SKShapeNode!
     var tile15: SKShapeNode!
+    var tiles: [SKShapeNode]!
     var form: SKShapeNode!
     var passScreen: SKShapeNode!
     var submit: SKShapeNode!
@@ -155,6 +156,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var remainingInBank: Int = 15
     var dictLookup: Int!
     var sequenceApp: Int = 1
+    var followDisable: Bool = false
+    var resetCounter: Int!
     
     // UIKit Intergration
     var loginBtn:SKShapeNode!
@@ -297,8 +300,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         } else if(textField4.text == race[5]){
             ETHNICID = "6"
         }
-        INSTRUCTID = "1" //TODO
-        SCHOOLID = "0" //TODO
+        INSTRUCTID = "1" //TODO <- defualts Ross
+        SCHOOLID = "0" //TODO <- defaults failure
         ETHNICID = textField4.text ?? "0"
         SEXID = textField5.text ?? "0"
         AGEID = textField3.text ?? "0"
@@ -321,6 +324,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     func stepForward1(){
         passScreen.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
         sequenceApp = sequenceApp + 1
+        followDisable = false
     }
     
     func stepForward2(){
@@ -343,8 +347,29 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     }
     
     func stepBackward2(){
-        passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
         form.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
+        textField1.isHidden = false
+        textField2.isHidden = false
+        textField3.isHidden = false
+        textField4.isHidden = false
+        textField5.isHidden = false
+        resetCounter = 1
+        for tile in tiles {
+            tile.run(SKAction.move(by: CGVector(dx: tileBankLocDict[resetCounter]!.x - (tile.position.x), dy: tileBankLocDict[resetCounter]!.y - (tile.position.y)), duration: 0.3))
+            if tile.fillColor == SKColor(red: 1/2, green: 1, blue: 1, alpha: 1) {
+                tile.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
+            }
+            if tile.fillColor == SKColor(red: 1, green: 1, blue: 1/2, alpha: 1) {
+                tile.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
+            }
+            tile.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
+            tile.run(SKAction.scale(to: 1, duration: 0.2))
+            submit.run(SKAction.fadeAlpha(to: 0, duration: 0.2))
+            resetCounter = resetCounter + 1
+            // Updates bank count
+            remainingInBank = remainingInBank + 1
+        }
+        remainingInBank = 15
         sequenceApp = 1
     }
     
@@ -359,6 +384,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Add on-click functionality here
         if sequenceApp == 1 {
+            followDisable = true
             for touch in touches {
                 let location = touch.location(in: self)
                 // Creates list of nodes sorted by Z-value at touch location
@@ -372,6 +398,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                 }
             }
         } else if (sequenceApp == 2) || (sequenceApp == 4) {
+            followDisable = false
             for touch in touches {
                 let location = touch.location(in: self)
                 // Prints touch location (x, y)
@@ -402,7 +429,9 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                     nodeToMove.zPosition = zPosUpdater
                     zPosUpdater = zPosUpdater + 2
                     // Increases size of selected tile
-                    nodeToMove.run(SKAction.scale(to: 1.4, duration: 0.2))
+                    if nodeToMove.name != "submit"{
+                        nodeToMove.run(SKAction.scale(to: 1.4, duration: 0.2))
+                    }
                     // Searches for underlying zone
                     nodeFound = false
                     for node in touchedNode {
@@ -453,6 +482,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             break
                         } else if node.name == "submit" {
                             print("Submit!")
+                            followDisable = true
                             stepForward1()
                             nodeFound = true
                             break
@@ -475,6 +505,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                 }
             }
         } else if (sequenceApp == 3) || (sequenceApp == 5) {
+            followDisable = true
             for touch in touches {
                 let location = touch.location(in: self)
                 // Creates list of nodes sorted by Z-value at touch location
@@ -484,10 +515,13 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                     if node.name == "contBtn" && !node.hasActions(){
                         stepForward2()
                         break
-                    } else if node.name == "pass" {
+                    } else if node.name == "pass" { // TODO
                         break
                     } else {
                         stepBackward1()
+                        submit.zPosition = zPosUpdater
+                        zPosUpdater = zPosUpdater + 2
+                        break
                     }
                 }
             }
@@ -498,47 +532,51 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Add on-drag functionality here
         // Checks if a node is currently selected
-        if nodeToMove != nil {
-            // Break statements stop from multi-touch
-            for touch in touches {
-                // Finds selected tile and updates position
-                let location = touch.location(in: self)
-                nodeToMove.position = CGPoint(x: nodeToMove.position.x + location.x - locationOld.x, y: nodeToMove.position.y + location.y - locationOld.y)
-                locationOld = location
-                let castedNode:SKShapeNode = nodeToMove as! SKShapeNode
-                let touchedNodeMid = self.nodes(at: location)
-                // The following updates the tile color!
-                for node in touchedNodeMid {
-                    if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
-                        if (node.name == "c_space") && (distance(location, p1) < circleWidth / 2) {
-                            castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
+        if(followDisable){
+            return
+        } else {
+            if nodeToMove != nil && nodeToMove.name != "submit" {
+                // Break statements stop from multi-touch
+                for touch in touches {
+                    // Finds selected tile and updates position
+                    let location = touch.location(in: self)
+                    nodeToMove.position = CGPoint(x: nodeToMove.position.x + location.x - locationOld.x, y: nodeToMove.position.y + location.y - locationOld.y)
+                    locationOld = location
+                    let castedNode:SKShapeNode = nodeToMove as! SKShapeNode
+                    let touchedNodeMid = self.nodes(at: location)
+                    // The following updates the tile color!
+                    for node in touchedNodeMid {
+                        if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
+                            if (node.name == "c_space") && (distance(location, p1) < circleWidth / 2) {
+                                castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
+                                break
+                            } else if (node.name == "w_space") && (distance(location, p2) < circleWidth / 2) {
+                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
+                                break
+                            } else if (node.name == "e_space") && (distance(location, p3) < circleWidth / 2) {
+                                castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
+                                break
+                            }
+                        } else if node.name == "cwe_space" && (location.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) {
+                            castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                             break
-                        } else if (node.name == "w_space") && (distance(location, p2) < circleWidth / 2) {
-                            castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
+                        } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
+                            if node.name == "cw_space" {
+                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
+                                break
+                            } else if node.name == "we_space" && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) && (location.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (location.x - weBar[3].x) + weBar[3].y)) {
+                                castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1/2, alpha: 1)
+                                break
+                            } else if node.name == "ce_space" && (location.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (location.x - ceBar[3].x) + ceBar[3].y)) && (location.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) {
+                                castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1, alpha: 1)
+                                break
+                            }
+                        } else if node.name == "na_space" {
+                            castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
                             break
-                        } else if (node.name == "e_space") && (distance(location, p3) < circleWidth / 2) {
-                            castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
-                            break
+                        } else {
+                            castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                         }
-                    } else if node.name == "cwe_space" && (location.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) {
-                        castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
-                        break
-                    } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
-                        if node.name == "cw_space" {
-                            castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
-                            break
-                        } else if node.name == "we_space" && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) && (location.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (location.x - weBar[3].x) + weBar[3].y)) {
-                            castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1/2, alpha: 1)
-                            break
-                        } else if node.name == "ce_space" && (location.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (location.x - ceBar[3].x) + ceBar[3].y)) && (location.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) {
-                            castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1, alpha: 1)
-                            break
-                        }
-                    } else if node.name == "na_space" {
-                        castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
-                        break
-                    } else {
-                        castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                     }
                 }
             }
@@ -555,159 +593,163 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     // Runs upon touch release
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Add on-release functionality here
-        if nodeToMove != nil {
-            let castedNode:SKShapeNode = nodeToMove as! SKShapeNode
-            // Finds locaion of selected tile
-            for touch in touches {
-                let locationEnd = touch.location(in: self)
-                let touchedNodeEnd = self.nodes(at: locationEnd)
-                nodeFound = false
-                for node in touchedNodeEnd {
-                    // Performs the resizing, recoloring, and reangling!
-                    if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
-                        if (node.name == "c_space") && (distance(locationEnd, p1) < circleWidth / 2) {
+        if(followDisable){
+            return
+        } else {
+            if nodeToMove != nil && nodeToMove.name != "submit" {
+                let castedNode:SKShapeNode = nodeToMove as! SKShapeNode
+                // Finds locaion of selected tile
+                for touch in touches {
+                    let locationEnd = touch.location(in: self)
+                    let touchedNodeEnd = self.nodes(at: locationEnd)
+                    nodeFound = false
+                    for node in touchedNodeEnd {
+                        // Performs the resizing, recoloring, and reangling!
+                        if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
+                            if (node.name == "c_space") && (distance(locationEnd, p1) < circleWidth / 2) {
+                                // Prints underlying location
+                                nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                                castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
+                                print("C Circle!")
+                                nodeFound = true
+                                break
+                            } else if (node.name == "w_space") && (distance(locationEnd, p2) < circleWidth / 2) {
+                                // Prints underlying location
+                                nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
+                                print("W Circle!")
+                                nodeFound = true
+                                break
+                            } else if (node.name == "e_space") && (distance(locationEnd, p3) < circleWidth / 2) {
+                                // Prints underlying location
+                                nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                                castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
+                                print("E Circle!")
+                                nodeFound = true
+                                break
+                            }
+                        } else if node.name == "cwe_space" && (locationEnd.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) {
                             // Prints underlying location
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                            castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
-                            print("C Circle!")
+                            castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
+                            print("CWE Triangle!")
                             nodeFound = true
                             break
-                        } else if (node.name == "w_space") && (distance(locationEnd, p2) < circleWidth / 2) {
+                        } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
+                            if node.name == "cw_space" {
+                                // Prints underlying location
+                                nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
+                                print("CW Bar!")
+                                nodeFound = true
+                                break
+                            } else if node.name == "we_space" && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) && (locationEnd.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (locationEnd.x - weBar[3].x) + weBar[3].y)) {
+                                // Prints underlying location
+                                nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                                nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
+                                castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1/2, alpha: 1)
+                                print("WE Bar!")
+                                nodeFound = true
+                                break
+                            } else if node.name == "ce_space" && (locationEnd.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (locationEnd.x - ceBar[3].x) + ceBar[3].y)) && (locationEnd.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) {
+                                // Prints underlying location
+                                nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                                nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
+                                castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1, alpha: 1)
+                                print("CE Bar!")
+                                nodeFound = true
+                                break
+                            }
+                        } else if node.name == "na_space" {
                             // Prints underlying location
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                            castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
-                            print("W Circle!")
+                            castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
+                            print("None!")
                             nodeFound = true
                             break
-                        } else if (node.name == "e_space") && (distance(locationEnd, p3) < circleWidth / 2) {
-                            // Prints underlying location
-                            nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                            castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
-                            print("E Circle!")
+                        } else if node.name == "submit" {
                             nodeFound = true
                             break
                         }
-                    } else if node.name == "cwe_space" && (locationEnd.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) {
-                        // Prints underlying location
-                        nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                    }
+                    // Finds dictionary entry for the bank location
+                    if !nodeFound {
+                        switch nodeToMove {
+                        case tile1:
+                            dictLookup = 1
+                            break
+                        case tile2:
+                            dictLookup = 2
+                            break
+                        case tile3:
+                            dictLookup = 3
+                            break
+                        case tile4:
+                            dictLookup = 4
+                            break
+                        case tile5:
+                            dictLookup = 5
+                            break
+                        case tile6:
+                            dictLookup = 6
+                            break
+                        case tile7:
+                            dictLookup = 7
+                            break
+                        case tile8:
+                            dictLookup = 8
+                            break
+                        case tile9:
+                            dictLookup = 9
+                            break
+                        case tile10:
+                            dictLookup = 10
+                            break
+                        case tile11:
+                            dictLookup = 11
+                            break
+                        case tile12:
+                            dictLookup = 12
+                            break
+                        case tile13:
+                            dictLookup = 13
+                            break
+                        case tile14:
+                            dictLookup = 14
+                            break
+                        case tile15:
+                            dictLookup = 15
+                            break
+                        case .none:
+                            dictLookup = 1
+                            break
+                        case .some(_):
+                            dictLookup = 1
+                            break
+                        }
+                        // Returns tile to it's proper bank location
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[dictLookup]!.x - (nodeToMove.position.x), dy: tileBankLocDict[dictLookup]!.y - (nodeToMove.position.y)), duration: 0.3))
                         castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
-                        print("CWE Triangle!")
-                        nodeFound = true
-                        break
-                    } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
-                        if node.name == "cw_space" {
-                            // Prints underlying location
-                            nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                            castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
-                            print("CW Bar!")
-                            nodeFound = true
-                            break
-                        } else if node.name == "we_space" && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) && (locationEnd.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (locationEnd.x - weBar[3].x) + weBar[3].y)) {
-                            // Prints underlying location
-                            nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                            nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
-                            castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1/2, alpha: 1)
-                            print("WE Bar!")
-                            nodeFound = true
-                            break
-                        } else if node.name == "ce_space" && (locationEnd.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (locationEnd.x - ceBar[3].x) + ceBar[3].y)) && (locationEnd.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) {
-                            // Prints underlying location
-                            nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                            nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
-                            castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1, alpha: 1)
-                            print("CE Bar!")
-                            nodeFound = true
-                            break
+                        // Returns tile to normal side
+                        nodeToMove.run(SKAction.scale(to: 1, duration: 0.2))
+                        // Updates bank count
+                        remainingInBank = remainingInBank + 1
+                        // Hides submit if submit is a tile is selected
+                        if remainingInBank == 1 {
+                            submit.run(SKAction.fadeAlpha(to: 0, duration: 0.2))
                         }
-                    } else if node.name == "na_space" {
-                        // Prints underlying location
-                        nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                        castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
-                        print("None!")
-                        nodeFound = true
-                        break
-                    } else if node.name == "submit" {
-                        nodeFound = true
-                        break
+                        print(remainingInBank)
+                        print("Bank!")
                     }
                 }
-                // Finds dictionary entry for the bank location
-                if !nodeFound {
-                    switch nodeToMove {
-                    case tile1:
-                        dictLookup = 1
-                        break
-                    case tile2:
-                        dictLookup = 2
-                        break
-                    case tile3:
-                        dictLookup = 3
-                        break
-                    case tile4:
-                        dictLookup = 4
-                        break
-                    case tile5:
-                        dictLookup = 5
-                        break
-                    case tile6:
-                        dictLookup = 6
-                        break
-                    case tile7:
-                        dictLookup = 7
-                        break
-                    case tile8:
-                        dictLookup = 8
-                        break
-                    case tile9:
-                        dictLookup = 9
-                        break
-                    case tile10:
-                        dictLookup = 10
-                        break
-                    case tile11:
-                        dictLookup = 11
-                        break
-                    case tile12:
-                        dictLookup = 12
-                        break
-                    case tile13:
-                        dictLookup = 13
-                        break
-                    case tile14:
-                        dictLookup = 14
-                        break
-                    case tile15:
-                        dictLookup = 15
-                        break
-                    case .none:
-                        dictLookup = 1
-                        break
-                    case .some(_):
-                        dictLookup = 1
-                        break
-                    }
-                    // Returns tile to it's proper bank location
-                    nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[dictLookup]!.x - (nodeToMove.position.x), dy: tileBankLocDict[dictLookup]!.y - (nodeToMove.position.y)), duration: 0.3))
-                    castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
-                    // Returns tile to normal side
-                    nodeToMove.run(SKAction.scale(to: 1, duration: 0.2))
-                    // Updates bank count
-                    remainingInBank = remainingInBank + 1
-                    // Hides submit if submit is a tile is selected
-                    if remainingInBank == 1 {
-                        submit.run(SKAction.fadeAlpha(to: 0, duration: 0.2))
-                    }
-                    print(remainingInBank)
-                    print("Bank!")
+                // Displays submit if bank is empty
+                if makeSumbitVis && remainingInBank == 0 {
+                    submit.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
+                    makeSumbitVis = false
                 }
+                locationOld = nil
+                nodeToMove = nil
             }
-            // Displays submit if bank is empty
-            if makeSumbitVis && remainingInBank == 0 {
-                submit.run(SKAction.fadeAlpha(to: 1, duration: 0.5))
-                makeSumbitVis = false
-            }
-            locationOld = nil
-            nodeToMove = nil
         }
     }
     
@@ -1457,5 +1499,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         loginBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50),fillColor:SKColor.blue,title:"Begin Session",logo:nil,name:"loginBtn")
         loginBtn.zPosition = 9000
         form.addChild(loginBtn)
+        tiles = [tile1, tile2, tile3, tile4, tile5, tile6, tile7, tile8, tile9, tile10, tile11, tile12, tile13, tile14, tile15]
     }
 }
