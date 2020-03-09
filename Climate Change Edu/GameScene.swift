@@ -19,10 +19,10 @@ protocol TransitionDelegate: SKSceneDelegate {
 class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     //UIPicker setup
     var school = ["Currently Unavailable"]
-    var grade = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
-    var age = ["6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"]
+    var grade = ["1st grade", "2nd grade", "3rd grade", "4th grade", "5th grade", "6th grade", "7th grade", "8th grade", "9th grade", "10th grade", "11th grade", "12th grade"]
+    var age = ["6 years old", "7 years old", "8 years old", "9 years old", "10 years old", "11 years old", "12 years old", "13 years old", "14 years old", "15 years old", "16 years old", "17 years old", "18 years old"]
     var race = ["White", "Black or African American", "American Indian", "Asian", "Mixed", "Other"]
-    var gender = ["M", "F"]
+    var gender = ["Male", "Female"]
     var textField1:UITextField!
     var textField2:UITextField!
     var textField3:UITextField!
@@ -287,6 +287,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         if(textField1.text == "" || textField2.text == "" || textField3.text == "" || textField4.text == "" || textField5.text == ""){
             return
         }
+        //ID handlers
         if(textField4.text == race[0]){
             ETHNICID = "1"
         } else if(textField4.text == race[1]){
@@ -299,13 +300,74 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             ETHNICID = "5"
         } else if(textField4.text == race[5]){
             ETHNICID = "6"
+        } else {
+            ETHNICID = "0" //Defaults 0 on failure
+        }
+        if(textField5.text == gender[0]){
+            SEXID = "M"
+        } else if(textField5.text == gender[1]){
+            SEXID = "F"
+        } else {
+            SEXID = "0" //Defaults 0 on failure
+        }
+        if(textField3.text == age[0]){
+            AGEID = "6"
+        } else if(textField3.text == age[1]){
+            AGEID = "7"
+        } else if(textField3.text == age[2]){
+            AGEID = "8"
+        } else if(textField3.text == age[3]){
+            AGEID = "9"
+        } else if(textField3.text == age[4]){
+            AGEID = "10"
+        } else if(textField3.text == age[5]){
+            AGEID = "11"
+        } else if(textField3.text == age[6]){
+            AGEID = "12"
+        } else if(textField3.text == age[7]){
+            AGEID = "13"
+        } else if(textField3.text == age[8]){
+            AGEID = "14"
+        } else if(textField3.text == age[9]){
+            AGEID = "15"
+        } else if(textField3.text == age[10]){
+            AGEID = "16"
+        } else if(textField3.text == age[11]){
+            AGEID = "17"
+        } else if(textField3.text == age[12]){
+            AGEID = "18"
+        } else {
+            AGEID = "0" //Defaults 0 on failure
+        }
+        if(textField2.text == grade[0]){
+            GRADEID = "1"
+        } else if(textField2.text == grade[1]){
+            GRADEID = "2"
+        } else if(textField2.text == grade[2]){
+            GRADEID = "3"
+        } else if(textField2.text == grade[3]){
+            GRADEID = "4"
+        } else if(textField2.text == grade[4]){
+            GRADEID = "5"
+        } else if(textField2.text == grade[5]){
+            GRADEID = "6"
+        } else if(textField2.text == grade[6]){
+            GRADEID = "7"
+        } else if(textField2.text == grade[7]){
+            GRADEID = "8"
+        } else if(textField2.text == grade[8]){
+            GRADEID = "9"
+        } else if(textField2.text == grade[9]){
+            GRADEID = "10"
+        } else if(textField2.text == grade[10]){
+            GRADEID = "11"
+        } else if(textField2.text == grade[11]){
+            GRADEID = "12"
+        } else {
+            GRADEID = "0" //Defaults 0 on failure
         }
         INSTRUCTID = "1" //TODO <- defualts Ross
         SCHOOLID = "0" //TODO <- defaults failure
-        ETHNICID = textField4.text ?? "0"
-        SEXID = textField5.text ?? "0"
-        AGEID = textField3.text ?? "0"
-        GRADEID = textField2.text ?? "0"
         form.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
         textField1.isHidden = true
         textField2.isHidden = true
@@ -323,6 +385,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     
     func stepForward1(){
         passScreen.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
+        passScreen.zPosition = zPosUpdater + 2
         sequenceApp = sequenceApp + 1
         followDisable = false
     }
@@ -330,7 +393,9 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     func stepForward2(){
         passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
         //API2()
+        passScreen.zPosition = zPosUpdater + 2
         sequenceApp = sequenceApp + 1
+        submitLabel.zPosition = zPosUpdater
         if submitLabel.text == "SUBMIT" {
             submitLabel.text = "FINISH"
         } else {
@@ -377,7 +442,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     override func didMove(to view: SKView) {
         initializeMenu()
         game = GameManager(scene: self)
-        zPosUpdater = 8
+        zPosUpdater = 12
     }
     
     // Function runs on initial screen touch
@@ -427,7 +492,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                 if nodeToMove != nil {
                     // Updates z Position so that selected nodes always appear on top
                     nodeToMove.zPosition = zPosUpdater
-                    zPosUpdater = zPosUpdater + 2
+                    zPosUpdater = zPosUpdater + 3
                     // Increases size of selected tile
                     if nodeToMove.name != "submit"{
                         nodeToMove.run(SKAction.scale(to: 1.4, duration: 0.2))
@@ -497,7 +562,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                         if remainingInBank == 0 {
                             makeSumbitVis = true
                             submit.zPosition = zPosUpdater
-                            zPosUpdater = zPosUpdater + 2
+                            zPosUpdater = zPosUpdater + 3
                         }
                         // Prints remaining bank count
                         print(remainingInBank)
@@ -520,7 +585,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                     } else {
                         stepBackward1()
                         submit.zPosition = zPosUpdater
-                        zPosUpdater = zPosUpdater + 2
+                        zPosUpdater = zPosUpdater + 3
                         break
                     }
                 }
@@ -1266,6 +1331,82 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         gameBG.addChild(tile13)
         gameBG.addChild(tile14)
         gameBG.addChild(tile15)
+        // Add color Static to background the tile labels
+        let tileStaticCol1 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        let tileStaticCol2 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        let tileStaticCol3 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        let tileStaticCol4 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        let tileStaticCol5 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        let tileStaticCol6 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        let tileStaticCol7 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        let tileStaticCol8 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        let tileStaticCol9 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        let tileStaticCol10 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        let tileStaticCol11 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        let tileStaticCol12 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        let tileStaticCol13 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        let tileStaticCol14 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        let tileStaticCol15 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        tileStaticCol1.zPosition = 1
+        tileStaticCol2.zPosition = 1
+        tileStaticCol3.zPosition = 1
+        tileStaticCol4.zPosition = 1
+        tileStaticCol5.zPosition = 1
+        tileStaticCol6.zPosition = 1
+        tileStaticCol7.zPosition = 1
+        tileStaticCol8.zPosition = 1
+        tileStaticCol9.zPosition = 1
+        tileStaticCol10.zPosition = 1
+        tileStaticCol11.zPosition = 1
+        tileStaticCol12.zPosition = 1
+        tileStaticCol13.zPosition = 1
+        tileStaticCol14.zPosition = 1
+        tileStaticCol15.zPosition = 1
+        tileStaticCol1.fillColor = SKColor.yellow
+        tileStaticCol2.fillColor = SKColor.yellow
+        tileStaticCol3.fillColor = SKColor.green
+        tileStaticCol4.fillColor = SKColor.green
+        tileStaticCol5.fillColor = SKColor.green
+        tileStaticCol6.fillColor = SKColor.cyan
+        tileStaticCol7.fillColor = SKColor.cyan
+        tileStaticCol8.fillColor = SKColor.red
+        tileStaticCol9.fillColor = SKColor.red
+        tileStaticCol10.fillColor = SKColor.red
+        tileStaticCol11.fillColor = SKColor.blue
+        tileStaticCol12.fillColor = SKColor.blue
+        tileStaticCol13.fillColor = SKColor.blue
+        tileStaticCol14.fillColor = SKColor.blue
+        tileStaticCol15.fillColor = SKColor.blue
+        tileStaticCol1.strokeColor = SKColor.black
+        tileStaticCol2.strokeColor = SKColor.black
+        tileStaticCol3.strokeColor = SKColor.black
+        tileStaticCol4.strokeColor = SKColor.black
+        tileStaticCol5.strokeColor = SKColor.black
+        tileStaticCol6.strokeColor = SKColor.black
+        tileStaticCol7.strokeColor = SKColor.black
+        tileStaticCol8.strokeColor = SKColor.black
+        tileStaticCol9.strokeColor = SKColor.black
+        tileStaticCol10.strokeColor = SKColor.black
+        tileStaticCol11.strokeColor = SKColor.black
+        tileStaticCol12.strokeColor = SKColor.black
+        tileStaticCol13.strokeColor = SKColor.black
+        tileStaticCol14.strokeColor = SKColor.black
+        tileStaticCol15.strokeColor = SKColor.black
+        tile1.addChild(tileStaticCol1)
+        tile2.addChild(tileStaticCol2)
+        tile3.addChild(tileStaticCol3)
+        tile4.addChild(tileStaticCol4)
+        tile5.addChild(tileStaticCol5)
+        tile6.addChild(tileStaticCol6)
+        tile7.addChild(tileStaticCol7)
+        tile8.addChild(tileStaticCol8)
+        tile9.addChild(tileStaticCol9)
+        tile10.addChild(tileStaticCol10)
+        tile11.addChild(tileStaticCol11)
+        tile12.addChild(tileStaticCol12)
+        tile13.addChild(tileStaticCol13)
+        tile14.addChild(tileStaticCol14)
+        tile15.addChild(tileStaticCol15)
         // Place Labels in center of tiles
         tileLabel1.position = CGPoint(x: (tileHeight / 2), y: 0)
         tileLabel2.position = CGPoint(x: (tileHeight / 2), y: 0)
@@ -1299,21 +1440,21 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tileLabel14.fontColor = SKColor.black
         tileLabel15.fontColor = SKColor.black
         // Make labels appear over tiles
-        tileLabel1.zPosition = 1
-        tileLabel2.zPosition = 1
-        tileLabel3.zPosition = 1
-        tileLabel4.zPosition = 1
-        tileLabel5.zPosition = 1
-        tileLabel6.zPosition = 1
-        tileLabel7.zPosition = 1
-        tileLabel8.zPosition = 1
-        tileLabel9.zPosition = 1
-        tileLabel10.zPosition = 1
-        tileLabel11.zPosition = 1
-        tileLabel12.zPosition = 1
-        tileLabel13.zPosition = 1
-        tileLabel14.zPosition = 1
-        tileLabel15.zPosition = 1
+        tileLabel1.zPosition = 2
+        tileLabel2.zPosition = 2
+        tileLabel3.zPosition = 2
+        tileLabel4.zPosition = 2
+        tileLabel5.zPosition = 2
+        tileLabel6.zPosition = 2
+        tileLabel7.zPosition = 2
+        tileLabel8.zPosition = 2
+        tileLabel9.zPosition = 2
+        tileLabel10.zPosition = 2
+        tileLabel11.zPosition = 2
+        tileLabel12.zPosition = 2
+        tileLabel13.zPosition = 2
+        tileLabel14.zPosition = 2
+        tileLabel15.zPosition = 2
         // Add labels  to screen
         tile1.addChild(tileLabel1)
         tile2.addChild(tileLabel2)
