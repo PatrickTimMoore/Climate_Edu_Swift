@@ -395,7 +395,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         //API2()
         passScreen.zPosition = zPosUpdater + 2
         sequenceApp = sequenceApp + 1
-        submitLabel.zPosition = zPosUpdater
         if submitLabel.text == "SUBMIT" {
             submitLabel.text = "FINISH"
         } else {
@@ -730,9 +729,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
                             print("None!")
-                            nodeFound = true
-                            break
-                        } else if node.name == "submit" {
                             nodeFound = true
                             break
                         }
@@ -1567,7 +1563,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         submitLabel = SKLabelNode(fontNamed: "ArialMT")
         submitLabel.text = "SUBMIT"
         submitLabel.fontColor = SKColor.white
-        submitLabel.zPosition = 1
+        submitLabel.zPosition = 0
         submitLabel.fontSize = 40 * ratio
         submitLabel.position = CGPoint(x: 0, y: -submitLabel.frame.height / 2)
         submit.addChild(submitLabel)
