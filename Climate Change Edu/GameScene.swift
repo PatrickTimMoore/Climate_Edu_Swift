@@ -139,6 +139,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var tile14: SKShapeNode!
     var tile15: SKShapeNode!
     var tiles: [SKShapeNode]!
+    var numButtons: [SKNode]!
     var form: SKShapeNode!
     var passScreen: SKShapeNode!
     var submit: SKShapeNode!
@@ -158,6 +159,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var sequenceApp: Int = 1
     var followDisable: Bool = false
     var resetCounter: Int!
+    var tileHeight: CGFloat!
     
     // UIKit Intergration
     var loginBtn:SKShapeNode!
@@ -229,7 +231,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var AGEID:String = "0"
     var GRADEID:String = "0"
     func API1(){
-        let endpoint1:String = "http://epsyapi.us-west-2.elasticbeanstalk.com/api/v1/session"
+        let endpoint1:String = "https://lk62rbimtg.execute-api.us-west-2.amazonaws.com/beta/session"
         guard let URL1 = URL(string: endpoint1) else {
             print("Error: Cannot create URL.")
             return
@@ -552,7 +554,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             break
                         }
                     }
-                    if !nodeFound{
+                    if !nodeFound && nodeToMove.position.y > (tileBankLocDict[13]!.y - tileHeight) {
                         // Prints underlying location
                         print("Bank pick!")
                         // Updates the count in the Bank
@@ -580,6 +582,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                         stepForward2()
                         break
                     } else if node.name == "pass" { // TODO
+                        break
+                    } else if numButtons.contains(node) {
                         break
                     } else {
                         stepBackward1()
@@ -830,7 +834,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         midMargin = ((3 / 4) * barLength * barLength).squareRoot()
         // Declares size of tiles
         let tileLengthOriginal: CGFloat = ((1/9) * 850 * ratio)
-        let tileHeight: CGFloat = (tileLengthOriginal / 2)
+        tileHeight = (tileLengthOriginal / 2)
         let tileLength = tileLengthOriginal + tileHeight
         // Declares center of the 3 circles as anchor points
         p1 = CGPoint(x: (barLength / -2), y: bottomMargin + midMargin)
@@ -1468,7 +1472,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tile14.addChild(tileLabel14)
         tile15.addChild(tileLabel15)
         // Create Sprite constants
-        let spriteOffset = (((tileHeight - (2 * ratio)) - tile1.frame.width) / 2) + (3 * ratio)
+        let temporaryValue1 = ((tileHeight - (2 * ratio)) - tile1.frame.width)
+        let spriteOffset = (temporaryValue1 / 2) + (3 * ratio)
         let spritePos = CGPoint(x: spriteOffset, y: 0)
         let spriteSize = CGSize(width: tileHeight - (2 * ratio), height: tileHeight - (2 * ratio))
         // Initialize sprites to images
@@ -1582,9 +1587,75 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         passScreen.zPosition = 8000
         self.addChild(passScreen)
         passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
-        contBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50),fillColor:SKColor.blue,title:"Continue Session",logo:nil,name:"contBtn")
-        contBtn.zPosition = 9000
+        contBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Continue Session", logo:nil, name:"contBtn")
+        contBtn.zPosition = 1
+        let numPad0 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
+        numPad0.fillColor = SKColor.lightGray
+        numPad0.name = "numPad0"
+        numPad0.zPosition = 1
+        passScreen.addChild(numPad0)
+        let numPad1 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
+        numPad1.fillColor = SKColor.lightGray
+        numPad1.name = "numPad1"
+        numPad1.zPosition = 1
+        numPad1.position.x = -2.2*passScreen.frame.width/15
+        numPad1.position.y = 6.6*passScreen.frame.width/15
+        passScreen.addChild(numPad1)
+        let numPad2 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
+        numPad2.fillColor = SKColor.lightGray
+        numPad2.name = "numPad2"
+        numPad2.zPosition = 1
+        numPad2.position.y = 6.6*passScreen.frame.width/15
+        passScreen.addChild(numPad2)
+        let numPad3 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
+        numPad3.fillColor = SKColor.lightGray
+        numPad3.name = "numPad3"
+        numPad3.zPosition = 1
+        numPad3.position.x = 2.2*passScreen.frame.width/15
+        numPad3.position.y = 6.6*passScreen.frame.width/15
+        passScreen.addChild(numPad3)
+        let numPad4 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
+        numPad4.fillColor = SKColor.lightGray
+        numPad4.name = "numPad4"
+        numPad4.zPosition = 1
+        numPad4.position.x = -2.2*passScreen.frame.width/15
+        numPad4.position.y = 4.4*passScreen.frame.width/15
+        passScreen.addChild(numPad4)
+        let numPad5 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
+        numPad5.fillColor = SKColor.lightGray
+        numPad5.name = "numPad5"
+        numPad5.zPosition = 1
+        numPad5.position.y = 4.4*passScreen.frame.width/15
+        passScreen.addChild(numPad5)
+        let numPad6 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
+        numPad6.fillColor = SKColor.lightGray
+        numPad6.name = "numPad6"
+        numPad6.zPosition = 1
+        numPad6.position.x = 2.2*passScreen.frame.width/15
+        numPad6.position.y = 4.4*passScreen.frame.width/15
+        passScreen.addChild(numPad6)
+        let numPad7 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
+        numPad7.fillColor = SKColor.lightGray
+        numPad7.name = "numPad7"
+        numPad7.zPosition = 1
+        numPad7.position.x = -2.2*passScreen.frame.width/15
+        numPad7.position.y = 2.2*passScreen.frame.width/15
+        passScreen.addChild(numPad7)
+        let numPad8 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
+        numPad8.fillColor = SKColor.lightGray
+        numPad8.name = "numPad8"
+        numPad8.zPosition = 1
+        numPad8.position.y = 2.2*passScreen.frame.width/15
+        passScreen.addChild(numPad8)
+        let numPad9 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
+        numPad9.fillColor = SKColor.lightGray
+        numPad9.name = "numPad9"
+        numPad9.zPosition = 1
+        numPad9.position.x = 2.2*passScreen.frame.width/15
+        numPad9.position.y = 2.2*passScreen.frame.width/15
+        passScreen.addChild(numPad9)
         passScreen.addChild(contBtn)
+        numButtons = [numPad0, numPad1, numPad2, numPad3, numPad4, numPad5, numPad6, numPad7, numPad8, numPad9]
         // Add text fields
         guard let view = self.view else { return }
         let originX = (view.frame.size.width - view.frame.size.width/1.5)/2
