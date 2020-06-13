@@ -998,120 +998,47 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tile_shape.lineWidth = 2 * ratio
         tile_shape.zPosition = 6
         tiles = []
-        // Assign tile properties
+        var tile_labels:[SKLabelNode] = []
+        // Creates template for tile labels to be used
+        let tile_label_teplate = SKLabelNode(fontNamed: "ArialMT")
+        tile_label_teplate.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tile_label_teplate.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tile_label_teplate.fontSize = tileLengthOriginal / 6
+        tile_label_teplate.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tile_label_teplate.fontColor = SKColor.black
+        tile_label_teplate.zPosition = 2
+        // Creates template for the tile static color TODO
+        // Assign tile and tile label properties, append to game board as children
         for i in 0...14 {
             let tile = tile_shape.copy() as! SKShapeNode
             tile.position = tileBankLocDict[i]
             tiles.append(tile)
             gameBG.addChild(tile)
+            let tile_label = tile_label_teplate.copy() as! SKLabelNode
+            tile_labels.append(tile_label)
+            tiles[i].addChild(tile_label)
         }
-        // Create labels
-        let tileLabel1 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel2 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel3 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel4 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel5 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel6 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel7 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel8 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel9 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel10 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel11 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel12 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel13 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel14 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel15 = SKLabelNode(fontNamed: "ArialMT")
-        // Labels and associated position
-        tileLabel1.text = "Cooling\n temps "
-        tileLabel2.text = "Warming\n  temps "
-        tileLabel3.text = "   Fast \nchanges"
-        tileLabel4.text = "Moderate\nchanges"
-        tileLabel5.text = "   Slow \nchanges"
-        tileLabel6.text = "Farming"
-        tileLabel7.text = "Industry"
-        tileLabel8.text = "Local"
-        tileLabel9.text = "Regional"
-        tileLabel10.text = "Global"
-        tileLabel11.text = "Animals\n& plants"
-        tileLabel12.text = "People"
-        tileLabel13.text = "Forests"
-        tileLabel14.text = "Oceans"
-        tileLabel15.text = "Greenhouse\n      effect "
-        tileLabel1.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel2.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel3.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel4.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel5.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel6.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel7.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel8.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel9.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel10.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel11.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel12.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel13.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel14.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel15.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel1.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel2.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel3.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel4.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel5.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel6.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel7.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel8.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel9.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel10.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel11.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel12.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel13.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel14.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel15.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel1.numberOfLines = 3
-        tileLabel1.preferredMaxLayoutWidth = tileLengthOriginal
-        tileLabel1.fontSize = tileLengthOriginal / 6
-        tileLabel2.numberOfLines = 3
-        tileLabel2.preferredMaxLayoutWidth = tileLengthOriginal
-        tileLabel2.fontSize = tileLengthOriginal / 6
-        tileLabel3.numberOfLines = 3
-        tileLabel3.preferredMaxLayoutWidth = tileLengthOriginal
-        tileLabel3.fontSize = tileLengthOriginal / 6
-        tileLabel4.numberOfLines = 3
-        tileLabel4.preferredMaxLayoutWidth = tileLengthOriginal
-        tileLabel4.fontSize = tileLengthOriginal / 6
-        tileLabel5.numberOfLines = 3
-        tileLabel5.preferredMaxLayoutWidth = tileLengthOriginal
-        tileLabel5.fontSize = tileLengthOriginal / 6
-        tileLabel6.numberOfLines = 3
-        tileLabel6.preferredMaxLayoutWidth = tileLengthOriginal
-        tileLabel6.fontSize = tileLengthOriginal / 6
-        tileLabel7.numberOfLines = 3
-        tileLabel7.preferredMaxLayoutWidth = tileLengthOriginal
-        tileLabel7.fontSize = tileLengthOriginal / 6
-        tileLabel8.numberOfLines = 3
-        tileLabel8.preferredMaxLayoutWidth = tileLengthOriginal
-        tileLabel8.fontSize = tileLengthOriginal / 6
-        tileLabel9.numberOfLines = 3
-        tileLabel9.preferredMaxLayoutWidth = tileLengthOriginal
-        tileLabel9.fontSize = tileLengthOriginal / 6
-        tileLabel10.numberOfLines = 3
-        tileLabel10.preferredMaxLayoutWidth = tileLengthOriginal
-        tileLabel10.fontSize = tileLengthOriginal / 6
-        tileLabel11.numberOfLines = 3
-        tileLabel11.preferredMaxLayoutWidth = tileLengthOriginal
-        tileLabel11.fontSize = tileLengthOriginal / 6
-        tileLabel12.numberOfLines = 3
-        tileLabel12.preferredMaxLayoutWidth = tileLengthOriginal
-        tileLabel12.fontSize = tileLengthOriginal / 6
-        tileLabel13.numberOfLines = 3
-        tileLabel13.preferredMaxLayoutWidth = tileLengthOriginal
-        tileLabel13.fontSize = tileLengthOriginal / 6
-        tileLabel14.numberOfLines = 3
-        tileLabel14.preferredMaxLayoutWidth = tileLengthOriginal
-        tileLabel14.fontSize = tileLengthOriginal / 6
-        tileLabel15.numberOfLines = 3
-        tileLabel15.preferredMaxLayoutWidth = tileLengthOriginal
-        tileLabel15.fontSize = tileLengthOriginal / 6
+        // Labels and associated position for tiels
+        tile_labels[0].text = "Cooling\n temps "
+        tile_labels[1].text = "Warming\n  temps "
+        tile_labels[2].text = "   Fast \nchanges"
+        tile_labels[3].text = "Moderate\nchanges"
+        tile_labels[4].text = "   Slow \nchanges"
+        tile_labels[5].text = "Farming"
+        tile_labels[6].text = "Industry"
+        tile_labels[7].text = "Local"
+        tile_labels[8].text = "Regional"
+        tile_labels[9].text = "Global"
+        tile_labels[10].text = "Animals\n& plants"
+        tile_labels[11].text = "People"
+        tile_labels[12].text = "Forests"
+        tile_labels[13].text = "Oceans"
+        tile_labels[14].text = "Greenhouse\n      effect "
+        // Aligns text within tile
+        for i in 0...14 {
+            tile_labels[i].numberOfLines = 3
+            tile_labels[i].preferredMaxLayoutWidth = tileLengthOriginal
+        }
         // Add color Static to background the tile labels
         let tileStaticCol1 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
         let tileStaticCol2 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
@@ -1188,70 +1115,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tiles[12].addChild(tileStaticCol13)
         tiles[13].addChild(tileStaticCol14)
         tiles[14].addChild(tileStaticCol15)
-        // Place Labels in center of tiles
-        tileLabel1.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel2.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel3.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel4.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel5.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel6.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel7.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel8.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel9.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel10.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel11.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel12.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel13.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel14.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel15.position = CGPoint(x: (tileHeight / 2), y: 0)
-        // Color text
-        tileLabel1.fontColor = SKColor.black
-        tileLabel2.fontColor = SKColor.black
-        tileLabel3.fontColor = SKColor.black
-        tileLabel4.fontColor = SKColor.black
-        tileLabel5.fontColor = SKColor.black
-        tileLabel6.fontColor = SKColor.black
-        tileLabel7.fontColor = SKColor.black
-        tileLabel8.fontColor = SKColor.black
-        tileLabel9.fontColor = SKColor.black
-        tileLabel10.fontColor = SKColor.black
-        tileLabel11.fontColor = SKColor.black
-        tileLabel12.fontColor = SKColor.black
-        tileLabel13.fontColor = SKColor.black
-        tileLabel14.fontColor = SKColor.black
-        tileLabel15.fontColor = SKColor.black
-        // Make labels appear over tiles
-        tileLabel1.zPosition = 2
-        tileLabel2.zPosition = 2
-        tileLabel3.zPosition = 2
-        tileLabel4.zPosition = 2
-        tileLabel5.zPosition = 2
-        tileLabel6.zPosition = 2
-        tileLabel7.zPosition = 2
-        tileLabel8.zPosition = 2
-        tileLabel9.zPosition = 2
-        tileLabel10.zPosition = 2
-        tileLabel11.zPosition = 2
-        tileLabel12.zPosition = 2
-        tileLabel13.zPosition = 2
-        tileLabel14.zPosition = 2
-        tileLabel15.zPosition = 2
-        // Add labels  to screen
-        tiles[0].addChild(tileLabel1)
-        tiles[1].addChild(tileLabel2)
-        tiles[2].addChild(tileLabel3)
-        tiles[3].addChild(tileLabel4)
-        tiles[4].addChild(tileLabel5)
-        tiles[5].addChild(tileLabel6)
-        tiles[6].addChild(tileLabel7)
-        tiles[7].addChild(tileLabel8)
-        tiles[8].addChild(tileLabel9)
-        tiles[9].addChild(tileLabel10)
-        tiles[10].addChild(tileLabel11)
-        tiles[11].addChild(tileLabel12)
-        tiles[12].addChild(tileLabel13)
-        tiles[13].addChild(tileLabel14)
-        tiles[14].addChild(tileLabel15)
         // Create Sprite constants
         let temporaryValue1 = ((tileHeight - (2 * ratio)) - tiles[0].frame.width)
         let spriteOffset = (temporaryValue1 / 2) + (3 * ratio)
