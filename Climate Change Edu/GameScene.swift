@@ -110,34 +110,11 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     //declaring varables used between initialization and in-game data
     var game: GameManager!
     var gameBG: SKShapeNode!
-    //var climateBG: SKShapeNode!
-    //var weatherBG: SKShapeNode!
-    //var enviromBG: SKShapeNode!
-    //var naBG: SKShapeNode!
-    //var cwBG: SKShapeNode!
-    //var weBG: SKShapeNode!
-    //var ceBG: SKShapeNode!
-    //var cweBG: SKShapeNode!
     var ceBar: [CGPoint]!
     var weBar: [CGPoint]!
     var p1: CGPoint!
     var p2: CGPoint!
     var p3: CGPoint!
-    var tile1: SKShapeNode!
-    var tile2: SKShapeNode!
-    var tile3: SKShapeNode!
-    var tile4: SKShapeNode!
-    var tile5: SKShapeNode!
-    var tile6: SKShapeNode!
-    var tile7: SKShapeNode!
-    var tile8: SKShapeNode!
-    var tile9: SKShapeNode!
-    var tile10: SKShapeNode!
-    var tile11: SKShapeNode!
-    var tile12: SKShapeNode!
-    var tile13: SKShapeNode!
-    var tile14: SKShapeNode!
-    var tile15: SKShapeNode!
     var tiles: [SKShapeNode]!
     var numButtons: [SKNode]!
     var numButtonsLabels: [SKNode]!
@@ -154,7 +131,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var circleWidth: CGFloat!
     var bottomMargin: CGFloat!
     var midMargin: CGFloat!
-    var tileBankLocDict: Dictionary<Int, CGPoint>!
+    var tileBankLocDict: [CGPoint]!
     var remainingInBank: Int = 15
     var dictLookup: Int!
     var sequenceApp: Int = 1
@@ -179,27 +156,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         textField.textColor = .black
         textField.isSecureTextEntry = isSecureTextEntry
         textField.delegate = self
-    }
-    @objc func textFieldDidChange(textField: UITextField) {
-        //print("everytime you type something this is fired..")
-    }
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        return true
-    }
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        if textField == textField1 { // validate email syntax
-            let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
-            let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-            let result = emailTest.evaluate(with: textField.text)
-            let title = "Alert title"
-            let message = result ? "This is a correct email" : "Wrong email syntax"
-            if !result {
-                self.run(SKAction.wait(forDuration: 0.01),completion:{[unowned self] in
-                    guard let delegate = self.delegate else { return }
-                    (delegate as! TransitionDelegate).showAlert(title:title,message: message)
-                })
-            }
-        }
     }
     func getButton(frame:CGRect,fillColor:SKColor,title:String = "",logo:SKSpriteNode!,name:String)->SKShapeNode {
         let btn = SKShapeNode(rect: frame, cornerRadius: 10)
@@ -423,9 +379,9 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         textField3.isHidden = false
         textField4.isHidden = false
         textField5.isHidden = false
-        resetCounter = 1
+        resetCounter = 0
         for tile in tiles {
-            tile.run(SKAction.move(by: CGVector(dx: tileBankLocDict[resetCounter]!.x - (tile.position.x), dy: tileBankLocDict[resetCounter]!.y - (tile.position.y)), duration: 0.3))
+            tile.run(SKAction.move(by: CGVector(dx: tileBankLocDict[resetCounter].x - (tile.position.x), dy: tileBankLocDict[resetCounter].y - (tile.position.y)), duration: 0.3))
             if tile.fillColor == SKColor(red: 1/2, green: 1, blue: 1, alpha: 1) {
                 tile.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
             }
@@ -558,7 +514,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             break
                         }
                     }
-                    if !nodeFound && nodeToMove.position.y > (tileBankLocDict[13]!.y - tileHeight) {
+                    if !nodeFound && nodeToMove.position.y > (tileBankLocDict[13].y - tileHeight) {
                         // Prints underlying location
                         print("Bank pick!")
                         // Updates the count in the Bank
@@ -752,63 +708,11 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             break
                         }
                     }
-                    // Finds dictionary entry for the bank location
+                    // If retruning tile to bank location
                     if !nodeFound {
-                        switch nodeToMove {
-                        case tile1:
-                            dictLookup = 1
-                            break
-                        case tile2:
-                            dictLookup = 2
-                            break
-                        case tile3:
-                            dictLookup = 3
-                            break
-                        case tile4:
-                            dictLookup = 4
-                            break
-                        case tile5:
-                            dictLookup = 5
-                            break
-                        case tile6:
-                            dictLookup = 6
-                            break
-                        case tile7:
-                            dictLookup = 7
-                            break
-                        case tile8:
-                            dictLookup = 8
-                            break
-                        case tile9:
-                            dictLookup = 9
-                            break
-                        case tile10:
-                            dictLookup = 10
-                            break
-                        case tile11:
-                            dictLookup = 11
-                            break
-                        case tile12:
-                            dictLookup = 12
-                            break
-                        case tile13:
-                            dictLookup = 13
-                            break
-                        case tile14:
-                            dictLookup = 14
-                            break
-                        case tile15:
-                            dictLookup = 15
-                            break
-                        case .none:
-                            dictLookup = 1
-                            break
-                        case .some(_):
-                            dictLookup = 1
-                            break
-                        }
                         // Returns tile to it's proper bank location
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[dictLookup]!.x - (nodeToMove.position.x), dy: tileBankLocDict[dictLookup]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = (tiles.firstIndex(of: castedNode) ?? 0)
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[dictLookup].x - (nodeToMove.position.x), dy: tileBankLocDict[dictLookup].y - (nodeToMove.position.y)), duration: 0.3))
                         castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                         // Returns tile to normal side
                         nodeToMove.run(SKAction.scale(to: 1, duration: 0.2))
@@ -1075,148 +979,32 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         let tileOffsetX = tileLength / -2
         let tileBufferX = screenWidth / 5.2
         // Create tile lookup table
-        let origin1 = CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
-        let origin2 = CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
-        let origin3 = CGPoint(x: tileOffsetX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
-        let origin4 = CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
-        let origin5 = CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
-        let origin6 = CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2))
-        let origin7 = CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2))
-        let origin8 = CGPoint(x: tileOffsetX + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2))
-        let origin9 = CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2))
-        let origin10 = CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2))
-        let origin11 = CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
-        let origin12 = CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
-        let origin13 = CGPoint(x: tileOffsetX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
-        let origin14 = CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
-        let origin15 = CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
-        // Creates dictionary to relate positions
-        tileBankLocDict = [1: origin1,
-                           2: origin2,
-                           3: origin3,
-                           4: origin4,
-                           5: origin5,
-                           6: origin6,
-                           7: origin7,
-                           8: origin8,
-                           9: origin9,
-                           10: origin10,
-                           11: origin11,
-                           12: origin12,
-                           13: origin13,
-                           14: origin14,
-                           15: origin15]
-        // Creates tiles to be used
-        tile1 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile1.position = tileBankLocDict[1]!
-        tile2 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile2.position = tileBankLocDict[2]!
-        tile3 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile3.position = tileBankLocDict[3]!
-        tile4 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile4.position = tileBankLocDict[4]!
-        tile5 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile5.position = tileBankLocDict[5]!
-        tile6 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile6.position = tileBankLocDict[6]!
-        tile7 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile7.position = tileBankLocDict[7]!
-        tile8 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile8.position = tileBankLocDict[8]!
-        tile9 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile9.position = tileBankLocDict[9]!
-        tile10 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile10.position = tileBankLocDict[10]!
-        tile11 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile11.position = tileBankLocDict[11]!
-        tile12 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile12.position = tileBankLocDict[12]!
-        tile13 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile13.position = tileBankLocDict[13]!
-        tile14 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile14.position = tileBankLocDict[14]!
-        tile15 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile15.position = tileBankLocDict[15]!
-        // Assign tile type
-        tile1.name = "tile"
-        tile2.name = "tile"
-        tile3.name = "tile"
-        tile4.name = "tile"
-        tile5.name = "tile"
-        tile6.name = "tile"
-        tile7.name = "tile"
-        tile8.name = "tile"
-        tile9.name = "tile"
-        tile10.name = "tile"
-        tile11.name = "tile"
-        tile12.name = "tile"
-        tile13.name = "tile"
-        tile14.name = "tile"
-        tile15.name = "tile"
-        // Color tile
-        tile1.fillColor = SKColor.white
-        tile2.fillColor = SKColor.white
-        tile3.fillColor = SKColor.white
-        tile4.fillColor = SKColor.white
-        tile5.fillColor = SKColor.white
-        tile6.fillColor = SKColor.white
-        tile7.fillColor = SKColor.white
-        tile8.fillColor = SKColor.white
-        tile9.fillColor = SKColor.white
-        tile10.fillColor = SKColor.white
-        tile11.fillColor = SKColor.white
-        tile12.fillColor = SKColor.white
-        tile13.fillColor = SKColor.white
-        tile14.fillColor = SKColor.white
-        tile15.fillColor = SKColor.white
-        // Color outline tile
-        tile1.strokeColor = SKColor.black
-        tile2.strokeColor = SKColor.black
-        tile3.strokeColor = SKColor.black
-        tile4.strokeColor = SKColor.black
-        tile5.strokeColor = SKColor.black
-        tile6.strokeColor = SKColor.black
-        tile7.strokeColor = SKColor.black
-        tile8.strokeColor = SKColor.black
-        tile9.strokeColor = SKColor.black
-        tile10.strokeColor = SKColor.black
-        tile11.strokeColor = SKColor.black
-        tile12.strokeColor = SKColor.black
-        tile13.strokeColor = SKColor.black
-        tile14.strokeColor = SKColor.black
-        tile15.strokeColor = SKColor.black
-        // Size outline tile
-        tile1.lineWidth = 2 * ratio
-        tile2.lineWidth = 2 * ratio
-        tile3.lineWidth = 2 * ratio
-        tile4.lineWidth = 2 * ratio
-        tile5.lineWidth = 2 * ratio
-        tile6.lineWidth = 2 * ratio
-        tile7.lineWidth = 2 * ratio
-        tile8.lineWidth = 2 * ratio
-        tile9.lineWidth = 2 * ratio
-        tile10.lineWidth = 2 * ratio
-        tile11.lineWidth = 2 * ratio
-        tile12.lineWidth = 2 * ratio
-        tile13.lineWidth = 2 * ratio
-        tile14.lineWidth = 2 * ratio
-        tile15.lineWidth = 2 * ratio
-        // make tile always visable lineWidth
-        tile1.zPosition = 6
-        tile2.zPosition = 6
-        tile3.zPosition = 6
-        tile4.zPosition = 6
-        tile5.zPosition = 6
-        tile6.zPosition = 6
-        tile7.zPosition = 6
-        tile8.zPosition = 6
-        tile9.zPosition = 6
-        tile10.zPosition = 6
-        tile11.zPosition = 6
-        tile12.zPosition = 6
-        tile13.zPosition = 6
-        tile14.zPosition = 6
-        tile15.zPosition = 6
+        tileBankLocDict = []
+        var x_pos_iter = tileOffsetX - (2 * tileBufferX) + (tileLength / 2)
+        var y_pos_iter = ((tileMin + 3*tileMax) / 4) + (tileHeight / 2)
+        while y_pos_iter >= ((3*tileMin + tileMax) / 4) + (tileHeight / 2) {
+            while x_pos_iter <= tileOffsetX + (2 * tileBufferX) + (tileLength / 2){
+                tileBankLocDict.append(CGPoint(x:x_pos_iter, y:y_pos_iter))
+                x_pos_iter += tileBufferX
+            }
+            y_pos_iter += (tileMin - tileMax) / 4
+            x_pos_iter = tileOffsetX - (2 * tileBufferX) + (tileLength / 2)
+        }
+        // Creates shape for tiles to be used
+        let tile_shape = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile_shape.name = "tile"
+        tile_shape.fillColor = SKColor.white
+        tile_shape.strokeColor = SKColor.black
+        tile_shape.lineWidth = 2 * ratio
+        tile_shape.zPosition = 6
+        tiles = []
+        // Assign tile properties
+        for i in 0...14 {
+            let tile = tile_shape.copy() as! SKShapeNode
+            tile.position = tileBankLocDict[i]
+            tiles.append(tile)
+            gameBG.addChild(tile)
+        }
         // Create labels
         let tileLabel1 = SKLabelNode(fontNamed: "ArialMT")
         let tileLabel2 = SKLabelNode(fontNamed: "ArialMT")
@@ -1279,73 +1067,51 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tileLabel13.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
         tileLabel14.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
         tileLabel15.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        if #available(iOS 11.0, *) {
-            // OLD iOS code just incase (^_~)
-            tileLabel1.numberOfLines = 3
-            tileLabel1.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel1.fontSize = tileLengthOriginal / 6
-            tileLabel2.numberOfLines = 3
-            tileLabel2.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel2.fontSize = tileLengthOriginal / 6
-            tileLabel3.numberOfLines = 3
-            tileLabel3.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel3.fontSize = tileLengthOriginal / 6
-            tileLabel4.numberOfLines = 3
-            tileLabel4.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel4.fontSize = tileLengthOriginal / 6
-            tileLabel5.numberOfLines = 3
-            tileLabel5.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel5.fontSize = tileLengthOriginal / 6
-            tileLabel6.numberOfLines = 3
-            tileLabel6.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel6.fontSize = tileLengthOriginal / 6
-            tileLabel7.numberOfLines = 3
-            tileLabel7.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel7.fontSize = tileLengthOriginal / 6
-            tileLabel8.numberOfLines = 3
-            tileLabel8.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel8.fontSize = tileLengthOriginal / 6
-            tileLabel9.numberOfLines = 3
-            tileLabel9.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel9.fontSize = tileLengthOriginal / 6
-            tileLabel10.numberOfLines = 3
-            tileLabel10.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel10.fontSize = tileLengthOriginal / 6
-            tileLabel11.numberOfLines = 3
-            tileLabel11.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel11.fontSize = tileLengthOriginal / 6
-            tileLabel12.numberOfLines = 3
-            tileLabel12.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel12.fontSize = tileLengthOriginal / 6
-            tileLabel13.numberOfLines = 3
-            tileLabel13.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel13.fontSize = tileLengthOriginal / 6
-            tileLabel14.numberOfLines = 3
-            tileLabel14.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel14.fontSize = tileLengthOriginal / 6
-            tileLabel15.numberOfLines = 3
-            tileLabel15.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel15.fontSize = tileLengthOriginal / 6
-        } else {
-            // Fallback on earlier versions
-            // FIX IN FUTURE UPDATE
-        }
-        // add tiles to screen
-        gameBG.addChild(tile1)
-        gameBG.addChild(tile2)
-        gameBG.addChild(tile3)
-        gameBG.addChild(tile4)
-        gameBG.addChild(tile5)
-        gameBG.addChild(tile6)
-        gameBG.addChild(tile7)
-        gameBG.addChild(tile8)
-        gameBG.addChild(tile9)
-        gameBG.addChild(tile10)
-        gameBG.addChild(tile11)
-        gameBG.addChild(tile12)
-        gameBG.addChild(tile13)
-        gameBG.addChild(tile14)
-        gameBG.addChild(tile15)
+        tileLabel1.numberOfLines = 3
+        tileLabel1.preferredMaxLayoutWidth = tileLengthOriginal
+        tileLabel1.fontSize = tileLengthOriginal / 6
+        tileLabel2.numberOfLines = 3
+        tileLabel2.preferredMaxLayoutWidth = tileLengthOriginal
+        tileLabel2.fontSize = tileLengthOriginal / 6
+        tileLabel3.numberOfLines = 3
+        tileLabel3.preferredMaxLayoutWidth = tileLengthOriginal
+        tileLabel3.fontSize = tileLengthOriginal / 6
+        tileLabel4.numberOfLines = 3
+        tileLabel4.preferredMaxLayoutWidth = tileLengthOriginal
+        tileLabel4.fontSize = tileLengthOriginal / 6
+        tileLabel5.numberOfLines = 3
+        tileLabel5.preferredMaxLayoutWidth = tileLengthOriginal
+        tileLabel5.fontSize = tileLengthOriginal / 6
+        tileLabel6.numberOfLines = 3
+        tileLabel6.preferredMaxLayoutWidth = tileLengthOriginal
+        tileLabel6.fontSize = tileLengthOriginal / 6
+        tileLabel7.numberOfLines = 3
+        tileLabel7.preferredMaxLayoutWidth = tileLengthOriginal
+        tileLabel7.fontSize = tileLengthOriginal / 6
+        tileLabel8.numberOfLines = 3
+        tileLabel8.preferredMaxLayoutWidth = tileLengthOriginal
+        tileLabel8.fontSize = tileLengthOriginal / 6
+        tileLabel9.numberOfLines = 3
+        tileLabel9.preferredMaxLayoutWidth = tileLengthOriginal
+        tileLabel9.fontSize = tileLengthOriginal / 6
+        tileLabel10.numberOfLines = 3
+        tileLabel10.preferredMaxLayoutWidth = tileLengthOriginal
+        tileLabel10.fontSize = tileLengthOriginal / 6
+        tileLabel11.numberOfLines = 3
+        tileLabel11.preferredMaxLayoutWidth = tileLengthOriginal
+        tileLabel11.fontSize = tileLengthOriginal / 6
+        tileLabel12.numberOfLines = 3
+        tileLabel12.preferredMaxLayoutWidth = tileLengthOriginal
+        tileLabel12.fontSize = tileLengthOriginal / 6
+        tileLabel13.numberOfLines = 3
+        tileLabel13.preferredMaxLayoutWidth = tileLengthOriginal
+        tileLabel13.fontSize = tileLengthOriginal / 6
+        tileLabel14.numberOfLines = 3
+        tileLabel14.preferredMaxLayoutWidth = tileLengthOriginal
+        tileLabel14.fontSize = tileLengthOriginal / 6
+        tileLabel15.numberOfLines = 3
+        tileLabel15.preferredMaxLayoutWidth = tileLengthOriginal
+        tileLabel15.fontSize = tileLengthOriginal / 6
         // Add color Static to background the tile labels
         let tileStaticCol1 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
         let tileStaticCol2 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
@@ -1407,21 +1173,21 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tileStaticCol13.strokeColor = SKColor.black
         tileStaticCol14.strokeColor = SKColor.black
         tileStaticCol15.strokeColor = SKColor.black
-        tile1.addChild(tileStaticCol1)
-        tile2.addChild(tileStaticCol2)
-        tile3.addChild(tileStaticCol3)
-        tile4.addChild(tileStaticCol4)
-        tile5.addChild(tileStaticCol5)
-        tile6.addChild(tileStaticCol6)
-        tile7.addChild(tileStaticCol7)
-        tile8.addChild(tileStaticCol8)
-        tile9.addChild(tileStaticCol9)
-        tile10.addChild(tileStaticCol10)
-        tile11.addChild(tileStaticCol11)
-        tile12.addChild(tileStaticCol12)
-        tile13.addChild(tileStaticCol13)
-        tile14.addChild(tileStaticCol14)
-        tile15.addChild(tileStaticCol15)
+        tiles[0].addChild(tileStaticCol1)
+        tiles[1].addChild(tileStaticCol2)
+        tiles[2].addChild(tileStaticCol3)
+        tiles[3].addChild(tileStaticCol4)
+        tiles[4].addChild(tileStaticCol5)
+        tiles[5].addChild(tileStaticCol6)
+        tiles[6].addChild(tileStaticCol7)
+        tiles[7].addChild(tileStaticCol8)
+        tiles[8].addChild(tileStaticCol9)
+        tiles[9].addChild(tileStaticCol10)
+        tiles[10].addChild(tileStaticCol11)
+        tiles[11].addChild(tileStaticCol12)
+        tiles[12].addChild(tileStaticCol13)
+        tiles[13].addChild(tileStaticCol14)
+        tiles[14].addChild(tileStaticCol15)
         // Place Labels in center of tiles
         tileLabel1.position = CGPoint(x: (tileHeight / 2), y: 0)
         tileLabel2.position = CGPoint(x: (tileHeight / 2), y: 0)
@@ -1471,23 +1237,23 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tileLabel14.zPosition = 2
         tileLabel15.zPosition = 2
         // Add labels  to screen
-        tile1.addChild(tileLabel1)
-        tile2.addChild(tileLabel2)
-        tile3.addChild(tileLabel3)
-        tile4.addChild(tileLabel4)
-        tile5.addChild(tileLabel5)
-        tile6.addChild(tileLabel6)
-        tile7.addChild(tileLabel7)
-        tile8.addChild(tileLabel8)
-        tile9.addChild(tileLabel9)
-        tile10.addChild(tileLabel10)
-        tile11.addChild(tileLabel11)
-        tile12.addChild(tileLabel12)
-        tile13.addChild(tileLabel13)
-        tile14.addChild(tileLabel14)
-        tile15.addChild(tileLabel15)
+        tiles[0].addChild(tileLabel1)
+        tiles[1].addChild(tileLabel2)
+        tiles[2].addChild(tileLabel3)
+        tiles[3].addChild(tileLabel4)
+        tiles[4].addChild(tileLabel5)
+        tiles[5].addChild(tileLabel6)
+        tiles[6].addChild(tileLabel7)
+        tiles[7].addChild(tileLabel8)
+        tiles[8].addChild(tileLabel9)
+        tiles[9].addChild(tileLabel10)
+        tiles[10].addChild(tileLabel11)
+        tiles[11].addChild(tileLabel12)
+        tiles[12].addChild(tileLabel13)
+        tiles[13].addChild(tileLabel14)
+        tiles[14].addChild(tileLabel15)
         // Create Sprite constants
-        let temporaryValue1 = ((tileHeight - (2 * ratio)) - tile1.frame.width)
+        let temporaryValue1 = ((tileHeight - (2 * ratio)) - tiles[0].frame.width)
         let spriteOffset = (temporaryValue1 / 2) + (3 * ratio)
         let spritePos = CGPoint(x: spriteOffset, y: 0)
         let spriteSize = CGSize(width: tileHeight - (2 * ratio), height: tileHeight - (2 * ratio))
@@ -1555,21 +1321,21 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tileSprite14.zPosition = 1
         tileSprite15.zPosition = 1
         // Adds sprite to tile
-        tile1.addChild(tileSprite1)
-        tile2.addChild(tileSprite2)
-        tile3.addChild(tileSprite3)
-        tile4.addChild(tileSprite4)
-        tile5.addChild(tileSprite5)
-        tile6.addChild(tileSprite6)
-        tile7.addChild(tileSprite7)
-        tile8.addChild(tileSprite8)
-        tile9.addChild(tileSprite9)
-        tile10.addChild(tileSprite10)
-        tile11.addChild(tileSprite11)
-        tile12.addChild(tileSprite12)
-        tile13.addChild(tileSprite13)
-        tile14.addChild(tileSprite14)
-        tile15.addChild(tileSprite15)
+        tiles[0].addChild(tileSprite1)
+        tiles[1].addChild(tileSprite2)
+        tiles[2].addChild(tileSprite3)
+        tiles[3].addChild(tileSprite4)
+        tiles[4].addChild(tileSprite5)
+        tiles[5].addChild(tileSprite6)
+        tiles[6].addChild(tileSprite7)
+        tiles[7].addChild(tileSprite8)
+        tiles[8].addChild(tileSprite9)
+        tiles[9].addChild(tileSprite10)
+        tiles[10].addChild(tileSprite11)
+        tiles[11].addChild(tileSprite12)
+        tiles[12].addChild(tileSprite13)
+        tiles[13].addChild(tileSprite14)
+        tiles[14].addChild(tileSprite15)
         // Submit button
         submit = SKShapeNode.init(ellipseOf: CGSize.init(width: screenWidth/3, height: screenWidth/10))
         submit.position = CGPoint(x: naBG.frame.midX, y: (naBG.frame.maxY + screenHeight/2)/2)
@@ -1783,6 +1549,5 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         loginBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50),fillColor:SKColor.blue,title:"Begin Session",logo:nil,name:"loginBtn")
         loginBtn.zPosition = 9000
         form.addChild(loginBtn)
-        tiles = [tile1, tile2, tile3, tile4, tile5, tile6, tile7, tile8, tile9, tile10, tile11, tile12, tile13, tile14, tile15]
     }
 }
