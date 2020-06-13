@@ -140,6 +140,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var tile15: SKShapeNode!
     var tiles: [SKShapeNode]!
     var numButtons: [SKNode]!
+    var numButtonsLabels: [SKNode]!
     var form: SKShapeNode!
     var passScreen: SKShapeNode!
     var submit: SKShapeNode!
@@ -157,6 +158,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var remainingInBank: Int = 15
     var dictLookup: Int!
     var sequenceApp: Int = 1
+    var spinLockState: Int = 0
     var followDisable: Bool = false
     var resetCounter: Int!
     var tileHeight: CGFloat!
@@ -243,6 +245,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         do {
             jsonPost1 = try JSONSerialization.data(withJSONObject: newPost1, options: [])
             URLRequest1.httpBody = jsonPost1
+            print("\(jsonPost1)")
         } catch {
             print("Error: cannot create JSON")
             return
@@ -267,7 +270,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                 }
                 print("json: \(receivedPost1)")
                 guard let post1ID = receivedPost1["id"] as? Int else {
-                    print("Error: could not recieve the session ID")
+                    print("Error: could not receive the session ID")
                     return
                 }
                 self.SESSIONID = post1ID
@@ -388,6 +391,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     func stepForward1(){
         passScreen.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
         passScreen.zPosition = zPosUpdater + 2
+        contBtn.run(SKAction.fadeAlpha(to: 0, duration: 0))
         sequenceApp = sequenceApp + 1
         followDisable = false
     }
@@ -581,10 +585,26 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                     if node.name == "contBtn" && !node.hasActions(){
                         stepForward2()
                         break
-                    } else if node.name == "pass" { // TODO
+                    } else if node.name == "pass" {
                         break
-                    } else if numButtons.contains(node) {
-                        break
+                    } else if numButtons.contains(node) || numButtonsLabels.contains(node) {
+                        if (node.name == "numPad3" || node.parent!.name == "numPad3") && spinLockState == 0 {
+                            spinLockState = 1
+                            break
+                        } else if (node.name == "numPad2" || node.parent!.name == "numPad2") && spinLockState == 1 {
+                            spinLockState = 2
+                            break
+                        } else if (node.name == "numPad1" || node.parent!.name == "numPad1") && spinLockState == 2 {
+                            spinLockState = 3
+                            break
+                        } else if (node.name == "numPad0" || node.parent!.name == "numPad0") && spinLockState == 3 {
+                            spinLockState = 4
+                            contBtn.run(SKAction.fadeAlpha(to: 1, duration: 0.2))
+                            break
+                        } else {
+                            spinLockState = 0
+                            break
+                        }
                     } else {
                         stepBackward1()
                         submit.zPosition = zPosUpdater
@@ -676,61 +696,56 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                         if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
                             if (node.name == "c_space") && (distance(locationEnd, p1) < circleWidth / 2) {
                                 // Prints underlying location
-                                nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                                castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
                                 print("C Circle!")
+                                castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
+                                nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
                                 break
                             } else if (node.name == "w_space") && (distance(locationEnd, p2) < circleWidth / 2) {
                                 // Prints underlying location
-                                nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
                                 print("W Circle!")
+                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
+                                nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
                                 break
                             } else if (node.name == "e_space") && (distance(locationEnd, p3) < circleWidth / 2) {
                                 // Prints underlying location
-                                nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                                castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
                                 print("E Circle!")
+                                castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
+                                nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
                                 break
                             }
                         } else if node.name == "cwe_space" && (locationEnd.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) {
                             // Prints underlying location
-                            nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                            castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                             print("CWE Triangle!")
+                            nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
+                            castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                             nodeFound = true
                             break
                         } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
+                            nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
+                            nodeFound = true
                             if node.name == "cw_space" {
                                 // Prints underlying location
-                                nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
-                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
                                 print("CW Bar!")
-                                nodeFound = true
+                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
                                 break
                             } else if node.name == "we_space" && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) && (locationEnd.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (locationEnd.x - weBar[3].x) + weBar[3].y)) {
                                 // Prints underlying location
-                                nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                                print("WE Bar!")
                                 nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
                                 castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1/2, alpha: 1)
-                                print("WE Bar!")
-                                nodeFound = true
-                                break
                             } else if node.name == "ce_space" && (locationEnd.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (locationEnd.x - ceBar[3].x) + ceBar[3].y)) && (locationEnd.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) {
                                 // Prints underlying location
-                                nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                                print("CE Bar!")
                                 nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
                                 castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1, alpha: 1)
-                                print("CE Bar!")
-                                nodeFound = true
-                                break
                             }
+                            break
                         } else if node.name == "na_space" {
                             // Prints underlying location
-                            nodeToMove.run(SKAction.scale(to: 0.6, duration: 0.2))
+                            nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
                             print("None!")
                             nodeFound = true
@@ -1594,6 +1609,12 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         numPad0.name = "numPad0"
         numPad0.zPosition = 1
         passScreen.addChild(numPad0)
+        let numPad0txt = SKLabelNode(fontNamed: "ArialMT")
+        numPad0txt.text = "0"
+        numPad0txt.zPosition = 0
+        numPad0txt.fontSize = 45 * ratio
+        numPad0txt.position = CGPoint(x: 0, y: -numPad0txt.frame.height / 2)
+        numPad0.addChild(numPad0txt)
         let numPad1 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
         numPad1.fillColor = SKColor.lightGray
         numPad1.name = "numPad1"
@@ -1601,12 +1622,24 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         numPad1.position.x = -2.2*passScreen.frame.width/15
         numPad1.position.y = 6.6*passScreen.frame.width/15
         passScreen.addChild(numPad1)
+        let numPad1txt = SKLabelNode(fontNamed: "ArialMT")
+        numPad1txt.text = "1"
+        numPad1txt.zPosition = 0
+        numPad1txt.fontSize = 45 * ratio
+        numPad1txt.position = CGPoint(x: 0, y: -numPad1txt.frame.height / 2)
+        numPad1.addChild(numPad1txt)
         let numPad2 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
         numPad2.fillColor = SKColor.lightGray
         numPad2.name = "numPad2"
         numPad2.zPosition = 1
         numPad2.position.y = 6.6*passScreen.frame.width/15
         passScreen.addChild(numPad2)
+        let numPad2txt = SKLabelNode(fontNamed: "ArialMT")
+        numPad2txt.text = "2"
+        numPad2txt.zPosition = 0
+        numPad2txt.fontSize = 45 * ratio
+        numPad2txt.position = CGPoint(x: 0, y: -numPad2txt.frame.height / 2)
+        numPad2.addChild(numPad2txt)
         let numPad3 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
         numPad3.fillColor = SKColor.lightGray
         numPad3.name = "numPad3"
@@ -1614,6 +1647,12 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         numPad3.position.x = 2.2*passScreen.frame.width/15
         numPad3.position.y = 6.6*passScreen.frame.width/15
         passScreen.addChild(numPad3)
+        let numPad3txt = SKLabelNode(fontNamed: "ArialMT")
+        numPad3txt.text = "3"
+        numPad3txt.zPosition = 0
+        numPad3txt.fontSize = 45 * ratio
+        numPad3txt.position = CGPoint(x: 0, y: -numPad3txt.frame.height / 2)
+        numPad3.addChild(numPad3txt)
         let numPad4 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
         numPad4.fillColor = SKColor.lightGray
         numPad4.name = "numPad4"
@@ -1621,12 +1660,24 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         numPad4.position.x = -2.2*passScreen.frame.width/15
         numPad4.position.y = 4.4*passScreen.frame.width/15
         passScreen.addChild(numPad4)
+        let numPad4txt = SKLabelNode(fontNamed: "ArialMT")
+        numPad4txt.text = "4"
+        numPad4txt.zPosition = 0
+        numPad4txt.fontSize = 45 * ratio
+        numPad4txt.position = CGPoint(x: 0, y: -numPad4txt.frame.height / 2)
+        numPad4.addChild(numPad4txt)
         let numPad5 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
         numPad5.fillColor = SKColor.lightGray
         numPad5.name = "numPad5"
         numPad5.zPosition = 1
         numPad5.position.y = 4.4*passScreen.frame.width/15
         passScreen.addChild(numPad5)
+        let numPad5txt = SKLabelNode(fontNamed: "ArialMT")
+        numPad5txt.text = "5"
+        numPad5txt.zPosition = 0
+        numPad5txt.fontSize = 45 * ratio
+        numPad5txt.position = CGPoint(x: 0, y: -numPad5txt.frame.height / 2)
+        numPad5.addChild(numPad5txt)
         let numPad6 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
         numPad6.fillColor = SKColor.lightGray
         numPad6.name = "numPad6"
@@ -1634,6 +1685,12 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         numPad6.position.x = 2.2*passScreen.frame.width/15
         numPad6.position.y = 4.4*passScreen.frame.width/15
         passScreen.addChild(numPad6)
+        let numPad6txt = SKLabelNode(fontNamed: "ArialMT")
+        numPad6txt.text = "6"
+        numPad6txt.zPosition = 0
+        numPad6txt.fontSize = 45 * ratio
+        numPad6txt.position = CGPoint(x: 0, y: -numPad6txt.frame.height / 2)
+        numPad6.addChild(numPad6txt)
         let numPad7 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
         numPad7.fillColor = SKColor.lightGray
         numPad7.name = "numPad7"
@@ -1641,12 +1698,24 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         numPad7.position.x = -2.2*passScreen.frame.width/15
         numPad7.position.y = 2.2*passScreen.frame.width/15
         passScreen.addChild(numPad7)
+        let numPad7txt = SKLabelNode(fontNamed: "ArialMT")
+        numPad7txt.text = "7"
+        numPad7txt.zPosition = 0
+        numPad7txt.fontSize = 45 * ratio
+        numPad7txt.position = CGPoint(x: 0, y: -numPad7txt.frame.height / 2)
+        numPad7.addChild(numPad7txt)
         let numPad8 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
         numPad8.fillColor = SKColor.lightGray
         numPad8.name = "numPad8"
         numPad8.zPosition = 1
         numPad8.position.y = 2.2*passScreen.frame.width/15
         passScreen.addChild(numPad8)
+        let numPad8txt = SKLabelNode(fontNamed: "ArialMT")
+        numPad8txt.text = "8"
+        numPad8txt.zPosition = 0
+        numPad8txt.fontSize = 45 * ratio
+        numPad8txt.position = CGPoint(x: 0, y: -numPad8txt.frame.height / 2)
+        numPad8.addChild(numPad8txt)
         let numPad9 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
         numPad9.fillColor = SKColor.lightGray
         numPad9.name = "numPad9"
@@ -1654,8 +1723,15 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         numPad9.position.x = 2.2*passScreen.frame.width/15
         numPad9.position.y = 2.2*passScreen.frame.width/15
         passScreen.addChild(numPad9)
+        let numPad9txt = SKLabelNode(fontNamed: "ArialMT")
+        numPad9txt.text = "9"
+        numPad9txt.zPosition = 0
+        numPad9txt.fontSize = 45 * ratio
+        numPad9txt.position = CGPoint(x: 0, y: -numPad9txt.frame.height / 2)
+        numPad9.addChild(numPad9txt)
         passScreen.addChild(contBtn)
         numButtons = [numPad0, numPad1, numPad2, numPad3, numPad4, numPad5, numPad6, numPad7, numPad8, numPad9]
+        numButtonsLabels = [numPad0txt, numPad1txt, numPad2txt, numPad3txt, numPad4txt, numPad5txt, numPad6txt, numPad7txt, numPad8txt, numPad9txt]
         // Add text fields
         guard let view = self.view else { return }
         let originX = (view.frame.size.width - view.frame.size.width/1.5)/2
