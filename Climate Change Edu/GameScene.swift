@@ -1008,15 +1008,45 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tile_label_teplate.fontColor = SKColor.black
         tile_label_teplate.zPosition = 2
         // Creates template for the tile static color TODO
-        // Assign tile and tile label properties, append to game board as children
+        let tile_color_template = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        tile_color_template.zPosition = 1
+        tile_color_template.strokeColor = SKColor.black
+        // Create Sprite constants
+        let temporaryValue1 = ((tileHeight - (2 * ratio)) - tileLength)
+        let spriteOffset = (temporaryValue1 / 2) + (3 * ratio)
+        let spritePos = CGPoint(x: spriteOffset, y: 0)
+        let spriteSize = CGSize(width: tileHeight - (2 * ratio), height: tileHeight - (2 * ratio))
+        // Assign tile properties, append to game board as children
         for i in 0...14 {
+            //tile
             let tile = tile_shape.copy() as! SKShapeNode
             tile.position = tileBankLocDict[i]
             tiles.append(tile)
             gameBG.addChild(tile)
+            //label
             let tile_label = tile_label_teplate.copy() as! SKLabelNode
             tile_labels.append(tile_label)
-            tiles[i].addChild(tile_label)
+            tile.addChild(tile_label)
+            //static color
+            let tile_color = tile_color_template.copy() as! SKShapeNode
+            if 0...1 ~= i {
+                tile_color.fillColor = SKColor.yellow
+            } else if 2...4 ~= i {
+                tile_color.fillColor = SKColor.green
+            } else if 5...6 ~= i {
+                tile_color.fillColor = SKColor.cyan
+            } else if 7...9 ~= i {
+                tile_color.fillColor = SKColor.red
+            } else if 10...14 ~= i {
+                tile_color.fillColor = SKColor.blue
+            }
+            tile.addChild(tile_color)
+            //sprite
+            let tileSprite = SKSpriteNode(imageNamed: "TileSprite-\(i+1)")
+            tileSprite.size = spriteSize
+            tileSprite.position = spritePos
+            tileSprite.zPosition = 1
+            tile.addChild(tileSprite)
         }
         // Labels and associated position for tiels
         tile_labels[0].text = "Cooling\n temps "
@@ -1039,166 +1069,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             tile_labels[i].numberOfLines = 3
             tile_labels[i].preferredMaxLayoutWidth = tileLengthOriginal
         }
-        // Add color Static to background the tile labels
-        let tileStaticCol1 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol2 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol3 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol4 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol5 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol6 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol7 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol8 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol9 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol10 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol11 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol12 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol13 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol14 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol15 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        tileStaticCol1.zPosition = 1
-        tileStaticCol2.zPosition = 1
-        tileStaticCol3.zPosition = 1
-        tileStaticCol4.zPosition = 1
-        tileStaticCol5.zPosition = 1
-        tileStaticCol6.zPosition = 1
-        tileStaticCol7.zPosition = 1
-        tileStaticCol8.zPosition = 1
-        tileStaticCol9.zPosition = 1
-        tileStaticCol10.zPosition = 1
-        tileStaticCol11.zPosition = 1
-        tileStaticCol12.zPosition = 1
-        tileStaticCol13.zPosition = 1
-        tileStaticCol14.zPosition = 1
-        tileStaticCol15.zPosition = 1
-        tileStaticCol1.fillColor = SKColor.yellow
-        tileStaticCol2.fillColor = SKColor.yellow
-        tileStaticCol3.fillColor = SKColor.green
-        tileStaticCol4.fillColor = SKColor.green
-        tileStaticCol5.fillColor = SKColor.green
-        tileStaticCol6.fillColor = SKColor.cyan
-        tileStaticCol7.fillColor = SKColor.cyan
-        tileStaticCol8.fillColor = SKColor.red
-        tileStaticCol9.fillColor = SKColor.red
-        tileStaticCol10.fillColor = SKColor.red
-        tileStaticCol11.fillColor = SKColor.blue
-        tileStaticCol12.fillColor = SKColor.blue
-        tileStaticCol13.fillColor = SKColor.blue
-        tileStaticCol14.fillColor = SKColor.blue
-        tileStaticCol15.fillColor = SKColor.blue
-        tileStaticCol1.strokeColor = SKColor.black
-        tileStaticCol2.strokeColor = SKColor.black
-        tileStaticCol3.strokeColor = SKColor.black
-        tileStaticCol4.strokeColor = SKColor.black
-        tileStaticCol5.strokeColor = SKColor.black
-        tileStaticCol6.strokeColor = SKColor.black
-        tileStaticCol7.strokeColor = SKColor.black
-        tileStaticCol8.strokeColor = SKColor.black
-        tileStaticCol9.strokeColor = SKColor.black
-        tileStaticCol10.strokeColor = SKColor.black
-        tileStaticCol11.strokeColor = SKColor.black
-        tileStaticCol12.strokeColor = SKColor.black
-        tileStaticCol13.strokeColor = SKColor.black
-        tileStaticCol14.strokeColor = SKColor.black
-        tileStaticCol15.strokeColor = SKColor.black
-        tiles[0].addChild(tileStaticCol1)
-        tiles[1].addChild(tileStaticCol2)
-        tiles[2].addChild(tileStaticCol3)
-        tiles[3].addChild(tileStaticCol4)
-        tiles[4].addChild(tileStaticCol5)
-        tiles[5].addChild(tileStaticCol6)
-        tiles[6].addChild(tileStaticCol7)
-        tiles[7].addChild(tileStaticCol8)
-        tiles[8].addChild(tileStaticCol9)
-        tiles[9].addChild(tileStaticCol10)
-        tiles[10].addChild(tileStaticCol11)
-        tiles[11].addChild(tileStaticCol12)
-        tiles[12].addChild(tileStaticCol13)
-        tiles[13].addChild(tileStaticCol14)
-        tiles[14].addChild(tileStaticCol15)
-        // Create Sprite constants
-        let temporaryValue1 = ((tileHeight - (2 * ratio)) - tiles[0].frame.width)
-        let spriteOffset = (temporaryValue1 / 2) + (3 * ratio)
-        let spritePos = CGPoint(x: spriteOffset, y: 0)
-        let spriteSize = CGSize(width: tileHeight - (2 * ratio), height: tileHeight - (2 * ratio))
-        // Initialize sprites to images
-        let tileSprite1 = SKSpriteNode(imageNamed: "TileSprite-1")
-        let tileSprite2 = SKSpriteNode(imageNamed: "TileSprite-2")
-        let tileSprite3 = SKSpriteNode(imageNamed: "TileSprite-3")
-        let tileSprite4 = SKSpriteNode(imageNamed: "TileSprite-4")
-        let tileSprite5 = SKSpriteNode(imageNamed: "TileSprite-5")
-        let tileSprite6 = SKSpriteNode(imageNamed: "TileSprite-6")
-        let tileSprite7 = SKSpriteNode(imageNamed: "TileSprite-7")
-        let tileSprite8 = SKSpriteNode(imageNamed: "TileSprite-8")
-        let tileSprite9 = SKSpriteNode(imageNamed: "TileSprite-9")
-        let tileSprite10 = SKSpriteNode(imageNamed: "TileSprite-10")
-        let tileSprite11 = SKSpriteNode(imageNamed: "TileSprite-11")
-        let tileSprite12 = SKSpriteNode(imageNamed: "TileSprite-12")
-        let tileSprite13 = SKSpriteNode(imageNamed: "TileSprite-13")
-        let tileSprite14 = SKSpriteNode(imageNamed: "TileSprite-14")
-        let tileSprite15 = SKSpriteNode(imageNamed: "TileSprite-15")
-        // Sets sprite size
-        tileSprite1.size = spriteSize
-        tileSprite2.size = spriteSize
-        tileSprite3.size = spriteSize
-        tileSprite4.size = spriteSize
-        tileSprite5.size = spriteSize
-        tileSprite6.size = spriteSize
-        tileSprite7.size = spriteSize
-        tileSprite8.size = spriteSize
-        tileSprite9.size = spriteSize
-        tileSprite10.size = spriteSize
-        tileSprite11.size = spriteSize
-        tileSprite12.size = spriteSize
-        tileSprite13.size = spriteSize
-        tileSprite14.size = spriteSize
-        tileSprite15.size = spriteSize
-        tileSprite1.position = spritePos
-        tileSprite2.position = spritePos
-        tileSprite3.position = spritePos
-        tileSprite4.position = spritePos
-        tileSprite5.position = spritePos
-        tileSprite6.position = spritePos
-        tileSprite7.position = spritePos
-        tileSprite8.position = spritePos
-        tileSprite9.position = spritePos
-        tileSprite10.position = spritePos
-        tileSprite11.position = spritePos
-        tileSprite12.position = spritePos
-        tileSprite13.position = spritePos
-        tileSprite14.position = spritePos
-        tileSprite15.position = spritePos
-        // sets sprite on top of tile
-        tileSprite1.zPosition = 1
-        tileSprite2.zPosition = 1
-        tileSprite3.zPosition = 1
-        tileSprite4.zPosition = 1
-        tileSprite5.zPosition = 1
-        tileSprite6.zPosition = 1
-        tileSprite7.zPosition = 1
-        tileSprite8.zPosition = 1
-        tileSprite9.zPosition = 1
-        tileSprite10.zPosition = 1
-        tileSprite11.zPosition = 1
-        tileSprite12.zPosition = 1
-        tileSprite13.zPosition = 1
-        tileSprite14.zPosition = 1
-        tileSprite15.zPosition = 1
-        // Adds sprite to tile
-        tiles[0].addChild(tileSprite1)
-        tiles[1].addChild(tileSprite2)
-        tiles[2].addChild(tileSprite3)
-        tiles[3].addChild(tileSprite4)
-        tiles[4].addChild(tileSprite5)
-        tiles[5].addChild(tileSprite6)
-        tiles[6].addChild(tileSprite7)
-        tiles[7].addChild(tileSprite8)
-        tiles[8].addChild(tileSprite9)
-        tiles[9].addChild(tileSprite10)
-        tiles[10].addChild(tileSprite11)
-        tiles[11].addChild(tileSprite12)
-        tiles[12].addChild(tileSprite13)
-        tiles[13].addChild(tileSprite14)
-        tiles[14].addChild(tileSprite15)
         // Submit button
         submit = SKShapeNode.init(ellipseOf: CGSize.init(width: screenWidth/3, height: screenWidth/10))
         submit.position = CGPoint(x: naBG.frame.midX, y: (naBG.frame.maxY + screenHeight/2)/2)
