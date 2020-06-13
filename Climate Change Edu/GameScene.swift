@@ -17,90 +17,70 @@ protocol TransitionDelegate: SKSceneDelegate {
 }
 
 class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
-    //UIPicker setup
+    //UIPicker setup -- manual magic values
     var school = ["Currently Unavailable"]
     var grade = ["1st grade", "2nd grade", "3rd grade", "4th grade", "5th grade", "6th grade", "7th grade", "8th grade", "9th grade", "10th grade", "11th grade", "12th grade"]
     var age = ["6 years old", "7 years old", "8 years old", "9 years old", "10 years old", "11 years old", "12 years old", "13 years old", "14 years old", "15 years old", "16 years old", "17 years old", "18 years old"]
     var race = ["White", "Black or African American", "American Indian", "Asian", "Mixed", "Other"]
     var gender = ["Male", "Female"]
-    var textField1:UITextField!
-    var textField2:UITextField!
-    var textField3:UITextField!
-    var textField4:UITextField!
-    var textField5:UITextField!
-    var picker1:UIPickerView!
-    var picker2:UIPickerView!
-    var picker3:UIPickerView!
-    var picker4:UIPickerView!
-    var picker5:UIPickerView!
+    var textFields:[UITextField]!
+    var pickers:[UIPickerView]!
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if pickerView == picker1 {
+        if pickerView == pickers[0] {
             return school.count
-        } else if pickerView == picker2 {
+        } else if pickerView == pickers[1] {
             return grade.count
-        } else if pickerView == picker3 {
+        } else if pickerView == pickers[2] {
             return age.count
-        } else if pickerView == picker4 {
+        } else if pickerView == pickers[3] {
             return race.count
-        } else if pickerView == picker5 {
+        } else if pickerView == pickers[4] {
             return gender.count
         } else {
             return 0
         }
     }
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if pickerView == picker1 {
+        if pickerView == pickers[0] {
             return school[row]
-        } else if pickerView == picker2 {
+        } else if pickerView == pickers[1] {
             return grade[row]
-        } else if pickerView == picker3 {
+        } else if pickerView == pickers[2] {
             return age[row]
-        } else if pickerView == picker4 {
+        } else if pickerView == pickers[3] {
             return race[row]
-        } else if pickerView == picker5 {
+        } else if pickerView == pickers[4] {
             return gender[row]
         } else {
             return "0"
         }
     }
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if pickerView == picker1 {
-            textField1.text = school[row]
-            picker1.isHidden = true;
-        } else if pickerView == picker2 {
-            textField2.text = grade[row]
-            picker2.isHidden = true;
-        } else if pickerView == picker3 {
-            textField3.text = age[row]
-            picker3.isHidden = true;
-        } else if pickerView == picker4 {
-            textField4.text = race[row]
-            picker4.isHidden = true;
-        } else if pickerView == picker5 {
-            textField5.text = gender[row]
-            picker5.isHidden = true;
+        if pickerView == pickers[0] {
+            textFields[0].text = school[row]
+            pickers[0].isHidden = true;
+        } else if pickerView == pickers[1] {
+            textFields[1].text = grade[row]
+            pickers[1].isHidden = true;
+        } else if pickerView == pickers[2] {
+            textFields[2].text = age[row]
+            pickers[2].isHidden = true;
+        } else if pickerView == pickers[3] {
+            textFields[3].text = race[row]
+            pickers[3].isHidden = true;
+        } else if pickerView == pickers[4] {
+            textFields[4].text = gender[row]
+            pickers[4].isHidden = true;
         } else {
             return
         }
     }
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        if textField == textField1 {
-            picker1.isHidden = false
-            return false
-        } else if textField == textField2 {
-            picker2.isHidden = false
-            return false
-        } else if textField == textField3 {
-            picker3.isHidden = false
-            return false
-        } else if textField == textField4 {
-            picker4.isHidden = false
-            return false
-        } else if textField == textField5 {
-            picker5.isHidden = false
+        if textFields.contains(textField) {
+            pickers[(textFields.firstIndex(of: textField) ?? 0)].isHidden = false
             return false
         } else {
             return true
@@ -117,7 +97,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var p3: CGPoint!
     var tiles: [SKShapeNode]!
     var numButtons: [SKNode]!
-    var numButtonsLabels: [SKNode]!
     var form: SKShapeNode!
     var passScreen: SKShapeNode!
     var submit: SKShapeNode!
@@ -243,103 +222,24 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     // API Validators
     func validate1(){
         // Validate submit info and then send to SQL server
-        // TODO
         // Then set up game
-        if(textField1.text == "" || textField2.text == "" || textField3.text == "" || textField4.text == "" || textField5.text == ""){
-            return
+        for i in 0...4 {
+            if textFields[i].text == "" || textFields[i].text == nil {
+                return
+            }
         }
         //ID handlers
-        if(textField4.text == race[0]){
-            ETHNICID = "1"
-        } else if(textField4.text == race[1]){
-            ETHNICID = "2"
-        } else if(textField4.text == race[2]){
-            ETHNICID = "3"
-        } else if(textField4.text == race[3]){
-            ETHNICID = "4"
-        } else if(textField4.text == race[4]){
-            ETHNICID = "5"
-        } else if(textField4.text == race[5]){
-            ETHNICID = "6"
-        } else {
-            ETHNICID = "0" //Defaults 0 on failure
-        }
-        if(textField5.text == gender[0]){
-            SEXID = "M"
-        } else if(textField5.text == gender[1]){
-            SEXID = "F"
-        } else {
-            SEXID = "0" //Defaults 0 on failure
-        }
-        if(textField3.text == age[0]){
-            AGEID = "6"
-        } else if(textField3.text == age[1]){
-            AGEID = "7"
-        } else if(textField3.text == age[2]){
-            AGEID = "8"
-        } else if(textField3.text == age[3]){
-            AGEID = "9"
-        } else if(textField3.text == age[4]){
-            AGEID = "10"
-        } else if(textField3.text == age[5]){
-            AGEID = "11"
-        } else if(textField3.text == age[6]){
-            AGEID = "12"
-        } else if(textField3.text == age[7]){
-            AGEID = "13"
-        } else if(textField3.text == age[8]){
-            AGEID = "14"
-        } else if(textField3.text == age[9]){
-            AGEID = "15"
-        } else if(textField3.text == age[10]){
-            AGEID = "16"
-        } else if(textField3.text == age[11]){
-            AGEID = "17"
-        } else if(textField3.text == age[12]){
-            AGEID = "18"
-        } else {
-            AGEID = "0" //Defaults 0 on failure
-        }
-        if(textField2.text == grade[0]){
-            GRADEID = "1"
-        } else if(textField2.text == grade[1]){
-            GRADEID = "2"
-        } else if(textField2.text == grade[2]){
-            GRADEID = "3"
-        } else if(textField2.text == grade[3]){
-            GRADEID = "4"
-        } else if(textField2.text == grade[4]){
-            GRADEID = "5"
-        } else if(textField2.text == grade[5]){
-            GRADEID = "6"
-        } else if(textField2.text == grade[6]){
-            GRADEID = "7"
-        } else if(textField2.text == grade[7]){
-            GRADEID = "8"
-        } else if(textField2.text == grade[8]){
-            GRADEID = "9"
-        } else if(textField2.text == grade[9]){
-            GRADEID = "10"
-        } else if(textField2.text == grade[10]){
-            GRADEID = "11"
-        } else if(textField2.text == grade[11]){
-            GRADEID = "12"
-        } else {
-            GRADEID = "0" //Defaults 0 on failure
-        }
+        ETHNICID = "\(race.firstIndex(of: textFields[3].text!)! + 1)"
+        SEXID = textFields[4].text == gender[1] ? "M" : "F"
+        AGEID = "\(age.firstIndex(of: textFields[2].text!)! + 6)"
+        GRADEID = "\(grade.firstIndex(of: textFields[1].text!)! + 1)"
         INSTRUCTID = "1" //TODO <- defualts Ross
         SCHOOLID = "0" //TODO <- defaults failure
         form.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
-        textField1.isHidden = true
-        textField2.isHidden = true
-        textField3.isHidden = true
-        textField4.isHidden = true
-        textField5.isHidden = true
-        picker1.isHidden = true
-        picker2.isHidden = true
-        picker3.isHidden = true
-        picker4.isHidden = true
-        picker5.isHidden = true
+        for i in 0...4 {
+            textFields[i].isHidden = true
+            pickers[i].isHidden = true
+        }
         API1()
         sequenceApp = sequenceApp + 1
     }
@@ -374,11 +274,9 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     
     func stepBackward2(){
         form.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
-        textField1.isHidden = false
-        textField2.isHidden = false
-        textField3.isHidden = false
-        textField4.isHidden = false
-        textField5.isHidden = false
+        for i in 0...4 {
+            textFields[i].isHidden = true
+        }
         resetCounter = 0
         for tile in tiles {
             tile.run(SKAction.move(by: CGVector(dx: tileBankLocDict[resetCounter].x - (tile.position.x), dy: tileBankLocDict[resetCounter].y - (tile.position.y)), duration: 0.3))
@@ -540,22 +438,23 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                 for node in touchedNode {
                     if node.name == "contBtn" && !node.hasActions(){
                         stepForward2()
+                        spinLockState = 0
                         break
                     } else if node.name == "pass" {
                         break
-                    } else if numButtons.contains(node) || numButtonsLabels.contains(node) {
-                        if (node.name == "numPad3" || node.parent!.name == "numPad3") && spinLockState == 0 {
-                            spinLockState = 1
-                            break
-                        } else if (node.name == "numPad2" || node.parent!.name == "numPad2") && spinLockState == 1 {
-                            spinLockState = 2
+                    } else if numButtons.contains(node) || numButtons.contains(node.parent ?? node) {
+                        if (node.name == "numPad0" || node.parent!.name == "numPad0") && spinLockState == 3 {
+                            spinLockState = 4
+                            contBtn.run(SKAction.fadeAlpha(to: 1, duration: 0.2))
                             break
                         } else if (node.name == "numPad1" || node.parent!.name == "numPad1") && spinLockState == 2 {
                             spinLockState = 3
                             break
-                        } else if (node.name == "numPad0" || node.parent!.name == "numPad0") && spinLockState == 3 {
-                            spinLockState = 4
-                            contBtn.run(SKAction.fadeAlpha(to: 1, duration: 0.2))
+                        } else if (node.name == "numPad2" || node.parent!.name == "numPad2") && spinLockState == 1 {
+                            spinLockState = 2
+                            break
+                        } else if (node.name == "numPad3" || node.parent!.name == "numPad3") {
+                            spinLockState = 1
                             break
                         } else {
                             spinLockState = 0
@@ -739,6 +638,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     
     private func initializeMenu() {
         // Declaring constants to determine object sizing
+        // THE NEXT 200 lines are just dog shit code design. Good luck.
         let screenSize: CGRect = UIScreen.main.bounds
         let screenWidth = screenSize.width
         let screenHeight = screenSize.height
@@ -923,55 +823,30 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         weLabel2.zRotation = 60 * CGFloat.pi / 180
         gameBG.addChild(weLabel1)
         gameBG.addChild(weLabel2)
-        let cweLabel1 = SKLabelNode(fontNamed: "ArialMT")
-        let cweLabel2 = SKLabelNode(fontNamed: "ArialMT")
-        let cweLabel3 = SKLabelNode(fontNamed: "ArialMT")
-        cweLabel1.text = "Enviroment and"
-        cweLabel2.text = "Weather and"
-        cweLabel3.text = "Climate"
-        cweLabel1.fontSize = 30 * ratio
-        cweLabel2.fontSize = 30 * ratio
-        cweLabel3.fontSize = 30 * ratio
-        cweLabel1.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel1.fontSize * 3.8))
-        cweLabel2.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel2.fontSize * 2.4))
-        cweLabel3.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel3.fontSize * 1.0))
-        cweLabel1.zPosition = 5
-        cweLabel2.zPosition = 5
-        cweLabel3.zPosition = 5
-        cweLabel1.fontColor = SKColor.black
-        cweLabel2.fontColor = SKColor.black
-        cweLabel3.fontColor = SKColor.black
-        gameBG.addChild(cweLabel1)
-        gameBG.addChild(cweLabel2)
-        gameBG.addChild(cweLabel3)
-        let naLabel1 = SKLabelNode(fontNamed: "ArialMT")
-        let naLabel2 = SKLabelNode(fontNamed: "ArialMT")
-        let naLabel3 = SKLabelNode(fontNamed: "ArialMT")
-        let naLabel4 = SKLabelNode(fontNamed: "ArialMT")
-        naLabel1.text = "unrelated"
-        naLabel2.text = "unrelated"
-        naLabel3.text = "unrelated"
-        naLabel4.text = "unrelated"
-        naLabel1.fontSize = 30 * ratio
-        naLabel2.fontSize = 30 * ratio
-        naLabel3.fontSize = 30 * ratio
-        naLabel4.fontSize = 30 * ratio
-        naLabel1.position = CGPoint(x: 7 * screenWidth / 20, y: (weatherBG.frame.midY + (3 * enviromBG.frame.midY)) / 4)
-        naLabel2.position = CGPoint(x: 7 * screenWidth / -20, y: (weatherBG.frame.midY + (3 * enviromBG.frame.midY)) / 4)
-        naLabel3.position = CGPoint(x: 7 * screenWidth / 20, y: (enviromBG.frame.midY - screenHeight) / 3)
-        naLabel4.position = CGPoint(x: 7 * screenWidth / -20, y: (enviromBG.frame.midY - screenHeight) / 3)
-        naLabel1.zPosition = 5
-        naLabel2.zPosition = 5
-        naLabel3.zPosition = 5
-        naLabel4.zPosition = 5
-        naLabel1.fontColor = SKColor.black
-        naLabel2.fontColor = SKColor.black
-        naLabel3.fontColor = SKColor.black
-        naLabel4.fontColor = SKColor.black
-        gameBG.addChild(naLabel1)
-        gameBG.addChild(naLabel2)
-        gameBG.addChild(naLabel3)
-        gameBG.addChild(naLabel4)
+        //Creates cwe labels
+        var cweLabels:[SKLabelNode] = []
+        for i in 0...2 {
+            let cweLabel = SKLabelNode(fontNamed: "ArialMT")
+            cweLabel.fontSize = 30 * ratio
+            cweLabel.zPosition = 5
+            cweLabel.fontColor = SKColor.black
+            cweLabel.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel.fontSize * (3.8 - CGFloat(i)*1.4)))
+            gameBG.addChild(cweLabel)
+            cweLabels.append(cweLabel)
+        }
+        cweLabels[0].text = "Enviroment and"
+        cweLabels[1].text = "Weather and"
+        cweLabels[2].text = "Climate"
+        // creates N/A lables
+        for i in 0...3 {
+            let naLabel = SKLabelNode(fontNamed: "ArialMT")
+            naLabel.text = "unrelated"
+            naLabel.fontSize = 30 * ratio
+            naLabel.zPosition = 5
+            naLabel.fontColor = SKColor.black
+            naLabel.position = CGPoint(x: 7 * screenWidth / CGFloat((i%2)*40 - 20), y: (i/2 == 0) ? (weatherBG.frame.midY + (3 * enviromBG.frame.midY)) / 4 : (enviromBG.frame.midY - screenHeight) / 3)
+            gameBG.addChild(naLabel)
+        }
         // Establish draggable tiles in bulk
         // Dimentional variables
         let tileMin = bottomMargin + midMargin + (0.6 * circleWidth)
@@ -1103,182 +978,53 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
         contBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Continue Session", logo:nil, name:"contBtn")
         contBtn.zPosition = 1
-        let numPad0 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad0.fillColor = SKColor.lightGray
-        numPad0.name = "numPad0"
-        numPad0.zPosition = 1
-        passScreen.addChild(numPad0)
-        let numPad0txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad0txt.text = "0"
-        numPad0txt.zPosition = 0
-        numPad0txt.fontSize = 45 * ratio
-        numPad0txt.position = CGPoint(x: 0, y: -numPad0txt.frame.height / 2)
-        numPad0.addChild(numPad0txt)
-        let numPad1 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad1.fillColor = SKColor.lightGray
-        numPad1.name = "numPad1"
-        numPad1.zPosition = 1
-        numPad1.position.x = -2.2*passScreen.frame.width/15
-        numPad1.position.y = 6.6*passScreen.frame.width/15
-        passScreen.addChild(numPad1)
-        let numPad1txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad1txt.text = "1"
-        numPad1txt.zPosition = 0
-        numPad1txt.fontSize = 45 * ratio
-        numPad1txt.position = CGPoint(x: 0, y: -numPad1txt.frame.height / 2)
-        numPad1.addChild(numPad1txt)
-        let numPad2 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad2.fillColor = SKColor.lightGray
-        numPad2.name = "numPad2"
-        numPad2.zPosition = 1
-        numPad2.position.y = 6.6*passScreen.frame.width/15
-        passScreen.addChild(numPad2)
-        let numPad2txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad2txt.text = "2"
-        numPad2txt.zPosition = 0
-        numPad2txt.fontSize = 45 * ratio
-        numPad2txt.position = CGPoint(x: 0, y: -numPad2txt.frame.height / 2)
-        numPad2.addChild(numPad2txt)
-        let numPad3 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad3.fillColor = SKColor.lightGray
-        numPad3.name = "numPad3"
-        numPad3.zPosition = 1
-        numPad3.position.x = 2.2*passScreen.frame.width/15
-        numPad3.position.y = 6.6*passScreen.frame.width/15
-        passScreen.addChild(numPad3)
-        let numPad3txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad3txt.text = "3"
-        numPad3txt.zPosition = 0
-        numPad3txt.fontSize = 45 * ratio
-        numPad3txt.position = CGPoint(x: 0, y: -numPad3txt.frame.height / 2)
-        numPad3.addChild(numPad3txt)
-        let numPad4 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad4.fillColor = SKColor.lightGray
-        numPad4.name = "numPad4"
-        numPad4.zPosition = 1
-        numPad4.position.x = -2.2*passScreen.frame.width/15
-        numPad4.position.y = 4.4*passScreen.frame.width/15
-        passScreen.addChild(numPad4)
-        let numPad4txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad4txt.text = "4"
-        numPad4txt.zPosition = 0
-        numPad4txt.fontSize = 45 * ratio
-        numPad4txt.position = CGPoint(x: 0, y: -numPad4txt.frame.height / 2)
-        numPad4.addChild(numPad4txt)
-        let numPad5 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad5.fillColor = SKColor.lightGray
-        numPad5.name = "numPad5"
-        numPad5.zPosition = 1
-        numPad5.position.y = 4.4*passScreen.frame.width/15
-        passScreen.addChild(numPad5)
-        let numPad5txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad5txt.text = "5"
-        numPad5txt.zPosition = 0
-        numPad5txt.fontSize = 45 * ratio
-        numPad5txt.position = CGPoint(x: 0, y: -numPad5txt.frame.height / 2)
-        numPad5.addChild(numPad5txt)
-        let numPad6 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad6.fillColor = SKColor.lightGray
-        numPad6.name = "numPad6"
-        numPad6.zPosition = 1
-        numPad6.position.x = 2.2*passScreen.frame.width/15
-        numPad6.position.y = 4.4*passScreen.frame.width/15
-        passScreen.addChild(numPad6)
-        let numPad6txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad6txt.text = "6"
-        numPad6txt.zPosition = 0
-        numPad6txt.fontSize = 45 * ratio
-        numPad6txt.position = CGPoint(x: 0, y: -numPad6txt.frame.height / 2)
-        numPad6.addChild(numPad6txt)
-        let numPad7 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad7.fillColor = SKColor.lightGray
-        numPad7.name = "numPad7"
-        numPad7.zPosition = 1
-        numPad7.position.x = -2.2*passScreen.frame.width/15
-        numPad7.position.y = 2.2*passScreen.frame.width/15
-        passScreen.addChild(numPad7)
-        let numPad7txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad7txt.text = "7"
-        numPad7txt.zPosition = 0
-        numPad7txt.fontSize = 45 * ratio
-        numPad7txt.position = CGPoint(x: 0, y: -numPad7txt.frame.height / 2)
-        numPad7.addChild(numPad7txt)
-        let numPad8 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad8.fillColor = SKColor.lightGray
-        numPad8.name = "numPad8"
-        numPad8.zPosition = 1
-        numPad8.position.y = 2.2*passScreen.frame.width/15
-        passScreen.addChild(numPad8)
-        let numPad8txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad8txt.text = "8"
-        numPad8txt.zPosition = 0
-        numPad8txt.fontSize = 45 * ratio
-        numPad8txt.position = CGPoint(x: 0, y: -numPad8txt.frame.height / 2)
-        numPad8.addChild(numPad8txt)
-        let numPad9 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad9.fillColor = SKColor.lightGray
-        numPad9.name = "numPad9"
-        numPad9.zPosition = 1
-        numPad9.position.x = 2.2*passScreen.frame.width/15
-        numPad9.position.y = 2.2*passScreen.frame.width/15
-        passScreen.addChild(numPad9)
-        let numPad9txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad9txt.text = "9"
-        numPad9txt.zPosition = 0
-        numPad9txt.fontSize = 45 * ratio
-        numPad9txt.position = CGPoint(x: 0, y: -numPad9txt.frame.height / 2)
-        numPad9.addChild(numPad9txt)
+        // Creates numberpad for password screen
+        let numPad_template = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
+        numPad_template.fillColor = SKColor.lightGray
+        numPad_template.zPosition = 1
+        numButtons = []
+        let numPadtxt_template = SKLabelNode(fontNamed: "ArialMT")
+        numPadtxt_template.zPosition = 0
+        numPadtxt_template.fontSize = 45 * ratio
+        numPadtxt_template.position = CGPoint(x: 0, y: -numPadtxt_template.frame.height / 2)
+        for i in 0...9 {
+            let numPad = numPad_template.copy() as! SKShapeNode
+            numPad.name = "numPad\(i)"
+            if i > 0 {
+                let i_mod_3_adj:CGFloat = CGFloat((i - 1) % 3) - 1
+                let i_floor_3:CGFloat = CGFloat((i - 1) / 3)
+                numPad.position.x = 2.2 * i_mod_3_adj * screenWidth * 0.9/15
+                numPad.position.y = 2.2 * (3 - i_floor_3) * screenWidth * 0.9/15
+            }
+            numButtons.append(numPad)
+            let numPadtxt = numPadtxt_template.copy() as! SKLabelNode
+            numPadtxt.text = "\(i)"
+            numPad.addChild(numPadtxt)
+            passScreen.addChild(numPad)
+        }
         passScreen.addChild(contBtn)
-        numButtons = [numPad0, numPad1, numPad2, numPad3, numPad4, numPad5, numPad6, numPad7, numPad8, numPad9]
-        numButtonsLabels = [numPad0txt, numPad1txt, numPad2txt, numPad3txt, numPad4txt, numPad5txt, numPad6txt, numPad7txt, numPad8txt, numPad9txt]
-        // Add text fields
+        // Add text fields/pickers for initial state
         guard let view = self.view else { return }
         let originX = (view.frame.size.width - view.frame.size.width/1.5)/2
-        picker1  = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
-        picker1.dataSource = self
-        picker1.delegate = self
-        picker1.backgroundColor = UIColor.white
-        picker1.isHidden = true;
-        view.addSubview(picker1)
-        picker2  = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
-        picker2.dataSource = self
-        picker2.delegate = self
-        picker2.backgroundColor = UIColor.white
-        picker2.isHidden = true;
-        view.addSubview(picker2)
-        picker3  = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
-        picker3.dataSource = self
-        picker3.delegate = self
-        picker3.backgroundColor = UIColor.white
-        picker3.isHidden = true;
-        view.addSubview(picker3)
-        picker4  = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
-        picker4.dataSource = self
-        picker4.delegate = self
-        picker4.backgroundColor = UIColor.white
-        picker4.isHidden = true;
-        view.addSubview(picker4)
-        picker5  = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
-        picker5.dataSource = self
-        picker5.delegate = self
-        picker5.backgroundColor = UIColor.white
-        picker5.isHidden = true;
-        view.addSubview(picker5)
-        textField1 = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5, width: view.frame.size.width/1.5, height: 30))
-        customize(textField: textField1, placeholder: "School Code")
-        view.addSubview(textField1)
-        textField2 = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5+60, width: view.frame.size.width/1.5, height: 30))
-        customize(textField: textField2, placeholder: "Grade")
-        view.addSubview(textField2)
-        textField3 = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5+120, width: view.frame.size.width/1.5, height: 30))
-        customize(textField: textField3, placeholder: "Age")
-        view.addSubview(textField3)
-        textField4 = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5+180, width: view.frame.size.width/1.5, height: 30))
-        customize(textField: textField4, placeholder: "Race")
-        view.addSubview(textField4)
-        textField5 = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5+240, width: view.frame.size.width/1.5, height: 30))
-        customize(textField: textField5, placeholder: "Gender")
-        view.addSubview(textField5)
+        pickers = []
+        textFields = []
+        for i in 0...4 {
+            let picker = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
+            picker.dataSource = self
+            picker.delegate = self
+            picker.backgroundColor = UIColor.white
+            picker.isHidden = true;
+            pickers.append(picker)
+            view.addSubview(picker)
+            let textField = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5 + CGFloat(i * 60), width: view.frame.size.width/1.5, height: 30))
+            textFields.append(textField)
+            view.addSubview(textField)
+        }
+        customize(textField: textFields[0], placeholder: "School Code")
+        customize(textField: textFields[1], placeholder: "Grade")
+        customize(textField: textFields[2], placeholder: "Age")
+        customize(textField: textFields[3], placeholder: "Race")
+        customize(textField: textFields[4], placeholder: "Gender")
         loginBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50),fillColor:SKColor.blue,title:"Begin Session",logo:nil,name:"loginBtn")
         loginBtn.zPosition = 9000
         form.addChild(loginBtn)
