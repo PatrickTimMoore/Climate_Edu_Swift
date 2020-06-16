@@ -3,7 +3,7 @@
 //  Climate Change Edu
 //
 //  Created by Patrick Moore on 5/15/19.
-//  Copyright © 2019 Patrick Moore. All rights reserved.
+//  Copyright © 2019-2020 Patrick Moore and Ross Toedte. All rights reserved.
 //
 
 import UIKit
@@ -267,7 +267,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     func stepBackward2(){
         form.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
         for i in 0...4 {
-            textFields[i].isHidden = true
+            textFields[i].isHidden = false
         }
         resetCounter = 0
         for tile in tiles {
