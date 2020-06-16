@@ -3,13 +3,12 @@
 //  Climate Change Edu
 //
 //  Created by Patrick Moore on 5/15/19.
-//  Copyright © 2019 Patrick Moore. All rights reserved.
+//  Copyright © 2019 Patrick Moore and Ross Toedte. All rights reserved.
 //
 
 import UIKit
 import SpriteKit
 import GameplayKit
-
 
 protocol TransitionDelegate: SKSceneDelegate {
     func showAlert(title:String,message:String)
