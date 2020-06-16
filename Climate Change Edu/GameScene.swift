@@ -160,7 +160,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     }
     
     // API Calls
-    var SESSIONID:Int!
+    var SESSIONID:Int = 0
     var INSTRUCTID:String = "0"
     var SCHOOLID:String = "0"
     var ETHNICID:String = "0"
@@ -168,52 +168,44 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var AGEID:String = "0"
     var GRADEID:String = "0"
     func API1(){
+        // Prepare URL
         let endpoint1:String = "https://lk62rbimtg.execute-api.us-west-2.amazonaws.com/beta/session"
         guard let URL1 = URL(string: endpoint1) else {
             print("Error: Cannot create URL.")
             return
         }
+        // Prepare URL Request Obj
         var URLRequest1 = URLRequest(url: URL1)
         URLRequest1.httpMethod = "POST"
-        let newPost1: [String: Any] = ["instructor_id": INSTRUCTID, "school_id": SCHOOLID, "ethnicity_id": ETHNICID, "sex": SEXID, "age": AGEID, "grade": GRADEID]
-        var jsonPost1:Data
-        do {
-            jsonPost1 = try JSONSerialization.data(withJSONObject: newPost1, options: [])
-            URLRequest1.httpBody = jsonPost1
-            print("\(jsonPost1)")
-        } catch {
-            print("Error: cannot create JSON")
-            return
-        }
-        let session = URLSession.shared
-        let task = session.dataTask(with: URLRequest1){
-            (data, response, error) in
-            guard error == nil else {
+        let newPost1 = [
+            "instructor_id": INSTRUCTID,
+            "school_id": SCHOOLID,
+            "ethnicity_id": ETHNICID,
+            "sex": SEXID,
+            "age": AGEID,
+            "grade": GRADEID
+        ]
+        // Creates JSoN
+        let jsonPost1 = try? JSONSerialization.data(withJSONObject: newPost1, options: [])
+        URLRequest1.httpBody = jsonPost1
+        URLRequest1.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        // Creates session
+        let task = URLSession.shared.dataTask(with: URLRequest1){ data, response, error in
+            guard let responseData = data, error == nil else {
                 print("Error: error in calling Post1")
-                print(error ?? 0)
-                return
-            }
-            guard let responseData = data else {
-                print("Error: did not recieve data from Post1")
+                print(error ?? "No Data")
                 return
             }
             // Parse responce
-            do {
-                guard let receivedPost1:[String: Any] = try JSONSerialization.jsonObject(with: responseData, options: .allowFragments) as? [String: Any] else {
-                    print("Error: could not make response from Post1 into a dictionary")
-                    return
+            let responseJSON1 = try? JSONSerialization.jsonObject(with: responseData, options: [])
+            if let responseJSON = responseJSON1 as? [String: Any] {
+                if let responseBody = responseJSON["body"] as? [String: Any] {
+                    self.SESSIONID = (responseBody["id"] as! Int)
+                } else {
+                    print("Error: error in converting response body")
                 }
-                print("json: \(receivedPost1)")
-                guard let post1ID = receivedPost1["id"] as? Int else {
-                    print("Error: could not receive the session ID")
-                    return
-                }
-                self.SESSIONID = post1ID
-                print("Session ID is: \(post1ID)")
-            } catch let error {
-                print("Error: error parsing response from Post1")
-                print(error)
-                return
+            } else {
+                print("Error: error in converting response data")
             }
         }
         task.resume()
@@ -399,8 +391,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             submit.zPosition = zPosUpdater
                             zPosUpdater = zPosUpdater + 3
                         }
-                        // Prints remaining bank count
-                        print(remainingInBank)
                     }
                 }
             }
@@ -581,7 +571,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                         if remainingInBank == 1 {
                             submit.run(SKAction.fadeAlpha(to: 0, duration: 0.2))
                         }
-                        print(remainingInBank)
                     }
                 }
                 // Displays submit if bank is empty
