@@ -266,7 +266,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     func stepBackward2(){
         form.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
         for i in 0...4 {
-            textFields[i].isHidden = true
+            textFields[i].isHidden = false
         }
         resetCounter = 0
         for tile in tiles {
