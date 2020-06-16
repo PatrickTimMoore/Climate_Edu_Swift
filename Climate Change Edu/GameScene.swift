@@ -17,90 +17,70 @@ protocol TransitionDelegate: SKSceneDelegate {
 }
 
 class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
-    //UIPicker setup
+    //UIPicker setup -- manual magic values
     var school = ["Currently Unavailable"]
     var grade = ["1st grade", "2nd grade", "3rd grade", "4th grade", "5th grade", "6th grade", "7th grade", "8th grade", "9th grade", "10th grade", "11th grade", "12th grade"]
     var age = ["6 years old", "7 years old", "8 years old", "9 years old", "10 years old", "11 years old", "12 years old", "13 years old", "14 years old", "15 years old", "16 years old", "17 years old", "18 years old"]
     var race = ["White", "Black or African American", "American Indian", "Asian", "Mixed", "Other"]
     var gender = ["Male", "Female"]
-    var textField1:UITextField!
-    var textField2:UITextField!
-    var textField3:UITextField!
-    var textField4:UITextField!
-    var textField5:UITextField!
-    var picker1:UIPickerView!
-    var picker2:UIPickerView!
-    var picker3:UIPickerView!
-    var picker4:UIPickerView!
-    var picker5:UIPickerView!
+    var textFields:[UITextField]!
+    var pickers:[UIPickerView]!
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if pickerView == picker1 {
+        if pickerView == pickers[0] {
             return school.count
-        } else if pickerView == picker2 {
+        } else if pickerView == pickers[1] {
             return grade.count
-        } else if pickerView == picker3 {
+        } else if pickerView == pickers[2] {
             return age.count
-        } else if pickerView == picker4 {
+        } else if pickerView == pickers[3] {
             return race.count
-        } else if pickerView == picker5 {
+        } else if pickerView == pickers[4] {
             return gender.count
         } else {
             return 0
         }
     }
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if pickerView == picker1 {
+        if pickerView == pickers[0] {
             return school[row]
-        } else if pickerView == picker2 {
+        } else if pickerView == pickers[1] {
             return grade[row]
-        } else if pickerView == picker3 {
+        } else if pickerView == pickers[2] {
             return age[row]
-        } else if pickerView == picker4 {
+        } else if pickerView == pickers[3] {
             return race[row]
-        } else if pickerView == picker5 {
+        } else if pickerView == pickers[4] {
             return gender[row]
         } else {
             return "0"
         }
     }
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if pickerView == picker1 {
-            textField1.text = school[row]
-            picker1.isHidden = true;
-        } else if pickerView == picker2 {
-            textField2.text = grade[row]
-            picker2.isHidden = true;
-        } else if pickerView == picker3 {
-            textField3.text = age[row]
-            picker3.isHidden = true;
-        } else if pickerView == picker4 {
-            textField4.text = race[row]
-            picker4.isHidden = true;
-        } else if pickerView == picker5 {
-            textField5.text = gender[row]
-            picker5.isHidden = true;
+        if pickerView == pickers[0] {
+            textFields[0].text = school[row]
+            pickers[0].isHidden = true;
+        } else if pickerView == pickers[1] {
+            textFields[1].text = grade[row]
+            pickers[1].isHidden = true;
+        } else if pickerView == pickers[2] {
+            textFields[2].text = age[row]
+            pickers[2].isHidden = true;
+        } else if pickerView == pickers[3] {
+            textFields[3].text = race[row]
+            pickers[3].isHidden = true;
+        } else if pickerView == pickers[4] {
+            textFields[4].text = gender[row]
+            pickers[4].isHidden = true;
         } else {
             return
         }
     }
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        if textField == textField1 {
-            picker1.isHidden = false
-            return false
-        } else if textField == textField2 {
-            picker2.isHidden = false
-            return false
-        } else if textField == textField3 {
-            picker3.isHidden = false
-            return false
-        } else if textField == textField4 {
-            picker4.isHidden = false
-            return false
-        } else if textField == textField5 {
-            picker5.isHidden = false
+        if textFields.contains(textField) {
+            pickers[(textFields.firstIndex(of: textField) ?? 0)].isHidden = false
             return false
         } else {
             return true
@@ -110,37 +90,13 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     //declaring varables used between initialization and in-game data
     var game: GameManager!
     var gameBG: SKShapeNode!
-    //var climateBG: SKShapeNode!
-    //var weatherBG: SKShapeNode!
-    //var enviromBG: SKShapeNode!
-    //var naBG: SKShapeNode!
-    //var cwBG: SKShapeNode!
-    //var weBG: SKShapeNode!
-    //var ceBG: SKShapeNode!
-    //var cweBG: SKShapeNode!
     var ceBar: [CGPoint]!
     var weBar: [CGPoint]!
     var p1: CGPoint!
     var p2: CGPoint!
     var p3: CGPoint!
-    var tile1: SKShapeNode!
-    var tile2: SKShapeNode!
-    var tile3: SKShapeNode!
-    var tile4: SKShapeNode!
-    var tile5: SKShapeNode!
-    var tile6: SKShapeNode!
-    var tile7: SKShapeNode!
-    var tile8: SKShapeNode!
-    var tile9: SKShapeNode!
-    var tile10: SKShapeNode!
-    var tile11: SKShapeNode!
-    var tile12: SKShapeNode!
-    var tile13: SKShapeNode!
-    var tile14: SKShapeNode!
-    var tile15: SKShapeNode!
     var tiles: [SKShapeNode]!
     var numButtons: [SKNode]!
-    var numButtonsLabels: [SKNode]!
     var form: SKShapeNode!
     var passScreen: SKShapeNode!
     var submit: SKShapeNode!
@@ -154,7 +110,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var circleWidth: CGFloat!
     var bottomMargin: CGFloat!
     var midMargin: CGFloat!
-    var tileBankLocDict: Dictionary<Int, CGPoint>!
+    var tileBankLocDict: [CGPoint]!
     var remainingInBank: Int = 15
     var dictLookup: Int!
     var sequenceApp: Int = 1
@@ -180,27 +136,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         textField.isSecureTextEntry = isSecureTextEntry
         textField.delegate = self
     }
-    @objc func textFieldDidChange(textField: UITextField) {
-        //print("everytime you type something this is fired..")
-    }
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        return true
-    }
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        if textField == textField1 { // validate email syntax
-            let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
-            let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-            let result = emailTest.evaluate(with: textField.text)
-            let title = "Alert title"
-            let message = result ? "This is a correct email" : "Wrong email syntax"
-            if !result {
-                self.run(SKAction.wait(forDuration: 0.01),completion:{[unowned self] in
-                    guard let delegate = self.delegate else { return }
-                    (delegate as! TransitionDelegate).showAlert(title:title,message: message)
-                })
-            }
-        }
-    }
     func getButton(frame:CGRect,fillColor:SKColor,title:String = "",logo:SKSpriteNode!,name:String)->SKShapeNode {
         let btn = SKShapeNode(rect: frame, cornerRadius: 10)
         btn.fillColor = fillColor
@@ -225,7 +160,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     }
     
     // API Calls
-    var SESSIONID:Int!
+    var SESSIONID:Int = 0
     var INSTRUCTID:String = "0"
     var SCHOOLID:String = "0"
     var ETHNICID:String = "0"
@@ -233,52 +168,44 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var AGEID:String = "0"
     var GRADEID:String = "0"
     func API1(){
+        // Prepare URL
         let endpoint1:String = "https://lk62rbimtg.execute-api.us-west-2.amazonaws.com/beta/session"
         guard let URL1 = URL(string: endpoint1) else {
             print("Error: Cannot create URL.")
             return
         }
+        // Prepare URL Request Obj
         var URLRequest1 = URLRequest(url: URL1)
         URLRequest1.httpMethod = "POST"
-        let newPost1: [String: Any] = ["instructor_id": INSTRUCTID, "school_id": SCHOOLID, "ethnicity_id": ETHNICID, "sex": SEXID, "age": AGEID, "grade": GRADEID]
-        var jsonPost1:Data
-        do {
-            jsonPost1 = try JSONSerialization.data(withJSONObject: newPost1, options: [])
-            URLRequest1.httpBody = jsonPost1
-            print("\(jsonPost1)")
-        } catch {
-            print("Error: cannot create JSON")
-            return
-        }
-        let session = URLSession.shared
-        let task = session.dataTask(with: URLRequest1){
-            (data, response, error) in
-            guard error == nil else {
+        let newPost1 = [
+            "instructor_id": INSTRUCTID,
+            "school_id": SCHOOLID,
+            "ethnicity_id": ETHNICID,
+            "sex": SEXID,
+            "age": AGEID,
+            "grade": GRADEID
+        ]
+        // Creates JSoN
+        let jsonPost1 = try? JSONSerialization.data(withJSONObject: newPost1, options: [])
+        URLRequest1.httpBody = jsonPost1
+        URLRequest1.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        // Creates session
+        let task = URLSession.shared.dataTask(with: URLRequest1){ data, response, error in
+            guard let responseData = data, error == nil else {
                 print("Error: error in calling Post1")
-                print(error ?? 0)
-                return
-            }
-            guard let responseData = data else {
-                print("Error: did not recieve data from Post1")
+                print(error ?? "No Data")
                 return
             }
             // Parse responce
-            do {
-                guard let receivedPost1:[String: Any] = try JSONSerialization.jsonObject(with: responseData, options: .allowFragments) as? [String: Any] else {
-                    print("Error: could not make response from Post1 into a dictionary")
-                    return
+            let responseJSON1 = try? JSONSerialization.jsonObject(with: responseData, options: [])
+            if let responseJSON = responseJSON1 as? [String: Any] {
+                if let responseBody = responseJSON["body"] as? [String: Any] {
+                    self.SESSIONID = (responseBody["id"] as! Int)
+                } else {
+                    print("Error: error in converting response body")
                 }
-                print("json: \(receivedPost1)")
-                guard let post1ID = receivedPost1["id"] as? Int else {
-                    print("Error: could not receive the session ID")
-                    return
-                }
-                self.SESSIONID = post1ID
-                print("Session ID is: \(post1ID)")
-            } catch let error {
-                print("Error: error parsing response from Post1")
-                print(error)
-                return
+            } else {
+                print("Error: error in converting response data")
             }
         }
         task.resume()
@@ -287,103 +214,24 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     // API Validators
     func validate1(){
         // Validate submit info and then send to SQL server
-        // TODO
         // Then set up game
-        if(textField1.text == "" || textField2.text == "" || textField3.text == "" || textField4.text == "" || textField5.text == ""){
-            return
+        for i in 0...4 {
+            if textFields[i].text == "" || textFields[i].text == nil {
+                return
+            }
         }
         //ID handlers
-        if(textField4.text == race[0]){
-            ETHNICID = "1"
-        } else if(textField4.text == race[1]){
-            ETHNICID = "2"
-        } else if(textField4.text == race[2]){
-            ETHNICID = "3"
-        } else if(textField4.text == race[3]){
-            ETHNICID = "4"
-        } else if(textField4.text == race[4]){
-            ETHNICID = "5"
-        } else if(textField4.text == race[5]){
-            ETHNICID = "6"
-        } else {
-            ETHNICID = "0" //Defaults 0 on failure
-        }
-        if(textField5.text == gender[0]){
-            SEXID = "M"
-        } else if(textField5.text == gender[1]){
-            SEXID = "F"
-        } else {
-            SEXID = "0" //Defaults 0 on failure
-        }
-        if(textField3.text == age[0]){
-            AGEID = "6"
-        } else if(textField3.text == age[1]){
-            AGEID = "7"
-        } else if(textField3.text == age[2]){
-            AGEID = "8"
-        } else if(textField3.text == age[3]){
-            AGEID = "9"
-        } else if(textField3.text == age[4]){
-            AGEID = "10"
-        } else if(textField3.text == age[5]){
-            AGEID = "11"
-        } else if(textField3.text == age[6]){
-            AGEID = "12"
-        } else if(textField3.text == age[7]){
-            AGEID = "13"
-        } else if(textField3.text == age[8]){
-            AGEID = "14"
-        } else if(textField3.text == age[9]){
-            AGEID = "15"
-        } else if(textField3.text == age[10]){
-            AGEID = "16"
-        } else if(textField3.text == age[11]){
-            AGEID = "17"
-        } else if(textField3.text == age[12]){
-            AGEID = "18"
-        } else {
-            AGEID = "0" //Defaults 0 on failure
-        }
-        if(textField2.text == grade[0]){
-            GRADEID = "1"
-        } else if(textField2.text == grade[1]){
-            GRADEID = "2"
-        } else if(textField2.text == grade[2]){
-            GRADEID = "3"
-        } else if(textField2.text == grade[3]){
-            GRADEID = "4"
-        } else if(textField2.text == grade[4]){
-            GRADEID = "5"
-        } else if(textField2.text == grade[5]){
-            GRADEID = "6"
-        } else if(textField2.text == grade[6]){
-            GRADEID = "7"
-        } else if(textField2.text == grade[7]){
-            GRADEID = "8"
-        } else if(textField2.text == grade[8]){
-            GRADEID = "9"
-        } else if(textField2.text == grade[9]){
-            GRADEID = "10"
-        } else if(textField2.text == grade[10]){
-            GRADEID = "11"
-        } else if(textField2.text == grade[11]){
-            GRADEID = "12"
-        } else {
-            GRADEID = "0" //Defaults 0 on failure
-        }
+        ETHNICID = "\(race.firstIndex(of: textFields[3].text!)! + 1)"
+        SEXID = textFields[4].text == gender[1] ? "M" : "F"
+        AGEID = "\(age.firstIndex(of: textFields[2].text!)! + 6)"
+        GRADEID = "\(grade.firstIndex(of: textFields[1].text!)! + 1)"
         INSTRUCTID = "1" //TODO <- defualts Ross
         SCHOOLID = "0" //TODO <- defaults failure
         form.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
-        textField1.isHidden = true
-        textField2.isHidden = true
-        textField3.isHidden = true
-        textField4.isHidden = true
-        textField5.isHidden = true
-        picker1.isHidden = true
-        picker2.isHidden = true
-        picker3.isHidden = true
-        picker4.isHidden = true
-        picker5.isHidden = true
+        for i in 0...4 {
+            textFields[i].isHidden = true
+            pickers[i].isHidden = true
+        }
         API1()
         sequenceApp = sequenceApp + 1
     }
@@ -418,14 +266,12 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     
     func stepBackward2(){
         form.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
-        textField1.isHidden = false
-        textField2.isHidden = false
-        textField3.isHidden = false
-        textField4.isHidden = false
-        textField5.isHidden = false
-        resetCounter = 1
+        for i in 0...4 {
+            textFields[i].isHidden = true
+        }
+        resetCounter = 0
         for tile in tiles {
-            tile.run(SKAction.move(by: CGVector(dx: tileBankLocDict[resetCounter]!.x - (tile.position.x), dy: tileBankLocDict[resetCounter]!.y - (tile.position.y)), duration: 0.3))
+            tile.run(SKAction.move(by: CGVector(dx: tileBankLocDict[resetCounter].x - (tile.position.x), dy: tileBankLocDict[resetCounter].y - (tile.position.y)), duration: 0.3))
             if tile.fillColor == SKColor(red: 1/2, green: 1, blue: 1, alpha: 1) {
                 tile.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
             }
@@ -471,8 +317,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             followDisable = false
             for touch in touches {
                 let location = touch.location(in: self)
-                // Prints touch location (x, y)
-                print(location)
                 // Creates list of nodes sorted by Z-value at touch location
                 let touchedNode = self.nodes(at: location)
                 // Checks for first 'tile' node
@@ -483,8 +327,9 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                         break
                     }
                 }
-                // Resets node to be of regular angle if not
+                // Checks for tile node
                 if nodeToMove != nil {
+                    // Resets node to be of regular angle if not
                     let castedNode:SKShapeNode = nodeToMove as! SKShapeNode
                     if castedNode.fillColor == SKColor(red: 1/2, green: 1, blue: 1, alpha: 1) {
                         nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
@@ -492,9 +337,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                     if castedNode.fillColor == SKColor(red: 1, green: 1, blue: 1/2, alpha: 1) {
                         nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
                     }
-                }
-                // Checks if a tile node is found
-                if nodeToMove != nil {
                     // Updates z Position so that selected nodes always appear on top
                     nodeToMove.zPosition = zPosUpdater
                     zPosUpdater = zPosUpdater + 3
@@ -505,62 +347,42 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                     // Searches for underlying zone
                     nodeFound = false
                     for node in touchedNode {
-                        print(node.name ?? "No Name")
                         if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
                             if (node.name == "c_space") && (distance(location, p1) < circleWidth / 2) {
-                                // Prints underlying location
-                                print("C Circle Pick!")
                                 nodeFound = true
                                 break
                             } else if (node.name == "w_space") && (distance(location, p2) < circleWidth / 2) {
-                                // Prints underlying location
-                                print("W Circle Pick!")
                                 nodeFound = true
                                 break
                             } else if (node.name == "e_space") && (distance(location, p3) < circleWidth / 2) {
-                                // Prints underlying location
-                                print("E Circle Pick!")
                                 nodeFound = true
                                 break
                             }
                         } else if node.name == "cwe_space" && (location.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) {
-                            // Prints underlying location
-                            print("CWE Triangle Pick!")
                             nodeFound = true
                             break
                         } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
                             if node.name == "cw_space" {
-                                // Prints underlying location
-                                print("CW Bar Pick!")
                                 nodeFound = true
                                 break
                             } else if node.name == "we_space" && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) && (location.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (location.x - weBar[3].x) + weBar[3].y)) {
-                                // Prints underlying location
-                                print("WE Bar Pick!")
                                 nodeFound = true
                                 break
                             } else if node.name == "ce_space" && (location.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (location.x - ceBar[3].x) + ceBar[3].y)) && (location.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) {
-                                // Prints underlying location
-                                print("CE Bar Pick!")
                                 nodeFound = true
                                 break
                             }
                         } else if node.name == "na_space" {
-                            // Prints underlying location
-                            print("None Pick!")
                             nodeFound = true
                             break
                         } else if node.name == "submit" {
-                            print("Submit!")
                             followDisable = true
                             stepForward1()
                             nodeFound = true
                             break
                         }
                     }
-                    if !nodeFound && nodeToMove.position.y > (tileBankLocDict[13]!.y - tileHeight) {
-                        // Prints underlying location
-                        print("Bank pick!")
+                    if !nodeFound && nodeToMove.position.y > (tileBankLocDict[13].y - tileHeight) {
                         // Updates the count in the Bank
                         remainingInBank = remainingInBank - 1
                         // Displays submit option if Bank is empty
@@ -569,8 +391,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             submit.zPosition = zPosUpdater
                             zPosUpdater = zPosUpdater + 3
                         }
-                        // Prints remaining bank count
-                        print(remainingInBank)
                     }
                 }
             }
@@ -584,22 +404,23 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                 for node in touchedNode {
                     if node.name == "contBtn" && !node.hasActions(){
                         stepForward2()
+                        spinLockState = 0
                         break
                     } else if node.name == "pass" {
                         break
-                    } else if numButtons.contains(node) || numButtonsLabels.contains(node) {
-                        if (node.name == "numPad3" || node.parent!.name == "numPad3") && spinLockState == 0 {
-                            spinLockState = 1
-                            break
-                        } else if (node.name == "numPad2" || node.parent!.name == "numPad2") && spinLockState == 1 {
-                            spinLockState = 2
+                    } else if numButtons.contains(node) || numButtons.contains(node.parent ?? node) {
+                        if (node.name == "numPad0" || node.parent!.name == "numPad0") && spinLockState == 3 {
+                            spinLockState = 4
+                            contBtn.run(SKAction.fadeAlpha(to: 1, duration: 0.2))
                             break
                         } else if (node.name == "numPad1" || node.parent!.name == "numPad1") && spinLockState == 2 {
                             spinLockState = 3
                             break
-                        } else if (node.name == "numPad0" || node.parent!.name == "numPad0") && spinLockState == 3 {
-                            spinLockState = 4
-                            contBtn.run(SKAction.fadeAlpha(to: 1, duration: 0.2))
+                        } else if (node.name == "numPad2" || node.parent!.name == "numPad2") && spinLockState == 1 {
+                            spinLockState = 2
+                            break
+                        } else if (node.name == "numPad3" || node.parent!.name == "numPad3") {
+                            spinLockState = 1
                             break
                         } else {
                             spinLockState = 0
@@ -695,30 +516,22 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                         // Performs the resizing, recoloring, and reangling!
                         if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
                             if (node.name == "c_space") && (distance(locationEnd, p1) < circleWidth / 2) {
-                                // Prints underlying location
-                                print("C Circle!")
                                 castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
                                 nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
                                 break
                             } else if (node.name == "w_space") && (distance(locationEnd, p2) < circleWidth / 2) {
-                                // Prints underlying location
-                                print("W Circle!")
                                 castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
                                 nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
                                 break
                             } else if (node.name == "e_space") && (distance(locationEnd, p3) < circleWidth / 2) {
-                                // Prints underlying location
-                                print("E Circle!")
                                 castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
                                 nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
                                 break
                             }
                         } else if node.name == "cwe_space" && (locationEnd.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) {
-                            // Prints underlying location
-                            print("CWE Triangle!")
                             nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                             nodeFound = true
@@ -727,88 +540,28 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                             nodeFound = true
                             if node.name == "cw_space" {
-                                // Prints underlying location
-                                print("CW Bar!")
                                 castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
                                 break
                             } else if node.name == "we_space" && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) && (locationEnd.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (locationEnd.x - weBar[3].x) + weBar[3].y)) {
-                                // Prints underlying location
-                                print("WE Bar!")
                                 nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
                                 castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1/2, alpha: 1)
                             } else if node.name == "ce_space" && (locationEnd.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (locationEnd.x - ceBar[3].x) + ceBar[3].y)) && (locationEnd.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) {
-                                // Prints underlying location
-                                print("CE Bar!")
                                 nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
                                 castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1, alpha: 1)
                             }
                             break
                         } else if node.name == "na_space" {
-                            // Prints underlying location
                             nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
-                            print("None!")
                             nodeFound = true
                             break
                         }
                     }
-                    // Finds dictionary entry for the bank location
+                    // If retruning tile to bank location
                     if !nodeFound {
-                        switch nodeToMove {
-                        case tile1:
-                            dictLookup = 1
-                            break
-                        case tile2:
-                            dictLookup = 2
-                            break
-                        case tile3:
-                            dictLookup = 3
-                            break
-                        case tile4:
-                            dictLookup = 4
-                            break
-                        case tile5:
-                            dictLookup = 5
-                            break
-                        case tile6:
-                            dictLookup = 6
-                            break
-                        case tile7:
-                            dictLookup = 7
-                            break
-                        case tile8:
-                            dictLookup = 8
-                            break
-                        case tile9:
-                            dictLookup = 9
-                            break
-                        case tile10:
-                            dictLookup = 10
-                            break
-                        case tile11:
-                            dictLookup = 11
-                            break
-                        case tile12:
-                            dictLookup = 12
-                            break
-                        case tile13:
-                            dictLookup = 13
-                            break
-                        case tile14:
-                            dictLookup = 14
-                            break
-                        case tile15:
-                            dictLookup = 15
-                            break
-                        case .none:
-                            dictLookup = 1
-                            break
-                        case .some(_):
-                            dictLookup = 1
-                            break
-                        }
                         // Returns tile to it's proper bank location
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[dictLookup]!.x - (nodeToMove.position.x), dy: tileBankLocDict[dictLookup]!.y - (nodeToMove.position.y)), duration: 0.3))
+                        dictLookup = (tiles.firstIndex(of: castedNode) ?? 0)
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[dictLookup].x - (nodeToMove.position.x), dy: tileBankLocDict[dictLookup].y - (nodeToMove.position.y)), duration: 0.3))
                         castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                         // Returns tile to normal side
                         nodeToMove.run(SKAction.scale(to: 1, duration: 0.2))
@@ -818,8 +571,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                         if remainingInBank == 1 {
                             submit.run(SKAction.fadeAlpha(to: 0, duration: 0.2))
                         }
-                        print(remainingInBank)
-                        print("Bank!")
                     }
                 }
                 // Displays submit if bank is empty
@@ -835,6 +586,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     
     private func initializeMenu() {
         // Declaring constants to determine object sizing
+        // THE NEXT 200 lines are just dog shit code design. Good luck.
         let screenSize: CGRect = UIScreen.main.bounds
         let screenWidth = screenSize.width
         let screenHeight = screenSize.height
@@ -1019,55 +771,30 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         weLabel2.zRotation = 60 * CGFloat.pi / 180
         gameBG.addChild(weLabel1)
         gameBG.addChild(weLabel2)
-        let cweLabel1 = SKLabelNode(fontNamed: "ArialMT")
-        let cweLabel2 = SKLabelNode(fontNamed: "ArialMT")
-        let cweLabel3 = SKLabelNode(fontNamed: "ArialMT")
-        cweLabel1.text = "Enviroment and"
-        cweLabel2.text = "Weather and"
-        cweLabel3.text = "Climate"
-        cweLabel1.fontSize = 30 * ratio
-        cweLabel2.fontSize = 30 * ratio
-        cweLabel3.fontSize = 30 * ratio
-        cweLabel1.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel1.fontSize * 3.8))
-        cweLabel2.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel2.fontSize * 2.4))
-        cweLabel3.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel3.fontSize * 1.0))
-        cweLabel1.zPosition = 5
-        cweLabel2.zPosition = 5
-        cweLabel3.zPosition = 5
-        cweLabel1.fontColor = SKColor.black
-        cweLabel2.fontColor = SKColor.black
-        cweLabel3.fontColor = SKColor.black
-        gameBG.addChild(cweLabel1)
-        gameBG.addChild(cweLabel2)
-        gameBG.addChild(cweLabel3)
-        let naLabel1 = SKLabelNode(fontNamed: "ArialMT")
-        let naLabel2 = SKLabelNode(fontNamed: "ArialMT")
-        let naLabel3 = SKLabelNode(fontNamed: "ArialMT")
-        let naLabel4 = SKLabelNode(fontNamed: "ArialMT")
-        naLabel1.text = "unrelated"
-        naLabel2.text = "unrelated"
-        naLabel3.text = "unrelated"
-        naLabel4.text = "unrelated"
-        naLabel1.fontSize = 30 * ratio
-        naLabel2.fontSize = 30 * ratio
-        naLabel3.fontSize = 30 * ratio
-        naLabel4.fontSize = 30 * ratio
-        naLabel1.position = CGPoint(x: 7 * screenWidth / 20, y: (weatherBG.frame.midY + (3 * enviromBG.frame.midY)) / 4)
-        naLabel2.position = CGPoint(x: 7 * screenWidth / -20, y: (weatherBG.frame.midY + (3 * enviromBG.frame.midY)) / 4)
-        naLabel3.position = CGPoint(x: 7 * screenWidth / 20, y: (enviromBG.frame.midY - screenHeight) / 3)
-        naLabel4.position = CGPoint(x: 7 * screenWidth / -20, y: (enviromBG.frame.midY - screenHeight) / 3)
-        naLabel1.zPosition = 5
-        naLabel2.zPosition = 5
-        naLabel3.zPosition = 5
-        naLabel4.zPosition = 5
-        naLabel1.fontColor = SKColor.black
-        naLabel2.fontColor = SKColor.black
-        naLabel3.fontColor = SKColor.black
-        naLabel4.fontColor = SKColor.black
-        gameBG.addChild(naLabel1)
-        gameBG.addChild(naLabel2)
-        gameBG.addChild(naLabel3)
-        gameBG.addChild(naLabel4)
+        //Creates cwe labels
+        var cweLabels:[SKLabelNode] = []
+        for i in 0...2 {
+            let cweLabel = SKLabelNode(fontNamed: "ArialMT")
+            cweLabel.fontSize = 30 * ratio
+            cweLabel.zPosition = 5
+            cweLabel.fontColor = SKColor.black
+            cweLabel.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel.fontSize * (3.8 - CGFloat(i)*1.4)))
+            gameBG.addChild(cweLabel)
+            cweLabels.append(cweLabel)
+        }
+        cweLabels[0].text = "Enviroment and"
+        cweLabels[1].text = "Weather and"
+        cweLabels[2].text = "Climate"
+        // creates N/A lables
+        for i in 0...3 {
+            let naLabel = SKLabelNode(fontNamed: "ArialMT")
+            naLabel.text = "unrelated"
+            naLabel.fontSize = 30 * ratio
+            naLabel.zPosition = 5
+            naLabel.fontColor = SKColor.black
+            naLabel.position = CGPoint(x: 7 * screenWidth / CGFloat((i%2)*40 - 20), y: (i/2 == 0) ? (weatherBG.frame.midY + (3 * enviromBG.frame.midY)) / 4 : (enviromBG.frame.midY - screenHeight) / 3)
+            gameBG.addChild(naLabel)
+        }
         // Establish draggable tiles in bulk
         // Dimentional variables
         let tileMin = bottomMargin + midMargin + (0.6 * circleWidth)
@@ -1075,501 +802,96 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         let tileOffsetX = tileLength / -2
         let tileBufferX = screenWidth / 5.2
         // Create tile lookup table
-        let origin1 = CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
-        let origin2 = CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
-        let origin3 = CGPoint(x: tileOffsetX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
-        let origin4 = CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
-        let origin5 = CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (tileMin / 4) + (3 * tileMax / 4) + (tileHeight / 2))
-        let origin6 = CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2))
-        let origin7 = CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2))
-        let origin8 = CGPoint(x: tileOffsetX + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2))
-        let origin9 = CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2))
-        let origin10 = CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (tileMin + tileMax) / 2 + (tileHeight / 2))
-        let origin11 = CGPoint(x: tileOffsetX - (2 * tileBufferX) + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
-        let origin12 = CGPoint(x: tileOffsetX - tileBufferX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
-        let origin13 = CGPoint(x: tileOffsetX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
-        let origin14 = CGPoint(x: tileOffsetX + tileBufferX + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
-        let origin15 = CGPoint(x: tileOffsetX + (2 * tileBufferX) + (tileLength / 2), y: (3 * tileMin / 4) + (tileMax / 4) + (tileHeight / 2))
-        // Creates dictionary to relate positions
-        tileBankLocDict = [1: origin1,
-                           2: origin2,
-                           3: origin3,
-                           4: origin4,
-                           5: origin5,
-                           6: origin6,
-                           7: origin7,
-                           8: origin8,
-                           9: origin9,
-                           10: origin10,
-                           11: origin11,
-                           12: origin12,
-                           13: origin13,
-                           14: origin14,
-                           15: origin15]
-        // Creates tiles to be used
-        tile1 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile1.position = tileBankLocDict[1]!
-        tile2 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile2.position = tileBankLocDict[2]!
-        tile3 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile3.position = tileBankLocDict[3]!
-        tile4 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile4.position = tileBankLocDict[4]!
-        tile5 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile5.position = tileBankLocDict[5]!
-        tile6 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile6.position = tileBankLocDict[6]!
-        tile7 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile7.position = tileBankLocDict[7]!
-        tile8 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile8.position = tileBankLocDict[8]!
-        tile9 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile9.position = tileBankLocDict[9]!
-        tile10 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile10.position = tileBankLocDict[10]!
-        tile11 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile11.position = tileBankLocDict[11]!
-        tile12 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile12.position = tileBankLocDict[12]!
-        tile13 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile13.position = tileBankLocDict[13]!
-        tile14 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile14.position = tileBankLocDict[14]!
-        tile15 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
-        tile15.position = tileBankLocDict[15]!
-        // Assign tile type
-        tile1.name = "tile"
-        tile2.name = "tile"
-        tile3.name = "tile"
-        tile4.name = "tile"
-        tile5.name = "tile"
-        tile6.name = "tile"
-        tile7.name = "tile"
-        tile8.name = "tile"
-        tile9.name = "tile"
-        tile10.name = "tile"
-        tile11.name = "tile"
-        tile12.name = "tile"
-        tile13.name = "tile"
-        tile14.name = "tile"
-        tile15.name = "tile"
-        // Color tile
-        tile1.fillColor = SKColor.white
-        tile2.fillColor = SKColor.white
-        tile3.fillColor = SKColor.white
-        tile4.fillColor = SKColor.white
-        tile5.fillColor = SKColor.white
-        tile6.fillColor = SKColor.white
-        tile7.fillColor = SKColor.white
-        tile8.fillColor = SKColor.white
-        tile9.fillColor = SKColor.white
-        tile10.fillColor = SKColor.white
-        tile11.fillColor = SKColor.white
-        tile12.fillColor = SKColor.white
-        tile13.fillColor = SKColor.white
-        tile14.fillColor = SKColor.white
-        tile15.fillColor = SKColor.white
-        // Color outline tile
-        tile1.strokeColor = SKColor.black
-        tile2.strokeColor = SKColor.black
-        tile3.strokeColor = SKColor.black
-        tile4.strokeColor = SKColor.black
-        tile5.strokeColor = SKColor.black
-        tile6.strokeColor = SKColor.black
-        tile7.strokeColor = SKColor.black
-        tile8.strokeColor = SKColor.black
-        tile9.strokeColor = SKColor.black
-        tile10.strokeColor = SKColor.black
-        tile11.strokeColor = SKColor.black
-        tile12.strokeColor = SKColor.black
-        tile13.strokeColor = SKColor.black
-        tile14.strokeColor = SKColor.black
-        tile15.strokeColor = SKColor.black
-        // Size outline tile
-        tile1.lineWidth = 2 * ratio
-        tile2.lineWidth = 2 * ratio
-        tile3.lineWidth = 2 * ratio
-        tile4.lineWidth = 2 * ratio
-        tile5.lineWidth = 2 * ratio
-        tile6.lineWidth = 2 * ratio
-        tile7.lineWidth = 2 * ratio
-        tile8.lineWidth = 2 * ratio
-        tile9.lineWidth = 2 * ratio
-        tile10.lineWidth = 2 * ratio
-        tile11.lineWidth = 2 * ratio
-        tile12.lineWidth = 2 * ratio
-        tile13.lineWidth = 2 * ratio
-        tile14.lineWidth = 2 * ratio
-        tile15.lineWidth = 2 * ratio
-        // make tile always visable lineWidth
-        tile1.zPosition = 6
-        tile2.zPosition = 6
-        tile3.zPosition = 6
-        tile4.zPosition = 6
-        tile5.zPosition = 6
-        tile6.zPosition = 6
-        tile7.zPosition = 6
-        tile8.zPosition = 6
-        tile9.zPosition = 6
-        tile10.zPosition = 6
-        tile11.zPosition = 6
-        tile12.zPosition = 6
-        tile13.zPosition = 6
-        tile14.zPosition = 6
-        tile15.zPosition = 6
-        // Create labels
-        let tileLabel1 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel2 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel3 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel4 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel5 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel6 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel7 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel8 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel9 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel10 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel11 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel12 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel13 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel14 = SKLabelNode(fontNamed: "ArialMT")
-        let tileLabel15 = SKLabelNode(fontNamed: "ArialMT")
-        // Labels and associated position
-        tileLabel1.text = "Cooling\n temps "
-        tileLabel2.text = "Warming\n  temps "
-        tileLabel3.text = "   Fast \nchanges"
-        tileLabel4.text = "Moderate\nchanges"
-        tileLabel5.text = "   Slow \nchanges"
-        tileLabel6.text = "Farming"
-        tileLabel7.text = "Industry"
-        tileLabel8.text = "Local"
-        tileLabel9.text = "Regional"
-        tileLabel10.text = "Global"
-        tileLabel11.text = "Animals\n& plants"
-        tileLabel12.text = "People"
-        tileLabel13.text = "Forests"
-        tileLabel14.text = "Oceans"
-        tileLabel15.text = "Greenhouse\n      effect "
-        tileLabel1.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel2.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel3.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel4.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel5.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel6.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel7.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel8.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel9.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel10.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel11.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel12.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel13.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel14.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel15.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        tileLabel1.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel2.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel3.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel4.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel5.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel6.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel7.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel8.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel9.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel10.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel11.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel12.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel13.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel14.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        tileLabel15.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
-        if #available(iOS 11.0, *) {
-            // OLD iOS code just incase (^_~)
-            tileLabel1.numberOfLines = 3
-            tileLabel1.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel1.fontSize = tileLengthOriginal / 6
-            tileLabel2.numberOfLines = 3
-            tileLabel2.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel2.fontSize = tileLengthOriginal / 6
-            tileLabel3.numberOfLines = 3
-            tileLabel3.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel3.fontSize = tileLengthOriginal / 6
-            tileLabel4.numberOfLines = 3
-            tileLabel4.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel4.fontSize = tileLengthOriginal / 6
-            tileLabel5.numberOfLines = 3
-            tileLabel5.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel5.fontSize = tileLengthOriginal / 6
-            tileLabel6.numberOfLines = 3
-            tileLabel6.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel6.fontSize = tileLengthOriginal / 6
-            tileLabel7.numberOfLines = 3
-            tileLabel7.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel7.fontSize = tileLengthOriginal / 6
-            tileLabel8.numberOfLines = 3
-            tileLabel8.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel8.fontSize = tileLengthOriginal / 6
-            tileLabel9.numberOfLines = 3
-            tileLabel9.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel9.fontSize = tileLengthOriginal / 6
-            tileLabel10.numberOfLines = 3
-            tileLabel10.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel10.fontSize = tileLengthOriginal / 6
-            tileLabel11.numberOfLines = 3
-            tileLabel11.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel11.fontSize = tileLengthOriginal / 6
-            tileLabel12.numberOfLines = 3
-            tileLabel12.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel12.fontSize = tileLengthOriginal / 6
-            tileLabel13.numberOfLines = 3
-            tileLabel13.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel13.fontSize = tileLengthOriginal / 6
-            tileLabel14.numberOfLines = 3
-            tileLabel14.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel14.fontSize = tileLengthOriginal / 6
-            tileLabel15.numberOfLines = 3
-            tileLabel15.preferredMaxLayoutWidth = tileLengthOriginal
-            tileLabel15.fontSize = tileLengthOriginal / 6
-        } else {
-            // Fallback on earlier versions
-            // FIX IN FUTURE UPDATE
+        tileBankLocDict = []
+        var x_pos_iter = tileOffsetX - (2 * tileBufferX) + (tileLength / 2)
+        var y_pos_iter = ((tileMin + 3*tileMax) / 4) + (tileHeight / 2)
+        while y_pos_iter >= ((3*tileMin + tileMax) / 4) + (tileHeight / 2) {
+            while x_pos_iter <= tileOffsetX + (2 * tileBufferX) + (tileLength / 2){
+                tileBankLocDict.append(CGPoint(x:x_pos_iter, y:y_pos_iter))
+                x_pos_iter += tileBufferX
+            }
+            y_pos_iter += (tileMin - tileMax) / 4
+            x_pos_iter = tileOffsetX - (2 * tileBufferX) + (tileLength / 2)
         }
-        // add tiles to screen
-        gameBG.addChild(tile1)
-        gameBG.addChild(tile2)
-        gameBG.addChild(tile3)
-        gameBG.addChild(tile4)
-        gameBG.addChild(tile5)
-        gameBG.addChild(tile6)
-        gameBG.addChild(tile7)
-        gameBG.addChild(tile8)
-        gameBG.addChild(tile9)
-        gameBG.addChild(tile10)
-        gameBG.addChild(tile11)
-        gameBG.addChild(tile12)
-        gameBG.addChild(tile13)
-        gameBG.addChild(tile14)
-        gameBG.addChild(tile15)
-        // Add color Static to background the tile labels
-        let tileStaticCol1 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol2 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol3 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol4 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol5 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol6 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol7 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol8 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol9 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol10 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol11 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol12 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol13 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol14 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        let tileStaticCol15 = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        tileStaticCol1.zPosition = 1
-        tileStaticCol2.zPosition = 1
-        tileStaticCol3.zPosition = 1
-        tileStaticCol4.zPosition = 1
-        tileStaticCol5.zPosition = 1
-        tileStaticCol6.zPosition = 1
-        tileStaticCol7.zPosition = 1
-        tileStaticCol8.zPosition = 1
-        tileStaticCol9.zPosition = 1
-        tileStaticCol10.zPosition = 1
-        tileStaticCol11.zPosition = 1
-        tileStaticCol12.zPosition = 1
-        tileStaticCol13.zPosition = 1
-        tileStaticCol14.zPosition = 1
-        tileStaticCol15.zPosition = 1
-        tileStaticCol1.fillColor = SKColor.yellow
-        tileStaticCol2.fillColor = SKColor.yellow
-        tileStaticCol3.fillColor = SKColor.green
-        tileStaticCol4.fillColor = SKColor.green
-        tileStaticCol5.fillColor = SKColor.green
-        tileStaticCol6.fillColor = SKColor.cyan
-        tileStaticCol7.fillColor = SKColor.cyan
-        tileStaticCol8.fillColor = SKColor.red
-        tileStaticCol9.fillColor = SKColor.red
-        tileStaticCol10.fillColor = SKColor.red
-        tileStaticCol11.fillColor = SKColor.blue
-        tileStaticCol12.fillColor = SKColor.blue
-        tileStaticCol13.fillColor = SKColor.blue
-        tileStaticCol14.fillColor = SKColor.blue
-        tileStaticCol15.fillColor = SKColor.blue
-        tileStaticCol1.strokeColor = SKColor.black
-        tileStaticCol2.strokeColor = SKColor.black
-        tileStaticCol3.strokeColor = SKColor.black
-        tileStaticCol4.strokeColor = SKColor.black
-        tileStaticCol5.strokeColor = SKColor.black
-        tileStaticCol6.strokeColor = SKColor.black
-        tileStaticCol7.strokeColor = SKColor.black
-        tileStaticCol8.strokeColor = SKColor.black
-        tileStaticCol9.strokeColor = SKColor.black
-        tileStaticCol10.strokeColor = SKColor.black
-        tileStaticCol11.strokeColor = SKColor.black
-        tileStaticCol12.strokeColor = SKColor.black
-        tileStaticCol13.strokeColor = SKColor.black
-        tileStaticCol14.strokeColor = SKColor.black
-        tileStaticCol15.strokeColor = SKColor.black
-        tile1.addChild(tileStaticCol1)
-        tile2.addChild(tileStaticCol2)
-        tile3.addChild(tileStaticCol3)
-        tile4.addChild(tileStaticCol4)
-        tile5.addChild(tileStaticCol5)
-        tile6.addChild(tileStaticCol6)
-        tile7.addChild(tileStaticCol7)
-        tile8.addChild(tileStaticCol8)
-        tile9.addChild(tileStaticCol9)
-        tile10.addChild(tileStaticCol10)
-        tile11.addChild(tileStaticCol11)
-        tile12.addChild(tileStaticCol12)
-        tile13.addChild(tileStaticCol13)
-        tile14.addChild(tileStaticCol14)
-        tile15.addChild(tileStaticCol15)
-        // Place Labels in center of tiles
-        tileLabel1.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel2.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel3.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel4.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel5.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel6.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel7.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel8.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel9.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel10.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel11.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel12.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel13.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel14.position = CGPoint(x: (tileHeight / 2), y: 0)
-        tileLabel15.position = CGPoint(x: (tileHeight / 2), y: 0)
-        // Color text
-        tileLabel1.fontColor = SKColor.black
-        tileLabel2.fontColor = SKColor.black
-        tileLabel3.fontColor = SKColor.black
-        tileLabel4.fontColor = SKColor.black
-        tileLabel5.fontColor = SKColor.black
-        tileLabel6.fontColor = SKColor.black
-        tileLabel7.fontColor = SKColor.black
-        tileLabel8.fontColor = SKColor.black
-        tileLabel9.fontColor = SKColor.black
-        tileLabel10.fontColor = SKColor.black
-        tileLabel11.fontColor = SKColor.black
-        tileLabel12.fontColor = SKColor.black
-        tileLabel13.fontColor = SKColor.black
-        tileLabel14.fontColor = SKColor.black
-        tileLabel15.fontColor = SKColor.black
-        // Make labels appear over tiles
-        tileLabel1.zPosition = 2
-        tileLabel2.zPosition = 2
-        tileLabel3.zPosition = 2
-        tileLabel4.zPosition = 2
-        tileLabel5.zPosition = 2
-        tileLabel6.zPosition = 2
-        tileLabel7.zPosition = 2
-        tileLabel8.zPosition = 2
-        tileLabel9.zPosition = 2
-        tileLabel10.zPosition = 2
-        tileLabel11.zPosition = 2
-        tileLabel12.zPosition = 2
-        tileLabel13.zPosition = 2
-        tileLabel14.zPosition = 2
-        tileLabel15.zPosition = 2
-        // Add labels  to screen
-        tile1.addChild(tileLabel1)
-        tile2.addChild(tileLabel2)
-        tile3.addChild(tileLabel3)
-        tile4.addChild(tileLabel4)
-        tile5.addChild(tileLabel5)
-        tile6.addChild(tileLabel6)
-        tile7.addChild(tileLabel7)
-        tile8.addChild(tileLabel8)
-        tile9.addChild(tileLabel9)
-        tile10.addChild(tileLabel10)
-        tile11.addChild(tileLabel11)
-        tile12.addChild(tileLabel12)
-        tile13.addChild(tileLabel13)
-        tile14.addChild(tileLabel14)
-        tile15.addChild(tileLabel15)
+        // Creates shape for tiles to be used
+        let tile_shape = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
+        tile_shape.name = "tile"
+        tile_shape.fillColor = SKColor.white
+        tile_shape.strokeColor = SKColor.black
+        tile_shape.lineWidth = 2 * ratio
+        tile_shape.zPosition = 6
+        tiles = []
+        var tile_labels:[SKLabelNode] = []
+        // Creates template for tile labels to be used
+        let tile_label_teplate = SKLabelNode(fontNamed: "ArialMT")
+        tile_label_teplate.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tile_label_teplate.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tile_label_teplate.fontSize = tileLengthOriginal / 6
+        tile_label_teplate.position = CGPoint(x: (tileHeight / 2), y: 0)
+        tile_label_teplate.fontColor = SKColor.black
+        tile_label_teplate.zPosition = 2
+        // Creates template for the tile static color TODO
+        let tile_color_template = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
+        tile_color_template.zPosition = 1
+        tile_color_template.strokeColor = SKColor.black
         // Create Sprite constants
-        let temporaryValue1 = ((tileHeight - (2 * ratio)) - tile1.frame.width)
+        let temporaryValue1 = ((tileHeight - (2 * ratio)) - tileLength)
         let spriteOffset = (temporaryValue1 / 2) + (3 * ratio)
         let spritePos = CGPoint(x: spriteOffset, y: 0)
         let spriteSize = CGSize(width: tileHeight - (2 * ratio), height: tileHeight - (2 * ratio))
-        // Initialize sprites to images
-        let tileSprite1 = SKSpriteNode(imageNamed: "TileSprite-1")
-        let tileSprite2 = SKSpriteNode(imageNamed: "TileSprite-2")
-        let tileSprite3 = SKSpriteNode(imageNamed: "TileSprite-3")
-        let tileSprite4 = SKSpriteNode(imageNamed: "TileSprite-4")
-        let tileSprite5 = SKSpriteNode(imageNamed: "TileSprite-5")
-        let tileSprite6 = SKSpriteNode(imageNamed: "TileSprite-6")
-        let tileSprite7 = SKSpriteNode(imageNamed: "TileSprite-7")
-        let tileSprite8 = SKSpriteNode(imageNamed: "TileSprite-8")
-        let tileSprite9 = SKSpriteNode(imageNamed: "TileSprite-9")
-        let tileSprite10 = SKSpriteNode(imageNamed: "TileSprite-10")
-        let tileSprite11 = SKSpriteNode(imageNamed: "TileSprite-11")
-        let tileSprite12 = SKSpriteNode(imageNamed: "TileSprite-12")
-        let tileSprite13 = SKSpriteNode(imageNamed: "TileSprite-13")
-        let tileSprite14 = SKSpriteNode(imageNamed: "TileSprite-14")
-        let tileSprite15 = SKSpriteNode(imageNamed: "TileSprite-15")
-        // Sets sprite size
-        tileSprite1.size = spriteSize
-        tileSprite2.size = spriteSize
-        tileSprite3.size = spriteSize
-        tileSprite4.size = spriteSize
-        tileSprite5.size = spriteSize
-        tileSprite6.size = spriteSize
-        tileSprite7.size = spriteSize
-        tileSprite8.size = spriteSize
-        tileSprite9.size = spriteSize
-        tileSprite10.size = spriteSize
-        tileSprite11.size = spriteSize
-        tileSprite12.size = spriteSize
-        tileSprite13.size = spriteSize
-        tileSprite14.size = spriteSize
-        tileSprite15.size = spriteSize
-        tileSprite1.position = spritePos
-        tileSprite2.position = spritePos
-        tileSprite3.position = spritePos
-        tileSprite4.position = spritePos
-        tileSprite5.position = spritePos
-        tileSprite6.position = spritePos
-        tileSprite7.position = spritePos
-        tileSprite8.position = spritePos
-        tileSprite9.position = spritePos
-        tileSprite10.position = spritePos
-        tileSprite11.position = spritePos
-        tileSprite12.position = spritePos
-        tileSprite13.position = spritePos
-        tileSprite14.position = spritePos
-        tileSprite15.position = spritePos
-        // sets sprite on top of tile
-        tileSprite1.zPosition = 1
-        tileSprite2.zPosition = 1
-        tileSprite3.zPosition = 1
-        tileSprite4.zPosition = 1
-        tileSprite5.zPosition = 1
-        tileSprite6.zPosition = 1
-        tileSprite7.zPosition = 1
-        tileSprite8.zPosition = 1
-        tileSprite9.zPosition = 1
-        tileSprite10.zPosition = 1
-        tileSprite11.zPosition = 1
-        tileSprite12.zPosition = 1
-        tileSprite13.zPosition = 1
-        tileSprite14.zPosition = 1
-        tileSprite15.zPosition = 1
-        // Adds sprite to tile
-        tile1.addChild(tileSprite1)
-        tile2.addChild(tileSprite2)
-        tile3.addChild(tileSprite3)
-        tile4.addChild(tileSprite4)
-        tile5.addChild(tileSprite5)
-        tile6.addChild(tileSprite6)
-        tile7.addChild(tileSprite7)
-        tile8.addChild(tileSprite8)
-        tile9.addChild(tileSprite9)
-        tile10.addChild(tileSprite10)
-        tile11.addChild(tileSprite11)
-        tile12.addChild(tileSprite12)
-        tile13.addChild(tileSprite13)
-        tile14.addChild(tileSprite14)
-        tile15.addChild(tileSprite15)
+        // Assign tile properties, append to game board as children
+        for i in 0...14 {
+            //tile
+            let tile = tile_shape.copy() as! SKShapeNode
+            tile.position = tileBankLocDict[i]
+            tiles.append(tile)
+            gameBG.addChild(tile)
+            //label
+            let tile_label = tile_label_teplate.copy() as! SKLabelNode
+            tile_labels.append(tile_label)
+            tile.addChild(tile_label)
+            //static color
+            let tile_color = tile_color_template.copy() as! SKShapeNode
+            if 0...1 ~= i {
+                tile_color.fillColor = SKColor.yellow
+            } else if 2...4 ~= i {
+                tile_color.fillColor = SKColor.green
+            } else if 5...6 ~= i {
+                tile_color.fillColor = SKColor.cyan
+            } else if 7...9 ~= i {
+                tile_color.fillColor = SKColor.red
+            } else if 10...14 ~= i {
+                tile_color.fillColor = SKColor.blue
+            }
+            tile.addChild(tile_color)
+            //sprite
+            let tileSprite = SKSpriteNode(imageNamed: "TileSprite-\(i+1)")
+            tileSprite.size = spriteSize
+            tileSprite.position = spritePos
+            tileSprite.zPosition = 1
+            tile.addChild(tileSprite)
+        }
+        // Labels and associated position for tiels
+        tile_labels[0].text = "Cooling\n temps "
+        tile_labels[1].text = "Warming\n  temps "
+        tile_labels[2].text = "   Fast \nchanges"
+        tile_labels[3].text = "Moderate\nchanges"
+        tile_labels[4].text = "   Slow \nchanges"
+        tile_labels[5].text = "Farming"
+        tile_labels[6].text = "Industry"
+        tile_labels[7].text = "Local"
+        tile_labels[8].text = "Regional"
+        tile_labels[9].text = "Global"
+        tile_labels[10].text = "Animals\n& plants"
+        tile_labels[11].text = "People"
+        tile_labels[12].text = "Forests"
+        tile_labels[13].text = "Oceans"
+        tile_labels[14].text = "Greenhouse\n      effect "
+        // Aligns text within tile
+        for i in 0...14 {
+            tile_labels[i].numberOfLines = 3
+            tile_labels[i].preferredMaxLayoutWidth = tileLengthOriginal
+        }
         // Submit button
         submit = SKShapeNode.init(ellipseOf: CGSize.init(width: screenWidth/3, height: screenWidth/10))
         submit.position = CGPoint(x: naBG.frame.midX, y: (naBG.frame.maxY + screenHeight/2)/2)
@@ -1604,185 +926,55 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
         contBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Continue Session", logo:nil, name:"contBtn")
         contBtn.zPosition = 1
-        let numPad0 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad0.fillColor = SKColor.lightGray
-        numPad0.name = "numPad0"
-        numPad0.zPosition = 1
-        passScreen.addChild(numPad0)
-        let numPad0txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad0txt.text = "0"
-        numPad0txt.zPosition = 0
-        numPad0txt.fontSize = 45 * ratio
-        numPad0txt.position = CGPoint(x: 0, y: -numPad0txt.frame.height / 2)
-        numPad0.addChild(numPad0txt)
-        let numPad1 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad1.fillColor = SKColor.lightGray
-        numPad1.name = "numPad1"
-        numPad1.zPosition = 1
-        numPad1.position.x = -2.2*passScreen.frame.width/15
-        numPad1.position.y = 6.6*passScreen.frame.width/15
-        passScreen.addChild(numPad1)
-        let numPad1txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad1txt.text = "1"
-        numPad1txt.zPosition = 0
-        numPad1txt.fontSize = 45 * ratio
-        numPad1txt.position = CGPoint(x: 0, y: -numPad1txt.frame.height / 2)
-        numPad1.addChild(numPad1txt)
-        let numPad2 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad2.fillColor = SKColor.lightGray
-        numPad2.name = "numPad2"
-        numPad2.zPosition = 1
-        numPad2.position.y = 6.6*passScreen.frame.width/15
-        passScreen.addChild(numPad2)
-        let numPad2txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad2txt.text = "2"
-        numPad2txt.zPosition = 0
-        numPad2txt.fontSize = 45 * ratio
-        numPad2txt.position = CGPoint(x: 0, y: -numPad2txt.frame.height / 2)
-        numPad2.addChild(numPad2txt)
-        let numPad3 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad3.fillColor = SKColor.lightGray
-        numPad3.name = "numPad3"
-        numPad3.zPosition = 1
-        numPad3.position.x = 2.2*passScreen.frame.width/15
-        numPad3.position.y = 6.6*passScreen.frame.width/15
-        passScreen.addChild(numPad3)
-        let numPad3txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad3txt.text = "3"
-        numPad3txt.zPosition = 0
-        numPad3txt.fontSize = 45 * ratio
-        numPad3txt.position = CGPoint(x: 0, y: -numPad3txt.frame.height / 2)
-        numPad3.addChild(numPad3txt)
-        let numPad4 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad4.fillColor = SKColor.lightGray
-        numPad4.name = "numPad4"
-        numPad4.zPosition = 1
-        numPad4.position.x = -2.2*passScreen.frame.width/15
-        numPad4.position.y = 4.4*passScreen.frame.width/15
-        passScreen.addChild(numPad4)
-        let numPad4txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad4txt.text = "4"
-        numPad4txt.zPosition = 0
-        numPad4txt.fontSize = 45 * ratio
-        numPad4txt.position = CGPoint(x: 0, y: -numPad4txt.frame.height / 2)
-        numPad4.addChild(numPad4txt)
-        let numPad5 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad5.fillColor = SKColor.lightGray
-        numPad5.name = "numPad5"
-        numPad5.zPosition = 1
-        numPad5.position.y = 4.4*passScreen.frame.width/15
-        passScreen.addChild(numPad5)
-        let numPad5txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad5txt.text = "5"
-        numPad5txt.zPosition = 0
-        numPad5txt.fontSize = 45 * ratio
-        numPad5txt.position = CGPoint(x: 0, y: -numPad5txt.frame.height / 2)
-        numPad5.addChild(numPad5txt)
-        let numPad6 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad6.fillColor = SKColor.lightGray
-        numPad6.name = "numPad6"
-        numPad6.zPosition = 1
-        numPad6.position.x = 2.2*passScreen.frame.width/15
-        numPad6.position.y = 4.4*passScreen.frame.width/15
-        passScreen.addChild(numPad6)
-        let numPad6txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad6txt.text = "6"
-        numPad6txt.zPosition = 0
-        numPad6txt.fontSize = 45 * ratio
-        numPad6txt.position = CGPoint(x: 0, y: -numPad6txt.frame.height / 2)
-        numPad6.addChild(numPad6txt)
-        let numPad7 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad7.fillColor = SKColor.lightGray
-        numPad7.name = "numPad7"
-        numPad7.zPosition = 1
-        numPad7.position.x = -2.2*passScreen.frame.width/15
-        numPad7.position.y = 2.2*passScreen.frame.width/15
-        passScreen.addChild(numPad7)
-        let numPad7txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad7txt.text = "7"
-        numPad7txt.zPosition = 0
-        numPad7txt.fontSize = 45 * ratio
-        numPad7txt.position = CGPoint(x: 0, y: -numPad7txt.frame.height / 2)
-        numPad7.addChild(numPad7txt)
-        let numPad8 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad8.fillColor = SKColor.lightGray
-        numPad8.name = "numPad8"
-        numPad8.zPosition = 1
-        numPad8.position.y = 2.2*passScreen.frame.width/15
-        passScreen.addChild(numPad8)
-        let numPad8txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad8txt.text = "8"
-        numPad8txt.zPosition = 0
-        numPad8txt.fontSize = 45 * ratio
-        numPad8txt.position = CGPoint(x: 0, y: -numPad8txt.frame.height / 2)
-        numPad8.addChild(numPad8txt)
-        let numPad9 = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
-        numPad9.fillColor = SKColor.lightGray
-        numPad9.name = "numPad9"
-        numPad9.zPosition = 1
-        numPad9.position.x = 2.2*passScreen.frame.width/15
-        numPad9.position.y = 2.2*passScreen.frame.width/15
-        passScreen.addChild(numPad9)
-        let numPad9txt = SKLabelNode(fontNamed: "ArialMT")
-        numPad9txt.text = "9"
-        numPad9txt.zPosition = 0
-        numPad9txt.fontSize = 45 * ratio
-        numPad9txt.position = CGPoint(x: 0, y: -numPad9txt.frame.height / 2)
-        numPad9.addChild(numPad9txt)
+        // Creates numberpad for password screen
+        let numPad_template = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
+        numPad_template.fillColor = SKColor.lightGray
+        numPad_template.zPosition = 1
+        numButtons = []
+        let numPadtxt_template = SKLabelNode(fontNamed: "ArialMT")
+        numPadtxt_template.zPosition = 0
+        numPadtxt_template.fontSize = 45 * ratio
+        numPadtxt_template.position = CGPoint(x: 0, y: -numPadtxt_template.frame.height / 2)
+        for i in 0...9 {
+            let numPad = numPad_template.copy() as! SKShapeNode
+            numPad.name = "numPad\(i)"
+            if i > 0 {
+                let i_mod_3_adj:CGFloat = CGFloat((i - 1) % 3) - 1
+                let i_floor_3:CGFloat = CGFloat((i - 1) / 3)
+                numPad.position.x = 2.2 * i_mod_3_adj * screenWidth * 0.9/15
+                numPad.position.y = 2.2 * (3 - i_floor_3) * screenWidth * 0.9/15
+            }
+            numButtons.append(numPad)
+            let numPadtxt = numPadtxt_template.copy() as! SKLabelNode
+            numPadtxt.text = "\(i)"
+            numPad.addChild(numPadtxt)
+            passScreen.addChild(numPad)
+        }
         passScreen.addChild(contBtn)
-        numButtons = [numPad0, numPad1, numPad2, numPad3, numPad4, numPad5, numPad6, numPad7, numPad8, numPad9]
-        numButtonsLabels = [numPad0txt, numPad1txt, numPad2txt, numPad3txt, numPad4txt, numPad5txt, numPad6txt, numPad7txt, numPad8txt, numPad9txt]
-        // Add text fields
+        // Add text fields/pickers for initial state
         guard let view = self.view else { return }
         let originX = (view.frame.size.width - view.frame.size.width/1.5)/2
-        picker1  = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
-        picker1.dataSource = self
-        picker1.delegate = self
-        picker1.backgroundColor = UIColor.white
-        picker1.isHidden = true;
-        view.addSubview(picker1)
-        picker2  = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
-        picker2.dataSource = self
-        picker2.delegate = self
-        picker2.backgroundColor = UIColor.white
-        picker2.isHidden = true;
-        view.addSubview(picker2)
-        picker3  = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
-        picker3.dataSource = self
-        picker3.delegate = self
-        picker3.backgroundColor = UIColor.white
-        picker3.isHidden = true;
-        view.addSubview(picker3)
-        picker4  = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
-        picker4.dataSource = self
-        picker4.delegate = self
-        picker4.backgroundColor = UIColor.white
-        picker4.isHidden = true;
-        view.addSubview(picker4)
-        picker5  = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
-        picker5.dataSource = self
-        picker5.delegate = self
-        picker5.backgroundColor = UIColor.white
-        picker5.isHidden = true;
-        view.addSubview(picker5)
-        textField1 = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5, width: view.frame.size.width/1.5, height: 30))
-        customize(textField: textField1, placeholder: "School Code")
-        view.addSubview(textField1)
-        textField2 = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5+60, width: view.frame.size.width/1.5, height: 30))
-        customize(textField: textField2, placeholder: "Grade")
-        view.addSubview(textField2)
-        textField3 = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5+120, width: view.frame.size.width/1.5, height: 30))
-        customize(textField: textField3, placeholder: "Age")
-        view.addSubview(textField3)
-        textField4 = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5+180, width: view.frame.size.width/1.5, height: 30))
-        customize(textField: textField4, placeholder: "Race")
-        view.addSubview(textField4)
-        textField5 = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5+240, width: view.frame.size.width/1.5, height: 30))
-        customize(textField: textField5, placeholder: "Gender")
-        view.addSubview(textField5)
+        pickers = []
+        textFields = []
+        for i in 0...4 {
+            let picker = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
+            picker.dataSource = self
+            picker.delegate = self
+            picker.backgroundColor = UIColor.white
+            picker.isHidden = true;
+            pickers.append(picker)
+            view.addSubview(picker)
+            let textField = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5 + CGFloat(i * 60), width: view.frame.size.width/1.5, height: 30))
+            textFields.append(textField)
+            view.addSubview(textField)
+        }
+        customize(textField: textFields[0], placeholder: "School Code")
+        customize(textField: textFields[1], placeholder: "Grade")
+        customize(textField: textFields[2], placeholder: "Age")
+        customize(textField: textFields[3], placeholder: "Race")
+        customize(textField: textFields[4], placeholder: "Gender")
         loginBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50),fillColor:SKColor.blue,title:"Begin Session",logo:nil,name:"loginBtn")
         loginBtn.zPosition = 9000
         form.addChild(loginBtn)
-        tiles = [tile1, tile2, tile3, tile4, tile5, tile6, tile7, tile8, tile9, tile10, tile11, tile12, tile13, tile14, tile15]
     }
 }
