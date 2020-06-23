@@ -98,6 +98,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var tiles: [SKShapeNode]!
     var numButtons: [SKNode]!
     var form: SKShapeNode!
+    var questionForm: SKShapeNode!
     var passScreen: SKShapeNode!
     var submit: SKShapeNode!
     var submitLabel: SKLabelNode!
@@ -909,21 +910,21 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         submitLabel.fontSize = 40 * ratio
         submitLabel.position = CGPoint(x: 0, y: -submitLabel.frame.height / 2)
         submit.addChild(submitLabel)
-        // Initial screen mode
+        // Initial screen mode and question prompt
         form = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
-        form.name = "form"
-        form.fillColor = SKColor.white
-        form.strokeColor = SKColor.black
-        form.zPosition = 8000
-        self.addChild(form)
-        // Middle screen mode
+        questionForm = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
         passScreen = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
         passScreen.name = "pass"
-        passScreen.fillColor = SKColor.white
-        passScreen.strokeColor = SKColor.black
-        passScreen.zPosition = 8000
-        self.addChild(passScreen)
-        passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
+        let formCrew = [form, questionForm, passScreen]
+        for forms in formCrew {
+            forms!.fillColor = SKColor.white
+            forms!.strokeColor = SKColor.black
+            forms!.zPosition = 8000
+            self.addChild(forms!)
+            if forms! != form {
+                forms!.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
+            }
+        }
         contBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Continue Session", logo:nil, name:"contBtn")
         contBtn.zPosition = 1
         // Creates numberpad for password screen
