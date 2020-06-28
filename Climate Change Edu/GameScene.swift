@@ -96,6 +96,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var p2: CGPoint!
     var p3: CGPoint!
     var tiles: [SKShapeNode]!
+    var tile_labels: [SKLabelNode]!
     var tilePrev: [String]!
     var tileCurr: [String]!
     var numButtons: [SKNode]!
@@ -820,7 +821,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tile_shape.lineWidth = 2 * ratio
         tile_shape.zPosition = 6
         tiles = []
-        var tile_labels:[SKLabelNode] = []
+        tile_labels = []
         // Creates template for tile labels to be used
         let tile_label_teplate = SKLabelNode(fontNamed: "ArialMT")
         tile_label_teplate.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
@@ -886,6 +887,21 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tile_labels[12].text = "Forests"
         tile_labels[13].text = "Oceans"
         tile_labels[14].text = "Greenhouse\n      effect "
+        tile_labels[0].name = "Cooling Temps"
+        tile_labels[1].name = "Warming Temps"
+        tile_labels[2].name = "Fast Changes"
+        tile_labels[3].name = "Moderate Changes"
+        tile_labels[4].name = "Slow Changes"
+        tile_labels[5].name = "Farming"
+        tile_labels[6].name = "Industry"
+        tile_labels[7].name = "Local"
+        tile_labels[8].name = "Regional"
+        tile_labels[9].name = "Global"
+        tile_labels[10].name = "Animals & Plants"
+        tile_labels[11].name = "People"
+        tile_labels[12].name = "Forests"
+        tile_labels[13].name = "Oceans"
+        tile_labels[14].name = "Greenhouse Effect"
         // Aligns text within tile
         for i in 0...14 {
             tile_labels[i].numberOfLines = 3
