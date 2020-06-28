@@ -96,6 +96,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var p2: CGPoint!
     var p3: CGPoint!
     var tiles: [SKShapeNode]!
+    var tilePrev: [String]!
+    var tileCurr: [String]!
     var numButtons: [SKNode]!
     var form: SKShapeNode!
     var questionForm: SKShapeNode!
@@ -236,7 +238,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         API1()
         sequenceApp = sequenceApp + 1
     }
-    
     func stepForward1(){
         passScreen.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
         passScreen.zPosition = zPosUpdater + 2
@@ -244,7 +245,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         sequenceApp = sequenceApp + 1
         followDisable = false
     }
-    
     func stepForward2(){
         passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
         //API2()
@@ -259,12 +259,10 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             stepBackward2()
         }
     }
-    
     func stepBackward1(){
         passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
         sequenceApp = sequenceApp - 1
     }
-    
     func stepBackward2(){
         form.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
         for i in 0...4 {
