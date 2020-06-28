@@ -670,33 +670,30 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         weBG.lineWidth = 4 * ratio
         weBG.name = "we_space"
         gameBG.addChild(weBG)
-        // Create Climate Circle
-        let climateBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
-        climateBG.position = p1
-        climateBG.zPosition = 4
-        climateBG.fillColor = SKColor.blue
-        climateBG.strokeColor = SKColor.black
-        climateBG.lineWidth = 4 * ratio
-        climateBG.name = "c_space"
-        gameBG.addChild(climateBG)
-        // Create Weather Circle
-        let weatherBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
-        weatherBG.position = p2
-        weatherBG.zPosition = 4
-        weatherBG.fillColor = SKColor.red
-        weatherBG.strokeColor = SKColor.black
-        weatherBG.lineWidth = 4 * ratio
-        weatherBG.name = "w_space"
-        gameBG.addChild(weatherBG)
-        // Create Enviroment Circle
-        let enviromBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
-        enviromBG.position = p3
-        enviromBG.zPosition = 4
-        enviromBG.fillColor = SKColor.green
-        enviromBG.strokeColor = SKColor.black
-        enviromBG.lineWidth = 4 * ratio
-        enviromBG.name = "e_space"
-        gameBG.addChild(enviromBG)
+        // Create Climate, Weather, and Enviroment Circle
+        var BG_circles:[SKShapeNode] = []
+        let BG_circle_template = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
+        BG_circle_template.zPosition = 4
+        BG_circle_template.strokeColor = SKColor.black
+        BG_circle_template.lineWidth = 4 * ratio
+        for i in 0...2{
+            let BG_circle = BG_circle_template.copy() as! SKShapeNode
+            if (i == 0) {
+                BG_circle.fillColor = SKColor.blue
+                BG_circle.name = "c_space"
+                BG_circle.position = p1
+            } else if (i == 1) {
+                BG_circle.fillColor = SKColor.red
+                BG_circle.name = "w_space"
+                BG_circle.position = p2
+            } else if (i == 2) {
+                BG_circle.fillColor = SKColor.green
+                BG_circle.name = "e_space"
+                BG_circle.position = p3
+            }
+            BG_circles.append(BG_circle)
+            gameBG.addChild(BG_circle)
+        }
         // Create Immobile Bank Label
         let bankLabel = SKLabelNode(fontNamed: "ArialMT")
         bankLabel.text = "Word Bank"
@@ -715,9 +712,9 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         cLabel.fontSize = 50 * ratio
         wLabel.fontSize = 50 * ratio
         eLabel.fontSize = 50 * ratio
-        cLabel.position = CGPoint(x: climateBG.frame.midX, y: climateBG.frame.midY - (cLabel.fontSize / 2))
-        wLabel.position = CGPoint(x: weatherBG.frame.midX, y: weatherBG.frame.midY - (cLabel.fontSize / 2))
-        eLabel.position = CGPoint(x: enviromBG.frame.midX, y: enviromBG.frame.midY - (cLabel.fontSize / 2))
+        cLabel.position = CGPoint(x: BG_circles[0].frame.midX, y: BG_circles[0].frame.midY - (cLabel.fontSize / 2))
+        wLabel.position = CGPoint(x: BG_circles[1].frame.midX, y: BG_circles[1].frame.midY - (cLabel.fontSize / 2))
+        eLabel.position = CGPoint(x: BG_circles[2].frame.midX, y: BG_circles[2].frame.midY - (cLabel.fontSize / 2))
         cLabel.zPosition = 5
         wLabel.zPosition = 5
         eLabel.zPosition = 5
@@ -739,22 +736,21 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         cwLabel2.fontColor = SKColor.black
         gameBG.addChild(cwLabel1)
         gameBG.addChild(cwLabel2)
-        let ceLabel1 = SKLabelNode(fontNamed: "ArialMT")
-        let ceLabel2 = SKLabelNode(fontNamed: "ArialMT")
-        ceLabel1.text = "Climate and"
-        ceLabel2.text = "Enviroment"
-        ceLabel1.fontSize = 30 * ratio
-        ceLabel2.fontSize = 30 * ratio
-        ceLabel1.position = CGPoint(x: ceBG.frame.midX + (ceLabel1.fontSize * 0.2 * CGFloat(3).squareRoot()), y: ceBG.frame.midY + (ceLabel1.fontSize * 0.2))
-        ceLabel2.position = CGPoint(x: ceBG.frame.midX - (ceLabel2.fontSize * 0.5 * CGFloat(3).squareRoot()), y: ceBG.frame.midY - (ceLabel2.fontSize * 0.5))
-        ceLabel1.zPosition = 5
-        ceLabel2.zPosition = 5
-        ceLabel1.fontColor = SKColor.black
-        ceLabel2.fontColor = SKColor.black
-        ceLabel1.zRotation = -60 * CGFloat.pi / 180
-        ceLabel2.zRotation = -60 * CGFloat.pi / 180
-        gameBG.addChild(ceLabel1)
-        gameBG.addChild(ceLabel2)
+        for i in 0...1 {
+            let ceLabel = SKLabelNode(fontNamed: "ArialMT")
+            ceLabel.fontSize = 30 * ratio
+            ceLabel.zPosition = 5
+            ceLabel.fontColor = SKColor.black
+            ceLabel.zRotation = -60 * CGFloat.pi / 180
+            if (i == 0) {
+                ceLabel.text = "Climate and"
+                ceLabel.position = CGPoint(x: ceBG.frame.midX + (ceLabel.fontSize * 0.2 * CGFloat(3).squareRoot()), y: ceBG.frame.midY + (ceLabel.fontSize * 0.2))
+            } else {
+                ceLabel.text = "Enviroment"
+                ceLabel.position = CGPoint(x: ceBG.frame.midX - (ceLabel.fontSize * 0.5 * CGFloat(3).squareRoot()), y: ceBG.frame.midY - (ceLabel.fontSize * 0.5))
+            }
+            gameBG.addChild(ceLabel)
+        }
         let weLabel1 = SKLabelNode(fontNamed: "ArialMT")
         let weLabel2 = SKLabelNode(fontNamed: "ArialMT")
         weLabel1.text = "Enviroment"
@@ -792,10 +788,17 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             naLabel.fontSize = 30 * ratio
             naLabel.zPosition = 5
             naLabel.fontColor = SKColor.black
-            naLabel.position = CGPoint(x: 7 * screenWidth / CGFloat((i%2)*40 - 20), y: (i/2 == 0) ? (weatherBG.frame.midY + (3 * enviromBG.frame.midY)) / 4 : (enviromBG.frame.midY - screenHeight) / 3)
+            naLabel.position = CGPoint(x: 7 * screenWidth / CGFloat((i%2)*40 - 20), y: (i/2 == 0) ? (BG_circles[1].frame.midY + (3 * BG_circles[2].frame.midY)) / 4 : (BG_circles[2].frame.midY - screenHeight) / 3)
             gameBG.addChild(naLabel)
         }
         // Establish draggable tiles in bulk
+        // Creates locational tags for questionaire
+        tilePrev = []
+        tileCurr = []
+        for _ in 0...14 {
+            tilePrev.append("Bank")
+            tileCurr.append("Bank")
+        }
         // Dimentional variables
         let tileMin = bottomMargin + midMargin + (0.6 * circleWidth)
         let tileMax = screenHeight / 2
