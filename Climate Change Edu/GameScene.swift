@@ -97,8 +97,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var p3: CGPoint!
     var tiles: [SKShapeNode]!
     var tile_labels: [SKLabelNode]!
-    var tilePrev: [String]!
-    var tileCurr: [String]!
+    var tilePrev: [String] = []
+    var tileCurr: [String] = []
     var numButtons: [SKNode]!
     var form: SKShapeNode!
     var questionForm: SKShapeNode!
@@ -585,8 +585,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     }
     
     private func initializeMenu() {
+        // THE NEXT 80 lines are just dog shit code design. Good luck.
         // Declaring constants to determine object sizing
-        // THE NEXT 200 lines are just dog shit code design. Good luck.
         let screenSize: CGRect = UIScreen.main.bounds
         let screenWidth = screenSize.width
         let screenHeight = screenSize.height
@@ -670,27 +670,21 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         weBG.lineWidth = 4 * ratio
         weBG.name = "we_space"
         gameBG.addChild(weBG)
+        let gameBarList = [ceBG, cwBG, weBG]
         // Create Climate, Weather, and Enviroment Circle
         var BG_circles:[SKShapeNode] = []
         let BG_circle_template = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
         BG_circle_template.zPosition = 4
         BG_circle_template.strokeColor = SKColor.black
         BG_circle_template.lineWidth = 4 * ratio
+        let BG_cicle_pos = [p1, p2, p3]
+        let BG_cicle_color = [SKColor.blue, SKColor.red, SKColor.green]
+        let BG_cicle_names = ["c_space", "w_space", "e_space"]
         for i in 0...2{
             let BG_circle = BG_circle_template.copy() as! SKShapeNode
-            if (i == 0) {
-                BG_circle.fillColor = SKColor.blue
-                BG_circle.name = "c_space"
-                BG_circle.position = p1
-            } else if (i == 1) {
-                BG_circle.fillColor = SKColor.red
-                BG_circle.name = "w_space"
-                BG_circle.position = p2
-            } else if (i == 2) {
-                BG_circle.fillColor = SKColor.green
-                BG_circle.name = "e_space"
-                BG_circle.position = p3
-            }
+            BG_circle.position = BG_cicle_pos[i]!
+            BG_circle.fillColor = BG_cicle_color[i]
+            BG_circle.name = BG_cicle_names[i]
             BG_circles.append(BG_circle)
             gameBG.addChild(BG_circle)
         }
@@ -703,70 +697,43 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         bankLabel.fontColor = SKColor.black
         gameBG.addChild(bankLabel)
         // Create Immobile Circle Labels
-        let cLabel = SKLabelNode(fontNamed: "ArialMT")
-        let wLabel = SKLabelNode(fontNamed: "ArialMT")
-        let eLabel = SKLabelNode(fontNamed: "ArialMT")
-        cLabel.text = "Climate"
-        wLabel.text = "Weather"
-        eLabel.text = "Enviroment"
-        cLabel.fontSize = 50 * ratio
-        wLabel.fontSize = 50 * ratio
-        eLabel.fontSize = 50 * ratio
-        cLabel.position = CGPoint(x: BG_circles[0].frame.midX, y: BG_circles[0].frame.midY - (cLabel.fontSize / 2))
-        wLabel.position = CGPoint(x: BG_circles[1].frame.midX, y: BG_circles[1].frame.midY - (cLabel.fontSize / 2))
-        eLabel.position = CGPoint(x: BG_circles[2].frame.midX, y: BG_circles[2].frame.midY - (cLabel.fontSize / 2))
-        cLabel.zPosition = 5
-        wLabel.zPosition = 5
-        eLabel.zPosition = 5
-        gameBG.addChild(cLabel)
-        gameBG.addChild(wLabel)
-        gameBG.addChild(eLabel)
+        let circleLabelText = ["Climate", "Weather", "Enviroment"]
+        for i in 0...2 {
+            let cicleLabel = SKLabelNode(fontNamed: "ArialMT")
+            cicleLabel.fontSize = 50 * ratio
+            cicleLabel.position = CGPoint(x: BG_circles[i].frame.midX, y: BG_circles[i].frame.midY - (cicleLabel.fontSize / 2))
+            cicleLabel.zPosition = 5
+            cicleLabel.text = circleLabelText[i]
+            gameBG.addChild(cicleLabel)
+        }
         // Create Immobile Bar Labels
+        let rotation1 = -60 * CGFloat.pi / 180
+        let rotation2 = 60 * CGFloat.pi / 180
+        let barLabelRotation = [rotation1, rotation1, 0, 0, rotation2, rotation2]
+        let barLabelText = ["Climate and", "Enviroment", "Climate and", "Weather", "Enviroment", "and Weather"]
+        let barLabelOriginX = [6 * ratio * CGFloat(3).squareRoot(), -15 * ratio * CGFloat(3).squareRoot(), 0, 0, -6 * ratio * CGFloat(3).squareRoot(), 15 * ratio * CGFloat(3).squareRoot()]
+        let barLabelOriginY = [6 * ratio, -15 * ratio, 6 * ratio, -36 * ratio, 6 * ratio, -15 * ratio]
         for i in 0...5 {
             let barLabel = SKLabelNode(fontNamed: "ArialMT")
             barLabel.fontSize = 30 * ratio
             barLabel.zPosition = 5
             barLabel.fontColor = SKColor.black
-            if (i == 0 || i == 1) {
-                barLabel.zRotation = -60 * CGFloat.pi / 180
-            } else if (i == 4 || i == 5) {
-                barLabel.zRotation = 60 * CGFloat.pi / 180
-            }
-            if (i == 0) {
-                barLabel.text = "Climate and"
-                barLabel.position = CGPoint(x: ceBG.frame.midX + (barLabel.fontSize * 0.2 * CGFloat(3).squareRoot()), y: ceBG.frame.midY + (barLabel.fontSize * 0.2))
-            } else if (i == 1) {
-                barLabel.text = "Enviroment"
-                barLabel.position = CGPoint(x: ceBG.frame.midX - (barLabel.fontSize * 0.5 * CGFloat(3).squareRoot()), y: ceBG.frame.midY - (barLabel.fontSize * 0.5))
-            } else if (i == 2) {
-                barLabel.text = "Climate and"
-                barLabel.position = CGPoint(x: cwBG.frame.midX, y: cwBG.frame.midY + (barLabel.fontSize * 0.2))
-            } else if (i == 3) {
-                barLabel.text = "Weather"
-                barLabel.position = CGPoint(x: cwBG.frame.midX, y: cwBG.frame.midY - (barLabel.fontSize * 1.2))
-            } else if (i == 4) {
-                barLabel.text = "Enviroment"
-                barLabel.position = CGPoint(x: weBG.frame.midX - (barLabel.fontSize * 0.2 * CGFloat(3).squareRoot()), y: weBG.frame.midY + (barLabel.fontSize * 0.2))
-            } else if (i == 5) {
-                barLabel.text = "and Weather"
-                barLabel.position = CGPoint(x: weBG.frame.midX + (barLabel.fontSize * 0.5 * CGFloat(3).squareRoot()), y: weBG.frame.midY - (barLabel.fontSize * 0.5))
-            }
+            barLabel.zRotation = barLabelRotation[i]
+            barLabel.text = barLabelText[i]
+            barLabel.position = CGPoint(x: gameBarList[(i/2)].frame.midX + barLabelOriginX[i], y: gameBarList[(i/2)].frame.midY + barLabelOriginY[i])
             gameBG.addChild(barLabel)
         }
         //Creates cwe labels
-        var cweLabels:[SKLabelNode] = []
+        let cweLabelsText = ["Enviroment and", "Weather and", "Climate"]
         for i in 0...2 {
             let cweLabel = SKLabelNode(fontNamed: "ArialMT")
+            cweLabel.text = cweLabelsText[i]
             cweLabel.fontSize = 30 * ratio
             cweLabel.zPosition = 5
             cweLabel.fontColor = SKColor.black
             cweLabel.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel.fontSize * (3.8 - CGFloat(i)*1.4)))
             gameBG.addChild(cweLabel)
-            cweLabels.append(cweLabel)
         }
-        cweLabels[0].text = "Enviroment and"
-        cweLabels[1].text = "Weather and"
-        cweLabels[2].text = "Climate"
         // creates N/A lables
         for i in 0...3 {
             let naLabel = SKLabelNode(fontNamed: "ArialMT")
@@ -779,8 +746,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         }
         // Establish draggable tiles in bulk
         // Creates locational tags for questionaire
-        tilePrev = []
-        tileCurr = []
         for _ in 0...14 {
             tilePrev.append("Bank")
             tileCurr.append("Bank")
@@ -828,6 +793,9 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         let spriteOffset = (temporaryValue1 / 2) + (3 * ratio)
         let spritePos = CGPoint(x: spriteOffset, y: 0)
         let spriteSize = CGSize(width: tileHeight - (2 * ratio), height: tileHeight - (2 * ratio))
+        // Labels and associated position for tiles
+        let tile_labelsText = ["Cooling\n temps ", "Warming\n  temps ", "   Fast \nchanges", "Moderate\nchanges", "   Slow \nchanges", "Farming", "Industry", "Local", "Regional", "Global", "Animals\n& plants", "People", "Forests", "Oceans", "Greenhouse\n      effect "]
+        let tile_labelsName = ["Cooling Temps", "Warming Temps", "Fast Changes", "Moderate Changes", "Slow Changes", "Farming", "Industry", "Local", "Regional", "Global", "Animals & Plants", "People", "Forests", "Oceans", "Greenhouse Effect"]
         // Assign tile properties, append to game board as children
         for i in 0...14 {
             //tile
@@ -837,6 +805,10 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             gameBG.addChild(tile)
             //label
             let tile_label = tile_label_teplate.copy() as! SKLabelNode
+            tile_label.text = tile_labelsText[i]
+            tile_label.name = tile_labelsName[i]
+            tile_label.numberOfLines = 3
+            tile_label.preferredMaxLayoutWidth = tileLengthOriginal
             tile_labels.append(tile_label)
             tile.addChild(tile_label)
             //static color
@@ -859,42 +831,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             tileSprite.position = spritePos
             tileSprite.zPosition = 1
             tile.addChild(tileSprite)
-        }
-        // Labels and associated position for tiels
-        tile_labels[0].text = "Cooling\n temps "
-        tile_labels[1].text = "Warming\n  temps "
-        tile_labels[2].text = "   Fast \nchanges"
-        tile_labels[3].text = "Moderate\nchanges"
-        tile_labels[4].text = "   Slow \nchanges"
-        tile_labels[5].text = "Farming"
-        tile_labels[6].text = "Industry"
-        tile_labels[7].text = "Local"
-        tile_labels[8].text = "Regional"
-        tile_labels[9].text = "Global"
-        tile_labels[10].text = "Animals\n& plants"
-        tile_labels[11].text = "People"
-        tile_labels[12].text = "Forests"
-        tile_labels[13].text = "Oceans"
-        tile_labels[14].text = "Greenhouse\n      effect "
-        tile_labels[0].name = "Cooling Temps"
-        tile_labels[1].name = "Warming Temps"
-        tile_labels[2].name = "Fast Changes"
-        tile_labels[3].name = "Moderate Changes"
-        tile_labels[4].name = "Slow Changes"
-        tile_labels[5].name = "Farming"
-        tile_labels[6].name = "Industry"
-        tile_labels[7].name = "Local"
-        tile_labels[8].name = "Regional"
-        tile_labels[9].name = "Global"
-        tile_labels[10].name = "Animals & Plants"
-        tile_labels[11].name = "People"
-        tile_labels[12].name = "Forests"
-        tile_labels[13].name = "Oceans"
-        tile_labels[14].name = "Greenhouse Effect"
-        // Aligns text within tile
-        for i in 0...14 {
-            tile_labels[i].numberOfLines = 3
-            tile_labels[i].preferredMaxLayoutWidth = tileLengthOriginal
         }
         // Submit button
         submit = SKShapeNode.init(ellipseOf: CGSize.init(width: screenWidth/3, height: screenWidth/10))
@@ -972,11 +908,10 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             textFields.append(textField)
             view.addSubview(textField)
         }
-        customize(textField: textFields[0], placeholder: "School Code")
-        customize(textField: textFields[1], placeholder: "Grade")
-        customize(textField: textFields[2], placeholder: "Age")
-        customize(textField: textFields[3], placeholder: "Race")
-        customize(textField: textFields[4], placeholder: "Gender")
+        let textFieldPlacholders = ["School Code", "Grade", "Age", "Race", "Gender"]
+        for i in 0...4{
+            customize(textField: textFields[i], placeholder: textFieldPlacholders[i])
+        }
         loginBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50),fillColor:SKColor.blue,title:"Begin Session",logo:nil,name:"loginBtn")
         loginBtn.zPosition = 9000
         form.addChild(loginBtn)
