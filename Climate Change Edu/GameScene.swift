@@ -784,10 +784,11 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tile_label_teplate.position = CGPoint(x: (tileHeight / 2), y: 0)
         tile_label_teplate.fontColor = SKColor.black
         tile_label_teplate.zPosition = 2
-        // Creates template for the tile static color TODO
+        // Creates template for the tile static color
         let tile_color_template = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
         tile_color_template.zPosition = 1
         tile_color_template.strokeColor = SKColor.black
+        let tile_colors = [SKColor.yellow, SKColor.yellow, SKColor.green, SKColor.green, SKColor.green, SKColor.cyan, SKColor.cyan, SKColor.red, SKColor.red, SKColor.red, SKColor.blue, SKColor.blue, SKColor.blue, SKColor.blue, SKColor.blue]
         // Create Sprite constants
         let temporaryValue1 = ((tileHeight - (2 * ratio)) - tileLength)
         let spriteOffset = (temporaryValue1 / 2) + (3 * ratio)
@@ -813,17 +814,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             tile.addChild(tile_label)
             //static color
             let tile_color = tile_color_template.copy() as! SKShapeNode
-            if 0...1 ~= i {
-                tile_color.fillColor = SKColor.yellow
-            } else if 2...4 ~= i {
-                tile_color.fillColor = SKColor.green
-            } else if 5...6 ~= i {
-                tile_color.fillColor = SKColor.cyan
-            } else if 7...9 ~= i {
-                tile_color.fillColor = SKColor.red
-            } else if 10...14 ~= i {
-                tile_color.fillColor = SKColor.blue
-            }
+            tile_color.fillColor = tile_colors[i]
             tile.addChild(tile_color)
             //sprite
             let tileSprite = SKSpriteNode(imageNamed: "TileSprite-\(i+1)")
