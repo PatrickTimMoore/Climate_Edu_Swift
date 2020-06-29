@@ -592,7 +592,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         let screenHeight = screenSize.height
         gameBG = SKShapeNode()
         self.addChild(gameBG)
-        // Determines ratio
+        // Determines screen ratio to maintain constant size
         let ratio: CGFloat = (screenWidth / CGFloat(850))
         circleWidth = (ratio * CGFloat(270))
         let barWidth: CGFloat = ratio * 110
@@ -631,7 +631,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         cweBG.fillColor = SKColor.white
         cweBG.name = "cwe_space"
         gameBG.addChild(cweBG)
-        // Create Combo Area
+        // Create Combo Area 1
         let cwBG = SKShapeNode()
         cwBG.position = CGPoint(x: 0, y: 0)
         cwBG.zPosition = 3
@@ -644,7 +644,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         cwBG.lineWidth = 4 * ratio
         cwBG.name = "cw_space"
         gameBG.addChild(cwBG)
-        // Create Combo Area
+        // Create Combo Area 2
         let ceBG = SKShapeNode()
         ceBG.position = CGPoint(x: 0, y: 0)
         ceBG.zPosition = 3
@@ -657,7 +657,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         ceBG.lineWidth = 4 * ratio
         ceBG.name = "ce_space"
         gameBG.addChild(ceBG)
-        // Create Combo Area
+        // Create Combo Area 3
         let weBG = SKShapeNode()
         weBG.position = CGPoint(x: 0, y: 0)
         weBG.zPosition = 3
