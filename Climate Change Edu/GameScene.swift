@@ -722,51 +722,37 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         gameBG.addChild(wLabel)
         gameBG.addChild(eLabel)
         // Create Immobile Bar Labels
-        let cwLabel1 = SKLabelNode(fontNamed: "ArialMT")
-        let cwLabel2 = SKLabelNode(fontNamed: "ArialMT")
-        cwLabel1.text = "Climate and"
-        cwLabel2.text = "Weather"
-        cwLabel1.fontSize = 30 * ratio
-        cwLabel2.fontSize = 30 * ratio
-        cwLabel1.position = CGPoint(x: cwBG.frame.midX, y: cwBG.frame.midY + (cwLabel1.fontSize * 0.2))
-        cwLabel2.position = CGPoint(x: cwBG.frame.midX, y: cwBG.frame.midY - (cwLabel2.fontSize * 1.2))
-        cwLabel1.zPosition = 5
-        cwLabel2.zPosition = 5
-        cwLabel1.fontColor = SKColor.black
-        cwLabel2.fontColor = SKColor.black
-        gameBG.addChild(cwLabel1)
-        gameBG.addChild(cwLabel2)
-        for i in 0...1 {
-            let ceLabel = SKLabelNode(fontNamed: "ArialMT")
-            ceLabel.fontSize = 30 * ratio
-            ceLabel.zPosition = 5
-            ceLabel.fontColor = SKColor.black
-            ceLabel.zRotation = -60 * CGFloat.pi / 180
-            if (i == 0) {
-                ceLabel.text = "Climate and"
-                ceLabel.position = CGPoint(x: ceBG.frame.midX + (ceLabel.fontSize * 0.2 * CGFloat(3).squareRoot()), y: ceBG.frame.midY + (ceLabel.fontSize * 0.2))
-            } else {
-                ceLabel.text = "Enviroment"
-                ceLabel.position = CGPoint(x: ceBG.frame.midX - (ceLabel.fontSize * 0.5 * CGFloat(3).squareRoot()), y: ceBG.frame.midY - (ceLabel.fontSize * 0.5))
+        for i in 0...5 {
+            let barLabel = SKLabelNode(fontNamed: "ArialMT")
+            barLabel.fontSize = 30 * ratio
+            barLabel.zPosition = 5
+            barLabel.fontColor = SKColor.black
+            if (i == 0 || i == 1) {
+                barLabel.zRotation = -60 * CGFloat.pi / 180
+            } else if (i == 4 || i == 5) {
+                barLabel.zRotation = 60 * CGFloat.pi / 180
             }
-            gameBG.addChild(ceLabel)
+            if (i == 0) {
+                barLabel.text = "Climate and"
+                barLabel.position = CGPoint(x: ceBG.frame.midX + (barLabel.fontSize * 0.2 * CGFloat(3).squareRoot()), y: ceBG.frame.midY + (barLabel.fontSize * 0.2))
+            } else if (i == 1) {
+                barLabel.text = "Enviroment"
+                barLabel.position = CGPoint(x: ceBG.frame.midX - (barLabel.fontSize * 0.5 * CGFloat(3).squareRoot()), y: ceBG.frame.midY - (barLabel.fontSize * 0.5))
+            } else if (i == 2) {
+                barLabel.text = "Climate and"
+                barLabel.position = CGPoint(x: cwBG.frame.midX, y: cwBG.frame.midY + (barLabel.fontSize * 0.2))
+            } else if (i == 3) {
+                barLabel.text = "Weather"
+                barLabel.position = CGPoint(x: cwBG.frame.midX, y: cwBG.frame.midY - (barLabel.fontSize * 1.2))
+            } else if (i == 4) {
+                barLabel.text = "Enviroment"
+                barLabel.position = CGPoint(x: weBG.frame.midX - (barLabel.fontSize * 0.2 * CGFloat(3).squareRoot()), y: weBG.frame.midY + (barLabel.fontSize * 0.2))
+            } else if (i == 5) {
+                barLabel.text = "and Weather"
+                barLabel.position = CGPoint(x: weBG.frame.midX + (barLabel.fontSize * 0.5 * CGFloat(3).squareRoot()), y: weBG.frame.midY - (barLabel.fontSize * 0.5))
+            }
+            gameBG.addChild(barLabel)
         }
-        let weLabel1 = SKLabelNode(fontNamed: "ArialMT")
-        let weLabel2 = SKLabelNode(fontNamed: "ArialMT")
-        weLabel1.text = "Enviroment"
-        weLabel2.text = "and Weather"
-        weLabel1.fontSize = 30 * ratio
-        weLabel2.fontSize = 30 * ratio
-        weLabel1.position = CGPoint(x: weBG.frame.midX - (weLabel1.fontSize * 0.2 * CGFloat(3).squareRoot()), y: weBG.frame.midY + (weLabel1.fontSize * 0.2))
-        weLabel2.position = CGPoint(x: weBG.frame.midX + (weLabel2.fontSize * 0.5 * CGFloat(3).squareRoot()), y: weBG.frame.midY - (weLabel2.fontSize * 0.5))
-        weLabel1.zPosition = 5
-        weLabel2.zPosition = 5
-        weLabel1.fontColor = SKColor.black
-        weLabel2.fontColor = SKColor.black
-        weLabel1.zRotation = 60 * CGFloat.pi / 180
-        weLabel2.zRotation = 60 * CGFloat.pi / 180
-        gameBG.addChild(weLabel1)
-        gameBG.addChild(weLabel2)
         //Creates cwe labels
         var cweLabels:[SKLabelNode] = []
         for i in 0...2 {
