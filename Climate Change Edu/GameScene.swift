@@ -118,6 +118,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var remainingInBank: Int = 15
     var dictLookup: Int!
     var sequenceApp: Int = 1
+    var questionState: Bool = false
     var spinLockState: Int = 0
     var followDisable: Bool = false
     var resetCounter: Int!
@@ -215,7 +216,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         task.resume()
     }
     
-    // API Validators
+    // API and State Validators
     func validate1(){
         // Validate submit info and then send to SQL server
         // Then set up game
@@ -288,6 +289,19 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         remainingInBank = 15
         sequenceApp = 1
     }
+    func questionaire1(){
+        questionState = true
+        //Lock State
+        //Move Field down
+        //Pull tile data
+        //Fill questions with tile data
+    } // TODO
+    func questionaire2(){
+        //Move Field up
+        //Make API call
+        //Unlock State
+        questionState = false
+    } // TODO
     
     // Function runs on start of the aplication
     override func didMove(to view: SKView) {
