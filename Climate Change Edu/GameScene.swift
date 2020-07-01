@@ -106,6 +106,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var submit: SKShapeNode!
     var submitLabel: SKLabelNode!
     var contBtn: SKShapeNode!
+    var questionBtn: SKShapeNode!
     var nodeToMove: SKNode!
     var locationOld: CGPoint!
     var zPosUpdater: CGFloat!
@@ -216,6 +217,13 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         task.resume()
     }
     
+    // Question helper
+    func setTileHistory(node:SKShapeNode, text:String){
+        let tileIndex = tiles.firstIndex(of: node)
+        tilePrev[tileIndex!] = tileCurr[tileIndex!]
+        tileCurr[tileIndex!] = text
+    }
+    
     // API and State Validators
     func validate1(){
         // Validate submit info and then send to SQL server
@@ -286,20 +294,27 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             // Updates bank count
             remainingInBank = remainingInBank + 1
         }
+        for i in 0...14 {
+            tileCurr[i] = "Bank"
+            tilePrev[i] = "Bank"
+        }
         remainingInBank = 15
         sequenceApp = 1
     }
-    func questionaire1(){
+    func questionaire1(node:SKShapeNode){
+        let tileIndex = tiles.firstIndex(of: node)
+        if tilePrev[tileIndex!] == tileCurr[tileIndex!]{
+            return
+        }
         questionState = true
-        //Lock State
-        //Move Field down
-        //Pull tile data
-        //Fill questions with tile data
+        questionForm.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
+        questionForm.zPosition = zPosUpdater + 2
+        //questionBtn.run(SKAction.fadeAlpha(to: 0, duration: 0))
+        //Fill questions with tile data TODO
     } // TODO
     func questionaire2(){
-        //Move Field up
-        //Make API call
-        //Unlock State
+        questionForm.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
+        //Make API call TODO
         questionState = false
     } // TODO
     
@@ -313,7 +328,21 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     // Function runs on initial screen touch
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Add on-click functionality here
-        if sequenceApp == 1 {
+        if questionState == true {
+            followDisable = true
+            for touch in touches {
+                let location = touch.location(in: self)
+                // Creates list of nodes sorted by Z-value at touch location
+                let touchedNode = self.nodes(at: location)
+                // Checks for first 'tile' node
+                for node in touchedNode {
+                    if node.name == "questionBtn" && !node.hasActions(){
+                        questionaire2()
+                        break
+                    }
+                }
+            }
+        } else if sequenceApp == 1 {
             followDisable = true
             for touch in touches {
                 let location = touch.location(in: self)
@@ -533,41 +562,58 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                                 castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
                                 nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
+                                setTileHistory(node: castedNode, text: "Climate")
+                                questionaire1(node: castedNode)
                                 break
                             } else if (node.name == "w_space") && (distance(locationEnd, p2) < circleWidth / 2) {
                                 castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
                                 nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
+                                setTileHistory(node: castedNode, text: "Weather")
+                                questionaire1(node: castedNode)
                                 break
                             } else if (node.name == "e_space") && (distance(locationEnd, p3) < circleWidth / 2) {
                                 castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
                                 nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
+                                setTileHistory(node: castedNode, text: "Enviroment")
+                                questionaire1(node: castedNode)
                                 break
                             }
                         } else if node.name == "cwe_space" && (locationEnd.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) {
                             nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                             nodeFound = true
+                            setTileHistory(node: castedNode, text: "Climate, Weather, and Enviroment")
+                            questionaire1(node: castedNode)
                             break
                         } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
                             nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                             nodeFound = true
                             if node.name == "cw_space" {
                                 castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
+                                setTileHistory(node: castedNode, text: "Climate and Weather")
+                                questionaire1(node: castedNode)
                                 break
                             } else if node.name == "we_space" && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) && (locationEnd.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (locationEnd.x - weBar[3].x) + weBar[3].y)) {
                                 nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
                                 castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1/2, alpha: 1)
+                                setTileHistory(node: castedNode, text: "Weather and Enviroment")
+                                questionaire1(node: castedNode)
+                                break
                             } else if node.name == "ce_space" && (locationEnd.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (locationEnd.x - ceBar[3].x) + ceBar[3].y)) && (locationEnd.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) {
                                 nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
                                 castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1, alpha: 1)
+                                setTileHistory(node: castedNode, text: "Climate and Enviroment")
+                                questionaire1(node: castedNode)
+                                break
                             }
-                            break
                         } else if node.name == "na_space" {
                             nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
                             nodeFound = true
+                            setTileHistory(node: castedNode, text: "Unrelated")
+                            questionaire1(node: castedNode)
                             break
                         }
                     }
@@ -857,6 +903,9 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         // Initial screen mode and question prompt
         form = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
         questionForm = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
+        questionBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Continue Session", logo:nil, name:"questionBtn")
+        questionBtn.zPosition = 1
+        questionForm.addChild(questionBtn)
         passScreen = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
         passScreen.name = "pass"
         let formCrew = [form, questionForm, passScreen]
@@ -869,8 +918,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                 forms!.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
             }
         }
-        contBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Continue Session", logo:nil, name:"contBtn")
-        contBtn.zPosition = 1
         // Creates numberpad for password screen
         let numPad_template = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
         numPad_template.fillColor = SKColor.lightGray
@@ -895,6 +942,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             numPad.addChild(numPadtxt)
             passScreen.addChild(numPad)
         }
+        contBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Continue Session", logo:nil, name:"contBtn")
+        contBtn.zPosition = 1
         passScreen.addChild(contBtn)
         // Add text fields/pickers for initial state
         guard let view = self.view else { return }
