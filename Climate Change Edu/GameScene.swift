@@ -95,6 +95,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var p1: CGPoint!
     var p2: CGPoint!
     var p3: CGPoint!
+    var tileIndex: Int!
     var tiles: [SKShapeNode]!
     var tile_labels: [SKLabelNode]!
     var tilePrev: [String] = []
@@ -124,6 +125,13 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var followDisable: Bool = false
     var resetCounter: Int!
     var tileHeight: CGFloat!
+    //UIButton setup -- manual magic values
+    var questionPrompt1: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
+    var questionPrompt2: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
+    var q1: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
+    var q2: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
+    var q3: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
+    var q4: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
     
     // UIKit Intergration
     var loginBtn:SKShapeNode!
@@ -219,9 +227,15 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     
     // Question helper
     func setTileHistory(node:SKShapeNode, text:String){
-        let tileIndex = tiles.firstIndex(of: node)
+        tileIndex = tiles.firstIndex(of: node)
         tilePrev[tileIndex!] = tileCurr[tileIndex!]
         tileCurr[tileIndex!] = text
+        questionPrompt1.text = "I see you’re saying \(tile_labels[tileIndex].name!) are somehow related to \(tileCurr[tileIndex]). Please answer the following relationships."
+        questionPrompt1.numberOfLines = 2
+        questionPrompt1.preferredMaxLayoutWidth = questionPrompt1.parent!.frame.width * 0.95
+        questionPrompt2.text = "Now let’s think about the opposite relationship, if any."
+        questionPrompt2.numberOfLines = 2
+        questionPrompt2.preferredMaxLayoutWidth = questionPrompt2.parent!.frame.width * 0.95
     }
     
     // API and State Validators
@@ -634,6 +648,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                         if remainingInBank == 1 {
                             submit.run(SKAction.fadeAlpha(to: 0, duration: 0.2))
                         }
+                        setTileHistory(node: castedNode, text: "Bank")
+                        questionaire1(node: castedNode)
                     }
                 }
                 // Displays submit if bank is empty
@@ -937,6 +953,27 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                 forms!.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
             }
         }
+        // Creates question headers
+        questionPrompt1.zPosition = 1
+        questionPrompt1.fontColor = SKColor.black
+        questionPrompt1.fontSize = 25 * ratio
+        questionPrompt1.position = CGPoint(x: 0, y: questionForm.frame.maxY - 75 * ratio)
+        questionForm.addChild(questionPrompt1)
+        questionPrompt2.zPosition = -1
+        questionPrompt2.fontColor = SKColor.black
+        questionPrompt2.fontSize = 25 * ratio
+        questionPrompt2.position = CGPoint(x: 0, y: questionForm.frame.maxY - 75 * ratio)
+        questionForm.addChild(questionPrompt2)
+        // Creates question prompts
+        q1.text = "Which of the following do you think is most right? (check all that apply)"
+        q2.text = "Is the relationship generally good or bad?"
+        q3.text = "Is the relationship major or minor?"
+        q4.text = "Are you sure or unsure about the relationship?"
+        q1.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        q1.position = CGPoint(x: questionForm.frame.minX, y: 0)
+        q1.fontSize = 18 * ratio
+        q1.zPosition = 1
+        questionForm.addChild(q1)
         // Creates numberpad for password screen
         let numPad_template = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
         numPad_template.fillColor = SKColor.lightGray
