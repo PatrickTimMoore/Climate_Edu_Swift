@@ -300,6 +300,9 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         }
         remainingInBank = 15
         sequenceApp = 1
+        for i in 0...4{
+            textFields[i].text = nil
+        }
     }
     func questionaire1(node:SKShapeNode){
         let tileIndex = tiles.firstIndex(of: node)
@@ -500,13 +503,13 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                     for node in touchedNodeMid {
                         if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
                             if (node.name == "c_space") && (distance(location, p1) < circleWidth / 2) {
-                                castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1/2, green: 143/255, blue: 1, alpha: 1)
                                 break
                             } else if (node.name == "w_space") && (distance(location, p2) < circleWidth / 2) {
-                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1, green: 143/255, blue: 1/2, alpha: 1)
                                 break
                             } else if (node.name == "e_space") && (distance(location, p3) < circleWidth / 2) {
-                                castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1/2, green: 215/255, blue: 1/2, alpha: 1)
                                 break
                             }
                         } else if node.name == "cwe_space" && (location.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) {
@@ -514,7 +517,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             break
                         } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
                             if node.name == "cw_space" {
-                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1, green: 159/255, blue: 1, alpha: 1)
                                 break
                             } else if node.name == "we_space" && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) && (location.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (location.x - weBar[3].x) + weBar[3].y)) {
                                 castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1/2, alpha: 1)
@@ -524,7 +527,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                                 break
                             }
                         } else if node.name == "na_space" {
-                            castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
+                            castedNode.fillColor = SKColor(red: 210/255, green: 210/255, blue: 210/255, alpha: 1)
                             break
                         } else {
                             castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
@@ -559,21 +562,21 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                         // Performs the resizing, recoloring, and reangling!
                         if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
                             if (node.name == "c_space") && (distance(locationEnd, p1) < circleWidth / 2) {
-                                castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1/2, green: 143/255, blue: 1, alpha: 1)
                                 nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
                                 setTileHistory(node: castedNode, text: "Climate")
                                 questionaire1(node: castedNode)
                                 break
                             } else if (node.name == "w_space") && (distance(locationEnd, p2) < circleWidth / 2) {
-                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1, green: 143/255, blue: 1/2, alpha: 1)
                                 nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
                                 setTileHistory(node: castedNode, text: "Weather")
                                 questionaire1(node: castedNode)
                                 break
                             } else if (node.name == "e_space") && (distance(locationEnd, p3) < circleWidth / 2) {
-                                castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1/2, green: 215/255, blue: 1/2, alpha: 1)
                                 nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
                                 setTileHistory(node: castedNode, text: "Enviroment")
@@ -591,7 +594,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                             nodeFound = true
                             if node.name == "cw_space" {
-                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1, green: 159/255, blue: 1, alpha: 1)
                                 setTileHistory(node: castedNode, text: "Climate and Weather")
                                 questionaire1(node: castedNode)
                                 break
@@ -610,7 +613,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             }
                         } else if node.name == "na_space" {
                             nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
-                            castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
+                            castedNode.fillColor = SKColor(red: 210/255, green: 210/255, blue: 210/255, alpha: 1)
                             nodeFound = true
                             setTileHistory(node: castedNode, text: "Unrelated")
                             questionaire1(node: castedNode)
@@ -676,7 +679,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         let naSpace: [CGPoint] = [CGPoint(x: -(halfScreenWidth) - (4 * ratio), y: midMargin + bottomMargin + (0.6 * circleWidth)), CGPoint(x: -(halfScreenWidth) - (4 * ratio), y: (screenHeight / -2) - (4 * ratio)), CGPoint(x: halfScreenWidth + (4 * ratio), y: (screenHeight / -2) - (4 * ratio)), CGPoint(x: halfScreenWidth + (4 * ratio), y: midMargin + bottomMargin + (0.6 * circleWidth))]
         path5.addLines(between: [naSpace[0], naSpace[1], naSpace[2], naSpace[3], naSpace[0]])
         naBG.path = path5
-        naBG.fillColor = SKColor.lightGray
+        naBG.fillColor = SKColor(red: 166/255, green: 166/255, blue: 166/255, alpha: 1)
         naBG.strokeColor = SKColor.black
         naBG.lineWidth = 4 * ratio
         naBG.name = "na_space"
@@ -699,7 +702,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         let cwBar = [CGPoint(x: p1.x, y: p1.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y - (barWidth / 2)), CGPoint(x: p1.x, y: p1.y - (barWidth / 2))]
         path2.addLines(between: [cwBar[0], cwBar[1], cwBar[2], cwBar[3], cwBar[0]])
         cwBG.path = path2
-        cwBG.fillColor = SKColor.magenta
+        cwBG.fillColor = SKColor(red: 1, green: 63/255, blue: 1, alpha: 1)
         cwBG.strokeColor = SKColor.black
         cwBG.lineWidth = 4 * ratio
         cwBG.name = "cw_space"
@@ -712,7 +715,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         ceBar = [CGPoint(x: p1.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p1.y + (barWidth / 4)), CGPoint(x: p3.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y + (barWidth / 4)), CGPoint(x: p3.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y - (barWidth / 4)), CGPoint(x: p1.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p1.y - (barWidth / 4))]
         path3.addLines(between: [ceBar[0], ceBar[1], ceBar[2], ceBar[3], ceBar[0]])
         ceBG.path = path3
-        ceBG.fillColor = SKColor.cyan
+        ceBG.fillColor = SKColor(red: 0, green: 1, blue: 1, alpha: 1)
         ceBG.strokeColor = SKColor.black
         ceBG.lineWidth = 4 * ratio
         ceBG.name = "ce_space"
@@ -725,7 +728,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         weBar = [CGPoint(x: p3.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y - (barWidth / 4)), CGPoint(x: p2.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p2.y - (barWidth / 4)), CGPoint(x: p2.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p2.y + (barWidth / 4)), CGPoint(x: p3.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y + (barWidth / 4))]
         path4.addLines(between: [weBar[0], weBar[1], weBar[2], weBar[3], weBar[0]])
         weBG.path = path4
-        weBG.fillColor = SKColor.yellow
+        weBG.fillColor = SKColor(red: 1, green: 1, blue: 0, alpha: 1)
         weBG.strokeColor = SKColor.black
         weBG.lineWidth = 4 * ratio
         weBG.name = "we_space"
@@ -738,7 +741,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         BG_circle_template.strokeColor = SKColor.black
         BG_circle_template.lineWidth = 4 * ratio
         let BG_cicle_pos = [p1, p2, p3]
-        let BG_cicle_color = [SKColor.blue, SKColor.red, SKColor.green]
+        let BG_cicle_color = [SKColor(red: 0, green: 31/255, blue: 1, alpha: 1), SKColor(red: 1, green: 31/255, blue: 0, alpha: 1), SKColor(red: 0, green: 175/255, blue: 0, alpha: 1)]
         let BG_cicle_names = ["c_space", "w_space", "e_space"]
         for i in 0...2{
             let BG_circle = BG_circle_template.copy() as! SKShapeNode
@@ -819,7 +822,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tileBankLocDict = []
         var x_pos_iter = tileOffsetX - (2 * tileBufferX) + (tileLength / 2)
         var y_pos_iter = ((tileMin + 3*tileMax) / 4) + (tileHeight / 2)
-        while y_pos_iter >= ((3*tileMin + tileMax) / 4) + (tileHeight / 2) {
+        while y_pos_iter >= (tileMin) + (tileHeight / 2) {
             while x_pos_iter <= tileOffsetX + (2 * tileBufferX) + (tileLength / 2){
                 tileBankLocDict.append(CGPoint(x:x_pos_iter, y:y_pos_iter))
                 x_pos_iter += tileBufferX
@@ -848,7 +851,23 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         let tile_color_template = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
         tile_color_template.zPosition = 1
         tile_color_template.strokeColor = SKColor.black
-        let tile_colors = [SKColor.yellow, SKColor.yellow, SKColor.green, SKColor.green, SKColor.green, SKColor.cyan, SKColor.cyan, SKColor.red, SKColor.red, SKColor.red, SKColor.blue, SKColor.blue, SKColor.blue, SKColor.blue, SKColor.blue]
+        let tile_colors = [
+            SKColor(red: 240/255, green: 224/255, blue: 144/255, alpha: 1),
+            SKColor(red: 240/255, green: 224/255, blue: 144/255, alpha: 1),
+            SKColor(red: 180/255, green: 240/255, blue: 180/255, alpha: 1),
+            SKColor(red: 180/255, green: 240/255, blue: 180/255, alpha: 1),
+            SKColor(red: 180/255, green: 240/255, blue: 180/255, alpha: 1),
+            SKColor(red: 180/255, green: 240/255, blue: 240/255, alpha: 1),
+            SKColor(red: 180/255, green: 240/255, blue: 240/255, alpha: 1),
+            SKColor(red: 240/255, green: 180/255, blue: 180/255, alpha: 1),
+            SKColor(red: 240/255, green: 180/255, blue: 180/255, alpha: 1),
+            SKColor(red: 240/255, green: 180/255, blue: 180/255, alpha: 1),
+            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
+            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
+            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
+            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
+            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1)
+        ]
         // Create Sprite constants
         let temporaryValue1 = ((tileHeight - (2 * ratio)) - tileLength)
         let spriteOffset = (temporaryValue1 / 2) + (3 * ratio)
