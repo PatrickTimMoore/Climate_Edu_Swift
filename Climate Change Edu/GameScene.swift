@@ -938,7 +938,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         // Initial screen mode and question prompt
         form = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
         questionForm = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
-        questionBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Continue Session", logo:nil, name:"questionBtn")
+        questionBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height*0.28,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Continue Session", logo:nil, name:"questionBtn")
         questionBtn.zPosition = 1
         questionForm.addChild(questionBtn)
         passScreen = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
@@ -969,11 +969,33 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         q2.text = "Is the relationship generally good or bad?"
         q3.text = "Is the relationship major or minor?"
         q4.text = "Are you sure or unsure about the relationship?"
-        q1.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        q1.position = CGPoint(x: questionForm.frame.minX, y: 0)
-        q1.fontSize = 18 * ratio
-        q1.zPosition = 1
-        questionForm.addChild(q1)
+        let qList = [q1, q2, q3, q4]
+        for i in 0...3{
+            qList[i].fontColor = SKColor.black
+            qList[i].horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+            let tempXvar = questionForm.frame.minX + 10 * ratio
+            let tempYvar1 = 125 * ratio
+            var tempYvar2 = CGFloat(i) * 130 * ratio
+            if i > 0{
+                tempYvar2 = tempYvar2 + 25 * ratio
+            }
+            qList[i].position = CGPoint(x: tempXvar, y: questionForm.frame.maxY - (tempYvar1 + tempYvar2))
+            qList[i].fontSize = 18 * ratio
+            qList[i].zPosition = 1
+            questionForm.addChild(qList[i])
+            for j in 1...4{
+                if i == 0 && j == 1 {
+                    tempYvar2 = CGFloat(i) * 130 * ratio + CGFloat(j) * 25 * ratio
+                    let questionSol = SKShapeNode.init(rect: CGRect(x: -self.size.width*0.35, y: questionForm.frame.maxY - (tempYvar1 + tempYvar2), width: self.size.width*0.7, height: 20))
+                    questionSol.fillColor = SKColor.systemTeal
+                    questionForm.addChild(questionSol)
+                }
+                tempYvar2 = CGFloat(i) * 130 * ratio + CGFloat(j + 1) * 25 * ratio
+                let questionSol = SKShapeNode.init(rect: CGRect(x: -self.size.width*0.35, y: questionForm.frame.maxY - (tempYvar1 + tempYvar2), width: self.size.width*0.7, height: 20))
+                questionSol.fillColor = SKColor.systemTeal
+                questionForm.addChild(questionSol)
+            }
+        }
         // Creates numberpad for password screen
         let numPad_template = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
         numPad_template.fillColor = SKColor.lightGray
