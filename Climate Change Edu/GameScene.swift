@@ -95,13 +95,19 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var p1: CGPoint!
     var p2: CGPoint!
     var p3: CGPoint!
+    var tileIndex: Int!
     var tiles: [SKShapeNode]!
+    var tile_labels: [SKLabelNode]!
+    var tilePrev: [String] = []
+    var tileCurr: [String] = []
     var numButtons: [SKNode]!
     var form: SKShapeNode!
+    var questionForm: SKShapeNode!
     var passScreen: SKShapeNode!
     var submit: SKShapeNode!
     var submitLabel: SKLabelNode!
     var contBtn: SKShapeNode!
+    var questionBtn: SKShapeNode!
     var nodeToMove: SKNode!
     var locationOld: CGPoint!
     var zPosUpdater: CGFloat!
@@ -114,10 +120,18 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var remainingInBank: Int = 15
     var dictLookup: Int!
     var sequenceApp: Int = 1
+    var questionState: Bool = false
     var spinLockState: Int = 0
     var followDisable: Bool = false
     var resetCounter: Int!
     var tileHeight: CGFloat!
+    //UIButton setup -- manual magic values
+    var questionPrompt1: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
+    var questionPrompt2: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
+    var q1: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
+    var q2: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
+    var q3: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
+    var q4: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
     
     // UIKit Intergration
     var loginBtn:SKShapeNode!
@@ -211,7 +225,20 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         task.resume()
     }
     
-    // API Validators
+    // Question helper
+    func setTileHistory(node:SKShapeNode, text:String){
+        tileIndex = tiles.firstIndex(of: node)
+        tilePrev[tileIndex!] = tileCurr[tileIndex!]
+        tileCurr[tileIndex!] = text
+        questionPrompt1.text = "I see you’re saying \(tile_labels[tileIndex].name!) are somehow related to \(tileCurr[tileIndex]). Please answer the following relationships."
+        questionPrompt1.numberOfLines = 2
+        questionPrompt1.preferredMaxLayoutWidth = questionPrompt1.parent!.frame.width * 0.95
+        questionPrompt2.text = "Now let’s think about the opposite relationship, if any."
+        questionPrompt2.numberOfLines = 2
+        questionPrompt2.preferredMaxLayoutWidth = questionPrompt2.parent!.frame.width * 0.95
+    }
+    
+    // API and State Validators
     func validate1(){
         // Validate submit info and then send to SQL server
         // Then set up game
@@ -235,7 +262,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         API1()
         sequenceApp = sequenceApp + 1
     }
-    
     func stepForward1(){
         passScreen.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
         passScreen.zPosition = zPosUpdater + 2
@@ -243,7 +269,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         sequenceApp = sequenceApp + 1
         followDisable = false
     }
-    
     func stepForward2(){
         passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
         //API2()
@@ -258,12 +283,10 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             stepBackward2()
         }
     }
-    
     func stepBackward1(){
         passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
         sequenceApp = sequenceApp - 1
     }
-    
     func stepBackward2(){
         form.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
         for i in 0...4 {
@@ -285,9 +308,32 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             // Updates bank count
             remainingInBank = remainingInBank + 1
         }
+        for i in 0...14 {
+            tileCurr[i] = "Bank"
+            tilePrev[i] = "Bank"
+        }
         remainingInBank = 15
         sequenceApp = 1
+        for i in 0...4{
+            textFields[i].text = nil
+        }
     }
+    func questionaire1(node:SKShapeNode){
+        let tileIndex = tiles.firstIndex(of: node)
+        if tilePrev[tileIndex!] == tileCurr[tileIndex!]{
+            return
+        }
+        questionState = true
+        questionForm.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
+        questionForm.zPosition = zPosUpdater + 2
+        //questionBtn.run(SKAction.fadeAlpha(to: 0, duration: 0))
+        //Fill questions with tile data TODO
+    } // TODO
+    func questionaire2(){
+        questionForm.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
+        //Make API call TODO
+        questionState = false
+    } // TODO
     
     // Function runs on start of the aplication
     override func didMove(to view: SKView) {
@@ -299,7 +345,21 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     // Function runs on initial screen touch
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         // Add on-click functionality here
-        if sequenceApp == 1 {
+        if questionState == true {
+            followDisable = true
+            for touch in touches {
+                let location = touch.location(in: self)
+                // Creates list of nodes sorted by Z-value at touch location
+                let touchedNode = self.nodes(at: location)
+                // Checks for first 'tile' node
+                for node in touchedNode {
+                    if node.name == "questionBtn" && !node.hasActions(){
+                        questionaire2()
+                        break
+                    }
+                }
+            }
+        } else if sequenceApp == 1 {
             followDisable = true
             for touch in touches {
                 let location = touch.location(in: self)
@@ -457,13 +517,13 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                     for node in touchedNodeMid {
                         if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
                             if (node.name == "c_space") && (distance(location, p1) < circleWidth / 2) {
-                                castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1/2, green: 143/255, blue: 1, alpha: 1)
                                 break
                             } else if (node.name == "w_space") && (distance(location, p2) < circleWidth / 2) {
-                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1, green: 143/255, blue: 1/2, alpha: 1)
                                 break
                             } else if (node.name == "e_space") && (distance(location, p3) < circleWidth / 2) {
-                                castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1/2, green: 215/255, blue: 1/2, alpha: 1)
                                 break
                             }
                         } else if node.name == "cwe_space" && (location.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (location.x - ceBar[0].x) + ceBar[0].y)) && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) {
@@ -471,7 +531,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             break
                         } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
                             if node.name == "cw_space" {
-                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1, green: 159/255, blue: 1, alpha: 1)
                                 break
                             } else if node.name == "we_space" && (location.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (location.x - weBar[0].x) + weBar[0].y)) && (location.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (location.x - weBar[3].x) + weBar[3].y)) {
                                 castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1/2, alpha: 1)
@@ -481,7 +541,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                                 break
                             }
                         } else if node.name == "na_space" {
-                            castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
+                            castedNode.fillColor = SKColor(red: 210/255, green: 210/255, blue: 210/255, alpha: 1)
                             break
                         } else {
                             castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
@@ -516,44 +576,61 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                         // Performs the resizing, recoloring, and reangling!
                         if node.name == "c_space" || node.name == "w_space" || node.name == "e_space" {
                             if (node.name == "c_space") && (distance(locationEnd, p1) < circleWidth / 2) {
-                                castedNode.fillColor = SKColor(red: 1/2, green: 1/2, blue: 1, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1/2, green: 143/255, blue: 1, alpha: 1)
                                 nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
+                                setTileHistory(node: castedNode, text: "Climate")
+                                questionaire1(node: castedNode)
                                 break
                             } else if (node.name == "w_space") && (distance(locationEnd, p2) < circleWidth / 2) {
-                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1/2, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1, green: 143/255, blue: 1/2, alpha: 1)
                                 nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
+                                setTileHistory(node: castedNode, text: "Weather")
+                                questionaire1(node: castedNode)
                                 break
                             } else if (node.name == "e_space") && (distance(locationEnd, p3) < circleWidth / 2) {
-                                castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1/2, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1/2, green: 215/255, blue: 1/2, alpha: 1)
                                 nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
+                                setTileHistory(node: castedNode, text: "Enviroment")
+                                questionaire1(node: castedNode)
                                 break
                             }
                         } else if node.name == "cwe_space" && (locationEnd.y > (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) {
                             nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                             nodeFound = true
+                            setTileHistory(node: castedNode, text: "Climate, Weather, and Enviroment")
+                            questionaire1(node: castedNode)
                             break
                         } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
                             nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                             nodeFound = true
                             if node.name == "cw_space" {
-                                castedNode.fillColor = SKColor(red: 1, green: 1/2, blue: 1, alpha: 1)
+                                castedNode.fillColor = SKColor(red: 1, green: 159/255, blue: 1, alpha: 1)
+                                setTileHistory(node: castedNode, text: "Climate and Weather")
+                                questionaire1(node: castedNode)
                                 break
                             } else if node.name == "we_space" && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) && (locationEnd.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (locationEnd.x - weBar[3].x) + weBar[3].y)) {
                                 nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
                                 castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1/2, alpha: 1)
+                                setTileHistory(node: castedNode, text: "Weather and Enviroment")
+                                questionaire1(node: castedNode)
+                                break
                             } else if node.name == "ce_space" && (locationEnd.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (locationEnd.x - ceBar[3].x) + ceBar[3].y)) && (locationEnd.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) {
                                 nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
                                 castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1, alpha: 1)
+                                setTileHistory(node: castedNode, text: "Climate and Enviroment")
+                                questionaire1(node: castedNode)
+                                break
                             }
-                            break
                         } else if node.name == "na_space" {
                             nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
-                            castedNode.fillColor = SKColor(red: 5/6, green: 5/6, blue: 5/6, alpha: 1)
+                            castedNode.fillColor = SKColor(red: 210/255, green: 210/255, blue: 210/255, alpha: 1)
                             nodeFound = true
+                            setTileHistory(node: castedNode, text: "Unrelated")
+                            questionaire1(node: castedNode)
                             break
                         }
                     }
@@ -571,6 +648,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                         if remainingInBank == 1 {
                             submit.run(SKAction.fadeAlpha(to: 0, duration: 0.2))
                         }
+                        setTileHistory(node: castedNode, text: "Bank")
+                        questionaire1(node: castedNode)
                     }
                 }
                 // Displays submit if bank is empty
@@ -585,14 +664,14 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     }
     
     private func initializeMenu() {
+        // THE NEXT 80 lines are just dog shit code design. Good luck.
         // Declaring constants to determine object sizing
-        // THE NEXT 200 lines are just dog shit code design. Good luck.
         let screenSize: CGRect = UIScreen.main.bounds
         let screenWidth = screenSize.width
         let screenHeight = screenSize.height
         gameBG = SKShapeNode()
         self.addChild(gameBG)
-        // Determines ratio
+        // Determines screen ratio to maintain constant size
         let ratio: CGFloat = (screenWidth / CGFloat(850))
         circleWidth = (ratio * CGFloat(270))
         let barWidth: CGFloat = ratio * 110
@@ -616,7 +695,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         let naSpace: [CGPoint] = [CGPoint(x: -(halfScreenWidth) - (4 * ratio), y: midMargin + bottomMargin + (0.6 * circleWidth)), CGPoint(x: -(halfScreenWidth) - (4 * ratio), y: (screenHeight / -2) - (4 * ratio)), CGPoint(x: halfScreenWidth + (4 * ratio), y: (screenHeight / -2) - (4 * ratio)), CGPoint(x: halfScreenWidth + (4 * ratio), y: midMargin + bottomMargin + (0.6 * circleWidth))]
         path5.addLines(between: [naSpace[0], naSpace[1], naSpace[2], naSpace[3], naSpace[0]])
         naBG.path = path5
-        naBG.fillColor = SKColor.lightGray
+        naBG.fillColor = SKColor(red: 166/255, green: 166/255, blue: 166/255, alpha: 1)
         naBG.strokeColor = SKColor.black
         naBG.lineWidth = 4 * ratio
         naBG.name = "na_space"
@@ -631,7 +710,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         cweBG.fillColor = SKColor.white
         cweBG.name = "cwe_space"
         gameBG.addChild(cweBG)
-        // Create Combo Area
+        // Create Combo Area 1
         let cwBG = SKShapeNode()
         cwBG.position = CGPoint(x: 0, y: 0)
         cwBG.zPosition = 3
@@ -639,12 +718,12 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         let cwBar = [CGPoint(x: p1.x, y: p1.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y + (barWidth / 2)), CGPoint(x: p2.x, y: p2.y - (barWidth / 2)), CGPoint(x: p1.x, y: p1.y - (barWidth / 2))]
         path2.addLines(between: [cwBar[0], cwBar[1], cwBar[2], cwBar[3], cwBar[0]])
         cwBG.path = path2
-        cwBG.fillColor = SKColor.magenta
+        cwBG.fillColor = SKColor(red: 1, green: 63/255, blue: 1, alpha: 1)
         cwBG.strokeColor = SKColor.black
         cwBG.lineWidth = 4 * ratio
         cwBG.name = "cw_space"
         gameBG.addChild(cwBG)
-        // Create Combo Area
+        // Create Combo Area 2
         let ceBG = SKShapeNode()
         ceBG.position = CGPoint(x: 0, y: 0)
         ceBG.zPosition = 3
@@ -652,12 +731,12 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         ceBar = [CGPoint(x: p1.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p1.y + (barWidth / 4)), CGPoint(x: p3.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y + (barWidth / 4)), CGPoint(x: p3.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y - (barWidth / 4)), CGPoint(x: p1.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p1.y - (barWidth / 4))]
         path3.addLines(between: [ceBar[0], ceBar[1], ceBar[2], ceBar[3], ceBar[0]])
         ceBG.path = path3
-        ceBG.fillColor = SKColor.cyan
+        ceBG.fillColor = SKColor(red: 0, green: 1, blue: 1, alpha: 1)
         ceBG.strokeColor = SKColor.black
         ceBG.lineWidth = 4 * ratio
         ceBG.name = "ce_space"
         gameBG.addChild(ceBG)
-        // Create Combo Area
+        // Create Combo Area 3
         let weBG = SKShapeNode()
         weBG.position = CGPoint(x: 0, y: 0)
         weBG.zPosition = 3
@@ -665,38 +744,29 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         weBar = [CGPoint(x: p3.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y - (barWidth / 4)), CGPoint(x: p2.x + ((barWidth * CGFloat(3.squareRoot())) / 4), y: p2.y - (barWidth / 4)), CGPoint(x: p2.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p2.y + (barWidth / 4)), CGPoint(x: p3.x - ((barWidth * CGFloat(3.squareRoot())) / 4), y: p3.y + (barWidth / 4))]
         path4.addLines(between: [weBar[0], weBar[1], weBar[2], weBar[3], weBar[0]])
         weBG.path = path4
-        weBG.fillColor = SKColor.yellow
+        weBG.fillColor = SKColor(red: 1, green: 1, blue: 0, alpha: 1)
         weBG.strokeColor = SKColor.black
         weBG.lineWidth = 4 * ratio
         weBG.name = "we_space"
         gameBG.addChild(weBG)
-        // Create Climate Circle
-        let climateBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
-        climateBG.position = p1
-        climateBG.zPosition = 4
-        climateBG.fillColor = SKColor.blue
-        climateBG.strokeColor = SKColor.black
-        climateBG.lineWidth = 4 * ratio
-        climateBG.name = "c_space"
-        gameBG.addChild(climateBG)
-        // Create Weather Circle
-        let weatherBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
-        weatherBG.position = p2
-        weatherBG.zPosition = 4
-        weatherBG.fillColor = SKColor.red
-        weatherBG.strokeColor = SKColor.black
-        weatherBG.lineWidth = 4 * ratio
-        weatherBG.name = "w_space"
-        gameBG.addChild(weatherBG)
-        // Create Enviroment Circle
-        let enviromBG = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
-        enviromBG.position = p3
-        enviromBG.zPosition = 4
-        enviromBG.fillColor = SKColor.green
-        enviromBG.strokeColor = SKColor.black
-        enviromBG.lineWidth = 4 * ratio
-        enviromBG.name = "e_space"
-        gameBG.addChild(enviromBG)
+        let gameBarList = [ceBG, cwBG, weBG]
+        // Create Climate, Weather, and Enviroment Circle
+        var BG_circles:[SKShapeNode] = []
+        let BG_circle_template = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
+        BG_circle_template.zPosition = 4
+        BG_circle_template.strokeColor = SKColor.black
+        BG_circle_template.lineWidth = 4 * ratio
+        let BG_cicle_pos = [p1, p2, p3]
+        let BG_cicle_color = [SKColor(red: 0, green: 31/255, blue: 1, alpha: 1), SKColor(red: 1, green: 31/255, blue: 0, alpha: 1), SKColor(red: 0, green: 175/255, blue: 0, alpha: 1)]
+        let BG_cicle_names = ["c_space", "w_space", "e_space"]
+        for i in 0...2{
+            let BG_circle = BG_circle_template.copy() as! SKShapeNode
+            BG_circle.position = BG_cicle_pos[i]!
+            BG_circle.fillColor = BG_cicle_color[i]
+            BG_circle.name = BG_cicle_names[i]
+            BG_circles.append(BG_circle)
+            gameBG.addChild(BG_circle)
+        }
         // Create Immobile Bank Label
         let bankLabel = SKLabelNode(fontNamed: "ArialMT")
         bankLabel.text = "Word Bank"
@@ -706,85 +776,43 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         bankLabel.fontColor = SKColor.black
         gameBG.addChild(bankLabel)
         // Create Immobile Circle Labels
-        let cLabel = SKLabelNode(fontNamed: "ArialMT")
-        let wLabel = SKLabelNode(fontNamed: "ArialMT")
-        let eLabel = SKLabelNode(fontNamed: "ArialMT")
-        cLabel.text = "Climate"
-        wLabel.text = "Weather"
-        eLabel.text = "Enviroment"
-        cLabel.fontSize = 50 * ratio
-        wLabel.fontSize = 50 * ratio
-        eLabel.fontSize = 50 * ratio
-        cLabel.position = CGPoint(x: climateBG.frame.midX, y: climateBG.frame.midY - (cLabel.fontSize / 2))
-        wLabel.position = CGPoint(x: weatherBG.frame.midX, y: weatherBG.frame.midY - (cLabel.fontSize / 2))
-        eLabel.position = CGPoint(x: enviromBG.frame.midX, y: enviromBG.frame.midY - (cLabel.fontSize / 2))
-        cLabel.zPosition = 5
-        wLabel.zPosition = 5
-        eLabel.zPosition = 5
-        gameBG.addChild(cLabel)
-        gameBG.addChild(wLabel)
-        gameBG.addChild(eLabel)
+        let circleLabelText = ["Climate", "Weather", "Enviroment"]
+        for i in 0...2 {
+            let cicleLabel = SKLabelNode(fontNamed: "ArialMT")
+            cicleLabel.fontSize = 50 * ratio
+            cicleLabel.position = CGPoint(x: BG_circles[i].frame.midX, y: BG_circles[i].frame.midY - (cicleLabel.fontSize / 2))
+            cicleLabel.zPosition = 5
+            cicleLabel.text = circleLabelText[i]
+            gameBG.addChild(cicleLabel)
+        }
         // Create Immobile Bar Labels
-        let cwLabel1 = SKLabelNode(fontNamed: "ArialMT")
-        let cwLabel2 = SKLabelNode(fontNamed: "ArialMT")
-        cwLabel1.text = "Climate and"
-        cwLabel2.text = "Weather"
-        cwLabel1.fontSize = 30 * ratio
-        cwLabel2.fontSize = 30 * ratio
-        cwLabel1.position = CGPoint(x: cwBG.frame.midX, y: cwBG.frame.midY + (cwLabel1.fontSize * 0.2))
-        cwLabel2.position = CGPoint(x: cwBG.frame.midX, y: cwBG.frame.midY - (cwLabel2.fontSize * 1.2))
-        cwLabel1.zPosition = 5
-        cwLabel2.zPosition = 5
-        cwLabel1.fontColor = SKColor.black
-        cwLabel2.fontColor = SKColor.black
-        gameBG.addChild(cwLabel1)
-        gameBG.addChild(cwLabel2)
-        let ceLabel1 = SKLabelNode(fontNamed: "ArialMT")
-        let ceLabel2 = SKLabelNode(fontNamed: "ArialMT")
-        ceLabel1.text = "Climate and"
-        ceLabel2.text = "Enviroment"
-        ceLabel1.fontSize = 30 * ratio
-        ceLabel2.fontSize = 30 * ratio
-        ceLabel1.position = CGPoint(x: ceBG.frame.midX + (ceLabel1.fontSize * 0.2 * CGFloat(3).squareRoot()), y: ceBG.frame.midY + (ceLabel1.fontSize * 0.2))
-        ceLabel2.position = CGPoint(x: ceBG.frame.midX - (ceLabel2.fontSize * 0.5 * CGFloat(3).squareRoot()), y: ceBG.frame.midY - (ceLabel2.fontSize * 0.5))
-        ceLabel1.zPosition = 5
-        ceLabel2.zPosition = 5
-        ceLabel1.fontColor = SKColor.black
-        ceLabel2.fontColor = SKColor.black
-        ceLabel1.zRotation = -60 * CGFloat.pi / 180
-        ceLabel2.zRotation = -60 * CGFloat.pi / 180
-        gameBG.addChild(ceLabel1)
-        gameBG.addChild(ceLabel2)
-        let weLabel1 = SKLabelNode(fontNamed: "ArialMT")
-        let weLabel2 = SKLabelNode(fontNamed: "ArialMT")
-        weLabel1.text = "Enviroment"
-        weLabel2.text = "and Weather"
-        weLabel1.fontSize = 30 * ratio
-        weLabel2.fontSize = 30 * ratio
-        weLabel1.position = CGPoint(x: weBG.frame.midX - (weLabel1.fontSize * 0.2 * CGFloat(3).squareRoot()), y: weBG.frame.midY + (weLabel1.fontSize * 0.2))
-        weLabel2.position = CGPoint(x: weBG.frame.midX + (weLabel2.fontSize * 0.5 * CGFloat(3).squareRoot()), y: weBG.frame.midY - (weLabel2.fontSize * 0.5))
-        weLabel1.zPosition = 5
-        weLabel2.zPosition = 5
-        weLabel1.fontColor = SKColor.black
-        weLabel2.fontColor = SKColor.black
-        weLabel1.zRotation = 60 * CGFloat.pi / 180
-        weLabel2.zRotation = 60 * CGFloat.pi / 180
-        gameBG.addChild(weLabel1)
-        gameBG.addChild(weLabel2)
+        let rotation1 = -60 * CGFloat.pi / 180
+        let rotation2 = 60 * CGFloat.pi / 180
+        let barLabelRotation = [rotation1, rotation1, 0, 0, rotation2, rotation2]
+        let barLabelText = ["Climate and", "Enviroment", "Climate and", "Weather", "Enviroment", "and Weather"]
+        let barLabelOriginX = [6 * ratio * CGFloat(3).squareRoot(), -15 * ratio * CGFloat(3).squareRoot(), 0, 0, -6 * ratio * CGFloat(3).squareRoot(), 15 * ratio * CGFloat(3).squareRoot()]
+        let barLabelOriginY = [6 * ratio, -15 * ratio, 6 * ratio, -36 * ratio, 6 * ratio, -15 * ratio]
+        for i in 0...5 {
+            let barLabel = SKLabelNode(fontNamed: "ArialMT")
+            barLabel.fontSize = 30 * ratio
+            barLabel.zPosition = 5
+            barLabel.fontColor = SKColor.black
+            barLabel.zRotation = barLabelRotation[i]
+            barLabel.text = barLabelText[i]
+            barLabel.position = CGPoint(x: gameBarList[(i/2)].frame.midX + barLabelOriginX[i], y: gameBarList[(i/2)].frame.midY + barLabelOriginY[i])
+            gameBG.addChild(barLabel)
+        }
         //Creates cwe labels
-        var cweLabels:[SKLabelNode] = []
+        let cweLabelsText = ["Enviroment and", "Weather and", "Climate"]
         for i in 0...2 {
             let cweLabel = SKLabelNode(fontNamed: "ArialMT")
+            cweLabel.text = cweLabelsText[i]
             cweLabel.fontSize = 30 * ratio
             cweLabel.zPosition = 5
             cweLabel.fontColor = SKColor.black
             cweLabel.position = CGPoint(x: cweBG.frame.midX, y: cweBG.frame.midY + (cweLabel.fontSize * (3.8 - CGFloat(i)*1.4)))
             gameBG.addChild(cweLabel)
-            cweLabels.append(cweLabel)
         }
-        cweLabels[0].text = "Enviroment and"
-        cweLabels[1].text = "Weather and"
-        cweLabels[2].text = "Climate"
         // creates N/A lables
         for i in 0...3 {
             let naLabel = SKLabelNode(fontNamed: "ArialMT")
@@ -792,10 +820,15 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             naLabel.fontSize = 30 * ratio
             naLabel.zPosition = 5
             naLabel.fontColor = SKColor.black
-            naLabel.position = CGPoint(x: 7 * screenWidth / CGFloat((i%2)*40 - 20), y: (i/2 == 0) ? (weatherBG.frame.midY + (3 * enviromBG.frame.midY)) / 4 : (enviromBG.frame.midY - screenHeight) / 3)
+            naLabel.position = CGPoint(x: 7 * screenWidth / CGFloat((i%2)*40 - 20), y: (i/2 == 0) ? (BG_circles[1].frame.midY + (3 * BG_circles[2].frame.midY)) / 4 : (BG_circles[2].frame.midY - screenHeight) / 3)
             gameBG.addChild(naLabel)
         }
         // Establish draggable tiles in bulk
+        // Creates locational tags for questionaire
+        for _ in 0...14 {
+            tilePrev.append("Bank")
+            tileCurr.append("Bank")
+        }
         // Dimentional variables
         let tileMin = bottomMargin + midMargin + (0.6 * circleWidth)
         let tileMax = screenHeight / 2
@@ -805,7 +838,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tileBankLocDict = []
         var x_pos_iter = tileOffsetX - (2 * tileBufferX) + (tileLength / 2)
         var y_pos_iter = ((tileMin + 3*tileMax) / 4) + (tileHeight / 2)
-        while y_pos_iter >= ((3*tileMin + tileMax) / 4) + (tileHeight / 2) {
+        while y_pos_iter >= (tileMin) + (tileHeight / 2) {
             while x_pos_iter <= tileOffsetX + (2 * tileBufferX) + (tileLength / 2){
                 tileBankLocDict.append(CGPoint(x:x_pos_iter, y:y_pos_iter))
                 x_pos_iter += tileBufferX
@@ -821,7 +854,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tile_shape.lineWidth = 2 * ratio
         tile_shape.zPosition = 6
         tiles = []
-        var tile_labels:[SKLabelNode] = []
+        tile_labels = []
         // Creates template for tile labels to be used
         let tile_label_teplate = SKLabelNode(fontNamed: "ArialMT")
         tile_label_teplate.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
@@ -830,15 +863,35 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tile_label_teplate.position = CGPoint(x: (tileHeight / 2), y: 0)
         tile_label_teplate.fontColor = SKColor.black
         tile_label_teplate.zPosition = 2
-        // Creates template for the tile static color TODO
+        // Creates template for the tile static color
         let tile_color_template = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
         tile_color_template.zPosition = 1
         tile_color_template.strokeColor = SKColor.black
+        let tile_colors = [
+            SKColor(red: 240/255, green: 224/255, blue: 144/255, alpha: 1),
+            SKColor(red: 240/255, green: 224/255, blue: 144/255, alpha: 1),
+            SKColor(red: 180/255, green: 240/255, blue: 180/255, alpha: 1),
+            SKColor(red: 180/255, green: 240/255, blue: 180/255, alpha: 1),
+            SKColor(red: 180/255, green: 240/255, blue: 180/255, alpha: 1),
+            SKColor(red: 180/255, green: 240/255, blue: 240/255, alpha: 1),
+            SKColor(red: 180/255, green: 240/255, blue: 240/255, alpha: 1),
+            SKColor(red: 240/255, green: 180/255, blue: 180/255, alpha: 1),
+            SKColor(red: 240/255, green: 180/255, blue: 180/255, alpha: 1),
+            SKColor(red: 240/255, green: 180/255, blue: 180/255, alpha: 1),
+            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
+            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
+            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
+            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
+            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1)
+        ]
         // Create Sprite constants
         let temporaryValue1 = ((tileHeight - (2 * ratio)) - tileLength)
         let spriteOffset = (temporaryValue1 / 2) + (3 * ratio)
         let spritePos = CGPoint(x: spriteOffset, y: 0)
         let spriteSize = CGSize(width: tileHeight - (2 * ratio), height: tileHeight - (2 * ratio))
+        // Labels and associated position for tiles
+        let tile_labelsText = ["Cooling\n temps ", "Warming\n  temps ", "   Fast \nchanges", "Moderate\nchanges", "   Slow \nchanges", "Farming", "Industry", "Local", "Regional", "Global", "Animals\n& plants", "People", "Forests", "Oceans", "Greenhouse\n      effect "]
+        let tile_labelsName = ["Cooling Temps", "Warming Temps", "Fast Changes", "Moderate Changes", "Slow Changes", "Farming", "Industry", "Local", "Regional", "Global", "Animals & Plants", "People", "Forests", "Oceans", "Greenhouse Effect"]
         // Assign tile properties, append to game board as children
         for i in 0...14 {
             //tile
@@ -848,21 +901,15 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             gameBG.addChild(tile)
             //label
             let tile_label = tile_label_teplate.copy() as! SKLabelNode
+            tile_label.text = tile_labelsText[i]
+            tile_label.name = tile_labelsName[i]
+            tile_label.numberOfLines = 3
+            tile_label.preferredMaxLayoutWidth = tileLengthOriginal
             tile_labels.append(tile_label)
             tile.addChild(tile_label)
             //static color
             let tile_color = tile_color_template.copy() as! SKShapeNode
-            if 0...1 ~= i {
-                tile_color.fillColor = SKColor.yellow
-            } else if 2...4 ~= i {
-                tile_color.fillColor = SKColor.green
-            } else if 5...6 ~= i {
-                tile_color.fillColor = SKColor.cyan
-            } else if 7...9 ~= i {
-                tile_color.fillColor = SKColor.red
-            } else if 10...14 ~= i {
-                tile_color.fillColor = SKColor.blue
-            }
+            tile_color.fillColor = tile_colors[i]
             tile.addChild(tile_color)
             //sprite
             let tileSprite = SKSpriteNode(imageNamed: "TileSprite-\(i+1)")
@@ -870,27 +917,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             tileSprite.position = spritePos
             tileSprite.zPosition = 1
             tile.addChild(tileSprite)
-        }
-        // Labels and associated position for tiels
-        tile_labels[0].text = "Cooling\n temps "
-        tile_labels[1].text = "Warming\n  temps "
-        tile_labels[2].text = "   Fast \nchanges"
-        tile_labels[3].text = "Moderate\nchanges"
-        tile_labels[4].text = "   Slow \nchanges"
-        tile_labels[5].text = "Farming"
-        tile_labels[6].text = "Industry"
-        tile_labels[7].text = "Local"
-        tile_labels[8].text = "Regional"
-        tile_labels[9].text = "Global"
-        tile_labels[10].text = "Animals\n& plants"
-        tile_labels[11].text = "People"
-        tile_labels[12].text = "Forests"
-        tile_labels[13].text = "Oceans"
-        tile_labels[14].text = "Greenhouse\n      effect "
-        // Aligns text within tile
-        for i in 0...14 {
-            tile_labels[i].numberOfLines = 3
-            tile_labels[i].preferredMaxLayoutWidth = tileLengthOriginal
         }
         // Submit button
         submit = SKShapeNode.init(ellipseOf: CGSize.init(width: screenWidth/3, height: screenWidth/10))
@@ -909,23 +935,67 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         submitLabel.fontSize = 40 * ratio
         submitLabel.position = CGPoint(x: 0, y: -submitLabel.frame.height / 2)
         submit.addChild(submitLabel)
-        // Initial screen mode
+        // Initial screen mode and question prompt
         form = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
-        form.name = "form"
-        form.fillColor = SKColor.white
-        form.strokeColor = SKColor.black
-        form.zPosition = 8000
-        self.addChild(form)
-        // Middle screen mode
+        questionForm = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
+        questionBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height*0.28,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Continue Session", logo:nil, name:"questionBtn")
+        questionBtn.zPosition = 1
+        questionForm.addChild(questionBtn)
         passScreen = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
         passScreen.name = "pass"
-        passScreen.fillColor = SKColor.white
-        passScreen.strokeColor = SKColor.black
-        passScreen.zPosition = 8000
-        self.addChild(passScreen)
-        passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
-        contBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Continue Session", logo:nil, name:"contBtn")
-        contBtn.zPosition = 1
+        let formCrew = [form, questionForm, passScreen]
+        for forms in formCrew {
+            forms!.fillColor = SKColor.white
+            forms!.strokeColor = SKColor.black
+            forms!.zPosition = 8000
+            self.addChild(forms!)
+            if forms! != form {
+                forms!.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
+            }
+        }
+        // Creates question headers
+        questionPrompt1.zPosition = 1
+        questionPrompt1.fontColor = SKColor.black
+        questionPrompt1.fontSize = 25 * ratio
+        questionPrompt1.position = CGPoint(x: 0, y: questionForm.frame.maxY - 75 * ratio)
+        questionForm.addChild(questionPrompt1)
+        questionPrompt2.zPosition = -1
+        questionPrompt2.fontColor = SKColor.black
+        questionPrompt2.fontSize = 25 * ratio
+        questionPrompt2.position = CGPoint(x: 0, y: questionForm.frame.maxY - 75 * ratio)
+        questionForm.addChild(questionPrompt2)
+        // Creates question prompts
+        q1.text = "Which of the following do you think is most right? (check all that apply)"
+        q2.text = "Is the relationship generally good or bad?"
+        q3.text = "Is the relationship major or minor?"
+        q4.text = "Are you sure or unsure about the relationship?"
+        let qList = [q1, q2, q3, q4]
+        for i in 0...3{
+            qList[i].fontColor = SKColor.black
+            qList[i].horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+            let tempXvar = questionForm.frame.minX + 10 * ratio
+            let tempYvar1 = 125 * ratio
+            var tempYvar2 = CGFloat(i) * 130 * ratio
+            if i > 0{
+                tempYvar2 = tempYvar2 + 25 * ratio
+            }
+            qList[i].position = CGPoint(x: tempXvar, y: questionForm.frame.maxY - (tempYvar1 + tempYvar2))
+            qList[i].fontSize = 18 * ratio
+            qList[i].zPosition = 1
+            questionForm.addChild(qList[i])
+            for j in 1...4{
+                if i == 0 && j == 1 {
+                    tempYvar2 = CGFloat(i) * 130 * ratio + CGFloat(j) * 25 * ratio
+                    let questionSol = SKShapeNode.init(rect: CGRect(x: -self.size.width*0.35, y: questionForm.frame.maxY - (tempYvar1 + tempYvar2), width: self.size.width*0.7, height: 20))
+                    questionSol.fillColor = SKColor.systemTeal
+                    questionForm.addChild(questionSol)
+                }
+                tempYvar2 = CGFloat(i) * 130 * ratio + CGFloat(j + 1) * 25 * ratio
+                let questionSol = SKShapeNode.init(rect: CGRect(x: -self.size.width*0.35, y: questionForm.frame.maxY - (tempYvar1 + tempYvar2), width: self.size.width*0.7, height: 20))
+                questionSol.fillColor = SKColor.systemTeal
+                questionForm.addChild(questionSol)
+            }
+        }
         // Creates numberpad for password screen
         let numPad_template = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
         numPad_template.fillColor = SKColor.lightGray
@@ -950,6 +1020,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             numPad.addChild(numPadtxt)
             passScreen.addChild(numPad)
         }
+        contBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Continue Session", logo:nil, name:"contBtn")
+        contBtn.zPosition = 1
         passScreen.addChild(contBtn)
         // Add text fields/pickers for initial state
         guard let view = self.view else { return }
@@ -968,11 +1040,10 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             textFields.append(textField)
             view.addSubview(textField)
         }
-        customize(textField: textFields[0], placeholder: "School Code")
-        customize(textField: textFields[1], placeholder: "Grade")
-        customize(textField: textFields[2], placeholder: "Age")
-        customize(textField: textFields[3], placeholder: "Race")
-        customize(textField: textFields[4], placeholder: "Gender")
+        let textFieldPlacholders = ["School Code", "Grade", "Age", "Race", "Gender"]
+        for i in 0...4{
+            customize(textField: textFields[i], placeholder: textFieldPlacholders[i])
+        }
         loginBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50),fillColor:SKColor.blue,title:"Begin Session",logo:nil,name:"loginBtn")
         loginBtn.zPosition = 9000
         form.addChild(loginBtn)
