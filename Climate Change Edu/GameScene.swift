@@ -92,6 +92,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var gameBG: SKShapeNode!
     var ceBar: [CGPoint]!
     var weBar: [CGPoint]!
+    var ratio: CGFloat!
     var p1: CGPoint!
     var p2: CGPoint!
     var p3: CGPoint!
@@ -101,6 +102,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var tilePrev: [String] = []
     var tileCurr: [String] = []
     var numButtons: [SKNode]!
+    var numAttempt: [SKShapeNode]!
+    var attempt: Int = 0
     var form: SKShapeNode!
     var questionForm: SKShapeNode!
     var passScreen: SKShapeNode!
@@ -129,9 +132,13 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var questionPrompt1: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
     var questionPrompt2: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
     var q1: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
+    var q1sol: [SKNode] = []
     var q2: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
+    var q2sol: [SKNode] = []
     var q3: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
+    var q3sol: [SKNode] = []
     var q4: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
+    var q4sol: [SKNode] = []
     
     // UIKit Intergration
     var loginBtn:SKShapeNode!
@@ -236,6 +243,78 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         questionPrompt2.text = "Now let’s think about the opposite relationship, if any."
         questionPrompt2.numberOfLines = 2
         questionPrompt2.preferredMaxLayoutWidth = questionPrompt2.parent!.frame.width * 0.95
+        let qSolution_Template = SKLabelNode(fontNamed: "ArialMT")
+        qSolution_Template.fontColor = SKColor.black
+        qSolution_Template.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        qSolution_Template.position = CGPoint(x: 0, y: 0)
+        qSolution_Template.fontSize = 18 * ratio
+        qSolution_Template.zPosition = 1
+        // begin the shit show lmfao
+        for parent in (q1sol + q2sol + q3sol + q4sol) {
+            parent.removeAllChildren()
+        }
+        let q1sol0 = qSolution_Template.copy() as! SKLabelNode
+        q1sol0.text = "\(tile_labels[tileIndex].name!) are a part of \(tileCurr[tileIndex])."
+        q1sol[0].addChild(q1sol0)
+        let q1sol1 = qSolution_Template.copy() as! SKLabelNode
+        q1sol1.text = "\(tile_labels[tileIndex].name!) is a characteristic of \(tileCurr[tileIndex])."
+        q1sol[1].addChild(q1sol1)
+        let q1sol2 = qSolution_Template.copy() as! SKLabelNode
+        q1sol2.text = "\(tile_labels[tileIndex].name!) can affect \(tileCurr[tileIndex])."
+        q1sol[2].addChild(q1sol2)
+        let q1sol3 = qSolution_Template.copy() as! SKLabelNode
+        q1sol3.text = "The relationship is more complicated than that."
+        q1sol[3].addChild(q1sol3)
+        let q1sol4 = qSolution_Template.copy() as! SKLabelNode
+        q1sol4.text = "I don’t know what I think about this."
+        q1sol[4].addChild(q1sol4)
+        let q2sol0 = qSolution_Template.copy() as! SKLabelNode
+        q2sol0.text = "This relationship is generally good."
+        q2sol[0].addChild(q2sol0)
+        let q2sol1 = qSolution_Template.copy() as! SKLabelNode
+        q2sol1.text = "This relationship is generally bad."
+        q2sol[1].addChild(q2sol1)
+        let q2sol2 = qSolution_Template.copy() as! SKLabelNode
+        q2sol2.text = "This relationship has both good and bad parts."
+        q2sol[2].addChild(q2sol2)
+        let q2sol3 = qSolution_Template.copy() as! SKLabelNode
+        q2sol3.text = "I don’t know what I think about this."
+        q2sol[3].addChild(q2sol3)
+        let q3sol0 = qSolution_Template.copy() as! SKLabelNode
+        q3sol0.text = "This is a major relationship."
+        q3sol[0].addChild(q3sol0)
+        let q3sol1 = qSolution_Template.copy() as! SKLabelNode
+        q3sol1.text = "This is a minor relationship."
+        q3sol[1].addChild(q3sol1)
+        let q3sol2 = qSolution_Template.copy() as! SKLabelNode
+        q3sol2.text = "This relationship has both major and minor parts."
+        q3sol[2].addChild(q3sol2)
+        let q3sol3 = qSolution_Template.copy() as! SKLabelNode
+        q3sol3.text = "I don’t know what I think about this."
+        q3sol[3].addChild(q3sol3)
+        let q4sol0 = qSolution_Template.copy() as! SKLabelNode
+        q4sol0.text = "I am sure about my thinking about this relationship."
+        q4sol[0].addChild(q4sol0)
+        let q4sol1 = qSolution_Template.copy() as! SKLabelNode
+        q4sol1.text = "I am not sure about my thinking about this relationship."
+        q4sol[1].addChild(q4sol1)
+        let q4sol2 = qSolution_Template.copy() as! SKLabelNode
+        q4sol2.text = "I have both sure and unsure thinking about this relationship."
+        q4sol[2].addChild(q4sol2)
+        let q4sol3 = qSolution_Template.copy() as! SKLabelNode
+        q4sol3.text = "I don’t know what I think about this."
+        q4sol[3].addChild(q4sol3)
+        let selectBubble_template = SKShapeNode(circleOfRadius: passScreen.frame.width/100)
+        selectBubble_template.strokeColor = SKColor.black
+        selectBubble_template.lineWidth = (ratio * 2)
+        selectBubble_template.fillColor = SKColor.white
+        selectBubble_template.position.x = ratio * (-15)
+        selectBubble_template.position.y = ratio * (8)
+        for option in (q1sol + q2sol + q3sol + q4sol) {
+            let selectBubble = selectBubble_template.copy() as! SKShapeNode
+            selectBubble.name = "select"
+            option.addChild(selectBubble)
+        }
     }
     
     // API and State Validators
@@ -353,8 +432,62 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                 let touchedNode = self.nodes(at: location)
                 // Checks for first 'tile' node
                 for node in touchedNode {
-                    if node.name == "questionBtn" && !node.hasActions(){
-                        questionaire2()
+                    if q1sol.contains(node.parent ?? node) {
+                        if (node.childNode(withName: "select") ?? node.parent?.childNode(withName: "select") != nil) {
+                            let castedOption = (node.childNode(withName: "select") ?? node.parent?.childNode(withName: "select")) as! SKShapeNode
+                            castedOption.fillColor = SKColor.systemBlue
+                            castedOption.name = "selectFilled"
+                        } else {
+                            let castedOption = (node.childNode(withName: "selectFilled") ?? node.parent?.childNode(withName: "selectFilled")) as! SKShapeNode
+                            castedOption.fillColor = SKColor.white
+                            castedOption.name = "select"
+                        }
+                    } else if q2sol.contains(node.parent ?? node) {
+                        for option in q2sol {
+                            let castedOption = option.childNode(withName: "select") as! SKShapeNode
+                            castedOption.fillColor = SKColor.white
+                        }
+                        let castedOption = (node.childNode(withName: "select") ?? node.parent?.childNode(withName: "select")) as! SKShapeNode
+                        castedOption.fillColor = SKColor.systemBlue
+                    } else if q3sol.contains(node.parent ?? node) {
+                        for option in q3sol {
+                            let castedOption = option.childNode(withName: "select") as! SKShapeNode
+                            castedOption.fillColor = SKColor.white
+                        }
+                        let castedOption = (node.childNode(withName: "select") ?? node.parent?.childNode(withName: "select")) as! SKShapeNode
+                        castedOption.fillColor = SKColor.systemBlue
+                    } else if q4sol.contains(node.parent ?? node) {
+                        for option in q4sol {
+                            let castedOption = option.childNode(withName: "select") as! SKShapeNode
+                            castedOption.fillColor = SKColor.white
+                        }
+                        let castedOption = (node.childNode(withName: "select") ?? node.parent?.childNode(withName: "select")) as! SKShapeNode
+                        castedOption.fillColor = SKColor.systemBlue
+                    } else if (node.name == "questionBtn" && !node.hasActions()) {
+                        let theNodeToBeCast = node.childNode(withName: "questionBtn") ?? node
+                        let castedButton = theNodeToBeCast as! SKLabelNode
+                        if castedButton.text == "Next Page" {
+                            for option in (q1sol + q2sol + q3sol + q4sol) {
+                                let theNodeToBeCast = option.childNode(withName: "select") ?? option.childNode(withName: "selectFilled")
+                                let castedOption = theNodeToBeCast as! SKShapeNode
+                                castedOption.name = "select"
+                                castedOption.fillColor = SKColor.white
+                            }
+                            castedButton.text = "Continue Session"
+                            questionPrompt1.zPosition = -1
+                            questionPrompt2.zPosition = 1
+                        } else{
+                            questionaire2()
+                            for option in (q1sol + q2sol + q3sol + q4sol) {
+                                let theNodeToBeCast = option.childNode(withName: "select") ?? option.childNode(withName: "selectFilled")
+                                let castedOption = theNodeToBeCast as! SKShapeNode
+                                castedOption.name = "select"
+                                castedOption.fillColor = SKColor.white
+                            }
+                            questionPrompt1.zPosition = 1
+                            questionPrompt2.zPosition = -1
+                            castedButton.text = "Next Page"
+                        }
                         break
                     }
                 }
@@ -463,26 +596,49 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                 // Checks for first 'tile' node
                 for node in touchedNode {
                     if node.name == "contBtn" && !node.hasActions(){
+                        attempt = 0
+                        for bubble in numAttempt {
+                            bubble.fillColor = SKColor.white
+                        }
                         stepForward2()
                         spinLockState = 0
                         break
                     } else if node.name == "pass" {
                         break
-                    } else if numButtons.contains(node) || numButtons.contains(node.parent ?? node) {
+                    } else if numButtons.contains(node) || numButtons.contains(node.parent ?? node){
+                        if attempt == 4 {
+                            break
+                        }
                         if (node.name == "numPad0" || node.parent!.name == "numPad0") && spinLockState == 3 {
+                            numAttempt[attempt].fillColor = SKColor.systemBlue
+                            attempt = attempt + 1
                             spinLockState = 4
                             contBtn.run(SKAction.fadeAlpha(to: 1, duration: 0.2))
                             break
                         } else if (node.name == "numPad1" || node.parent!.name == "numPad1") && spinLockState == 2 {
+                            numAttempt[attempt].fillColor = SKColor.systemBlue
+                            attempt = attempt + 1
                             spinLockState = 3
                             break
                         } else if (node.name == "numPad2" || node.parent!.name == "numPad2") && spinLockState == 1 {
+                            numAttempt[attempt].fillColor = SKColor.systemBlue
+                            attempt = attempt + 1
                             spinLockState = 2
                             break
-                        } else if (node.name == "numPad3" || node.parent!.name == "numPad3") {
+                        } else if (node.name == "numPad3" || node.parent!.name == "numPad3") && attempt == 0 {
+                            numAttempt[attempt].fillColor = SKColor.systemBlue
+                            attempt = attempt + 1
                             spinLockState = 1
                             break
                         } else {
+                            numAttempt[attempt].fillColor = SKColor.systemBlue
+                            attempt = attempt + 1
+                            if attempt == 4 {
+                                attempt = 0
+                                for bubble in numAttempt {
+                                    bubble.fillColor = SKColor.white
+                                }
+                            }
                             spinLockState = 0
                             break
                         }
@@ -630,7 +786,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             castedNode.fillColor = SKColor(red: 210/255, green: 210/255, blue: 210/255, alpha: 1)
                             nodeFound = true
                             setTileHistory(node: castedNode, text: "Unrelated")
-                            questionaire1(node: castedNode)
+                            //questionaire1(node: castedNode)
                             break
                         }
                     }
@@ -649,7 +805,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             submit.run(SKAction.fadeAlpha(to: 0, duration: 0.2))
                         }
                         setTileHistory(node: castedNode, text: "Bank")
-                        questionaire1(node: castedNode)
+                        //questionaire1(node: castedNode)
                     }
                 }
                 // Displays submit if bank is empty
@@ -672,7 +828,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         gameBG = SKShapeNode()
         self.addChild(gameBG)
         // Determines screen ratio to maintain constant size
-        let ratio: CGFloat = (screenWidth / CGFloat(850))
+        ratio = (screenWidth / CGFloat(850))
+        let ratioLocal: CGFloat = (screenWidth / CGFloat(850))
         circleWidth = (ratio * CGFloat(270))
         let barWidth: CGFloat = ratio * 110
         let barLength: CGFloat = ratio * CGFloat(550)
@@ -692,7 +849,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         naBG.zPosition = 1
         let path5 = CGMutablePath()
         let halfScreenWidth = (screenWidth / 2)
-        let naSpace: [CGPoint] = [CGPoint(x: -(halfScreenWidth) - (4 * ratio), y: midMargin + bottomMargin + (0.6 * circleWidth)), CGPoint(x: -(halfScreenWidth) - (4 * ratio), y: (screenHeight / -2) - (4 * ratio)), CGPoint(x: halfScreenWidth + (4 * ratio), y: (screenHeight / -2) - (4 * ratio)), CGPoint(x: halfScreenWidth + (4 * ratio), y: midMargin + bottomMargin + (0.6 * circleWidth))]
+        let naSpace: [CGPoint] = [CGPoint(x: -(halfScreenWidth) - (4 * ratioLocal), y: midMargin + bottomMargin + (0.6 * circleWidth)), CGPoint(x: -(halfScreenWidth) - (4 * ratioLocal), y: (screenHeight / -2) - (4 * ratioLocal)), CGPoint(x: halfScreenWidth + (4 * ratioLocal), y: (screenHeight / -2) - (4 * ratioLocal)), CGPoint(x: halfScreenWidth + (4 * ratioLocal), y: midMargin + bottomMargin + (0.6 * circleWidth))]
         path5.addLines(between: [naSpace[0], naSpace[1], naSpace[2], naSpace[3], naSpace[0]])
         naBG.path = path5
         naBG.fillColor = SKColor(red: 166/255, green: 166/255, blue: 166/255, alpha: 1)
@@ -791,7 +948,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         let barLabelRotation = [rotation1, rotation1, 0, 0, rotation2, rotation2]
         let barLabelText = ["Climate and", "Enviroment", "Climate and", "Weather", "Enviroment", "and Weather"]
         let barLabelOriginX = [6 * ratio * CGFloat(3).squareRoot(), -15 * ratio * CGFloat(3).squareRoot(), 0, 0, -6 * ratio * CGFloat(3).squareRoot(), 15 * ratio * CGFloat(3).squareRoot()]
-        let barLabelOriginY = [6 * ratio, -15 * ratio, 6 * ratio, -36 * ratio, 6 * ratio, -15 * ratio]
+        let barLabelOriginY = [6 * ratioLocal, -15 * ratioLocal, 6 * ratioLocal, -36 * ratioLocal, 6 * ratioLocal, -15 * ratioLocal]
         for i in 0...5 {
             let barLabel = SKLabelNode(fontNamed: "ArialMT")
             barLabel.fontSize = 30 * ratio
@@ -938,7 +1095,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         // Initial screen mode and question prompt
         form = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
         questionForm = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
-        questionBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height*0.28,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Continue Session", logo:nil, name:"questionBtn")
+        questionBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height*0.28,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Next Page", logo:nil, name:"questionBtn")
         questionBtn.zPosition = 1
         questionForm.addChild(questionBtn)
         passScreen = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
@@ -957,12 +1114,12 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         questionPrompt1.zPosition = 1
         questionPrompt1.fontColor = SKColor.black
         questionPrompt1.fontSize = 25 * ratio
-        questionPrompt1.position = CGPoint(x: 0, y: questionForm.frame.maxY - 75 * ratio)
+        questionPrompt1.position = CGPoint(x: 0, y: questionForm.frame.maxY - 90 * ratio)
         questionForm.addChild(questionPrompt1)
         questionPrompt2.zPosition = -1
         questionPrompt2.fontColor = SKColor.black
         questionPrompt2.fontSize = 25 * ratio
-        questionPrompt2.position = CGPoint(x: 0, y: questionForm.frame.maxY - 75 * ratio)
+        questionPrompt2.position = CGPoint(x: 0, y: questionForm.frame.maxY - 90 * ratio)
         questionForm.addChild(questionPrompt2)
         // Creates question prompts
         q1.text = "Which of the following do you think is most right? (check all that apply)"
@@ -986,17 +1143,42 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             for j in 1...4{
                 if i == 0 && j == 1 {
                     tempYvar2 = CGFloat(i) * 130 * ratio + CGFloat(j) * 25 * ratio
-                    let questionSol = SKShapeNode.init(rect: CGRect(x: -self.size.width*0.35, y: questionForm.frame.maxY - (tempYvar1 + tempYvar2), width: self.size.width*0.7, height: 20))
-                    questionSol.fillColor = SKColor.systemTeal
+                    let questionSol = SKShapeNode.init(rect: CGRect(x: 0, y: 0, width: self.size.width*0.7, height: 20))
+                    questionSol.position = CGPoint(x: -self.size.width*0.35, y: questionForm.frame.maxY - (tempYvar1 + tempYvar2))
+                    questionSol.fillColor = SKColor.white
+                    q1sol.append(questionSol)
                     questionForm.addChild(questionSol)
                 }
                 tempYvar2 = CGFloat(i) * 130 * ratio + CGFloat(j + 1) * 25 * ratio
-                let questionSol = SKShapeNode.init(rect: CGRect(x: -self.size.width*0.35, y: questionForm.frame.maxY - (tempYvar1 + tempYvar2), width: self.size.width*0.7, height: 20))
-                questionSol.fillColor = SKColor.systemTeal
+                let questionSol = SKShapeNode.init(rect: CGRect(x: 0, y: 0, width: self.size.width*0.7, height: 20))
+                questionSol.position = CGPoint(x: -self.size.width*0.35, y: questionForm.frame.maxY - (tempYvar1 + tempYvar2))
+                questionSol.fillColor = SKColor.white
+                if i == 0 {
+                    q1sol.append(questionSol)
+                } else if i == 1 {
+                    q2sol.append(questionSol)
+                } else if i == 2 {
+                    q3sol.append(questionSol)
+                } else if i == 3 {
+                    q4sol.append(questionSol)
+                }
                 questionForm.addChild(questionSol)
             }
         }
         // Creates numberpad for password screen
+        let numPadAttemptBubble_template = SKShapeNode(circleOfRadius: passScreen.frame.width/60)
+        numPadAttemptBubble_template.strokeColor = SKColor.black
+        numPadAttemptBubble_template.lineWidth = (ratio * 2)
+        numPadAttemptBubble_template.fillColor = SKColor.white
+        numAttempt = []
+        for i in 0...3 {
+            let numPadAttemptBubble = numPadAttemptBubble_template.copy() as! SKShapeNode
+            numPadAttemptBubble.name = "numPadTry\(i)"
+            numPadAttemptBubble.position.x = (CGFloat(i) - CGFloat(1.5)) * screenWidth * 0.096
+            numPadAttemptBubble.position.y = 2.2 * (4) * screenWidth * 0.9/15
+            numAttempt.append(numPadAttemptBubble)
+            passScreen.addChild(numPadAttemptBubble)
+        }
         let numPad_template = SKShapeNode(circleOfRadius: passScreen.frame.width/15)
         numPad_template.fillColor = SKColor.lightGray
         numPad_template.zPosition = 1
@@ -1004,7 +1186,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         let numPadtxt_template = SKLabelNode(fontNamed: "ArialMT")
         numPadtxt_template.zPosition = 0
         numPadtxt_template.fontSize = 45 * ratio
-        numPadtxt_template.position = CGPoint(x: 0, y: -numPadtxt_template.frame.height / 2)
+        numPadtxt_template.position = CGPoint(x: 0, y: (-numPadtxt_template.frame.height / 2) - (18 * ratio))
         for i in 0...9 {
             let numPad = numPad_template.copy() as! SKShapeNode
             numPad.name = "numPad\(i)"
