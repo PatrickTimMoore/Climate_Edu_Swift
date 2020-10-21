@@ -201,14 +201,14 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         // Prepare URL Request Obj
         var URLRequest1 = URLRequest(url: URL1)
         URLRequest1.httpMethod = "POST"
-        let newPost1 = [
+        let newPost1 = ["body-json" : [
             "instructor_id": INSTRUCTID,
             "school_id": SCHOOLID,
             "ethnicity_id": ETHNICID,
             "sex": SEXID,
             "age": AGEID,
             "grade": GRADEID
-        ]
+        ]]
         // Creates JSoN
         let jsonPost1 = try? JSONSerialization.data(withJSONObject: newPost1, options: [])
         URLRequest1.httpBody = jsonPost1
