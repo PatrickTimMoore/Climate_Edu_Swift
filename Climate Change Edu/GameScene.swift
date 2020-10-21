@@ -190,7 +190,10 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var GRADEID:String = "0"
     func API1(){
         // Prepare URL
-        let endpoint1:String = "https://lk62rbimtg.execute-api.us-west-2.amazonaws.com/beta/session"
+        //change base URL to change databases
+        // PROD: https://xj53w9d4z7.execute-api.us-east-2.amazonaws.com/default/session
+        // STAGING: https://lk62rbimtg.execute-api.us-west-2.amazonaws.com/beta/session
+        let endpoint1:String = "https://xj53w9d4z7.execute-api.us-east-2.amazonaws.com/default/session"
         guard let URL1 = URL(string: endpoint1) else {
             print("Error: Cannot create URL.")
             return
@@ -230,6 +233,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             }
         }
         task.resume()
+    }
+    func API2(){
     }
     
     // Question helper
@@ -341,6 +346,11 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         API1()
         sequenceApp = sequenceApp + 1
     }
+    func validate2(){
+        // Validate submit info and then send to SQL server
+        API2()
+    }
+    
     func stepForward1(){
         passScreen.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
         passScreen.zPosition = zPosUpdater + 2
@@ -473,6 +483,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                                 castedOption.name = "select"
                                 castedOption.fillColor = SKColor.white
                             }
+                            validate2()
                             castedButton.text = "Continue Session"
                             questionPrompt1.zPosition = -1
                             questionPrompt2.zPosition = 1
@@ -484,6 +495,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                                 castedOption.name = "select"
                                 castedOption.fillColor = SKColor.white
                             }
+                            validate2()
                             questionPrompt1.zPosition = 1
                             questionPrompt2.zPosition = -1
                             castedButton.text = "Next Page"
