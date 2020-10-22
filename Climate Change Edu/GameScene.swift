@@ -128,6 +128,9 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var followDisable: Bool = false
     var resetCounter: Int!
     var tileHeight: CGFloat!
+    var startTime: NSDate!
+    var clickTime: NSDate!
+    var currTime: NSDate!
     //UIButton setup -- manual magic values
     var questionPrompt1: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
     var questionPrompt2: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
@@ -181,6 +184,10 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     }
     
     // API Calls
+    var TILEINDEX:Int = 0
+    var STARTTIME:Double = 0.0
+    var ENDTIME:Double = 0.0
+    var DURATION:Double = 0.0
     var SESSIONID:Int = 0
     var INSTRUCTID:String = "0"
     var SCHOOLID:String = "0"
@@ -235,6 +242,53 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         task.resume()
     }
     func API2(){
+        // Prepare URL
+        // change base URL to change databases
+        // PROD: https://xj53w9d4z7.execute-api.us-east-2.amazonaws.com/default/session
+        // STAGING: https://lk62rbimtg.execute-api.us-west-2.amazonaws.com/beta/session
+        let endpoint2:String = "https://xj53w9d4z7.execute-api.us-east-2.amazonaws.com/default/snapshot"
+        guard let URL2 = URL(string: endpoint2) else {
+            print("Error: Cannot create URL.")
+            return
+        }
+        // Prepare URL Request Obj
+        var URLRequest2 = URLRequest(url: URL2)
+        URLRequest2.httpMethod = "POST"
+        let newPost2 = ["body-json" : [
+            "session_id": SESSIONID,
+            "tile": TILEINDEX,
+            "previous": tilePrev[TILEINDEX],
+            "new": tileCurr[TILEINDEX],
+            "duration": DURATION,
+            "time_start": STARTTIME,
+            "time_end": ENDTIME
+        ]]
+        print(DURATION)
+        // Creates JSoN
+        let jsonPost2 = try? JSONSerialization.data(withJSONObject: newPost2, options: [])
+        URLRequest2.httpBody = jsonPost2
+        URLRequest2.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        // Creates session
+        let task = URLSession.shared.dataTask(with: URLRequest2){ data, response, error in
+            guard let responseData = data, error == nil else {
+                print("Error: error in calling Post2")
+                print(error ?? "No Data")
+                return
+            }
+            // Parse responce
+            let responseJSON2 = try? JSONSerialization.jsonObject(with: responseData, options: [])
+            if let responseJSON = responseJSON2 as? [String: Any] {
+                print(responseJSON)
+                if (responseJSON["body"] as? [String: Any]) != nil {
+                    print("Successful capture!")
+                } else {
+                    print("Error: error in converting response body")
+                }
+            } else {
+                print("Error: error in converting response data")
+            }
+        }
+        task.resume()
     }
     
     // Question helper
@@ -346,9 +400,16 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         API1()
         sequenceApp = sequenceApp + 1
     }
-    func validate2(){
+    func validate2(node:SKShapeNode){
         // Validate submit info and then send to SQL server
-        API2()
+        TILEINDEX = tiles.firstIndex(of: node) ?? -1
+        currTime = NSDate()
+        STARTTIME = clickTime.timeIntervalSince(startTime as Date)
+        ENDTIME = currTime.timeIntervalSince(startTime as Date)
+        DURATION = currTime.timeIntervalSince(clickTime as Date)
+        if (TILEINDEX != -1) {
+            API2()
+        }
     }
     
     func stepForward1(){
@@ -360,7 +421,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     }
     func stepForward2(){
         passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
-        //API2()
         passScreen.zPosition = zPosUpdater + 2
         sequenceApp = sequenceApp + 1
         if submitLabel.text == "SUBMIT" {
@@ -483,7 +543,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                                 castedOption.name = "select"
                                 castedOption.fillColor = SKColor.white
                             }
-                            validate2()
                             castedButton.text = "Continue Session"
                             questionPrompt1.zPosition = -1
                             questionPrompt2.zPosition = 1
@@ -495,7 +554,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                                 castedOption.name = "select"
                                 castedOption.fillColor = SKColor.white
                             }
-                            validate2()
                             questionPrompt1.zPosition = 1
                             questionPrompt2.zPosition = -1
                             castedButton.text = "Next Page"
@@ -514,6 +572,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                 for node in touchedNode {
                     if node.name == "loginBtn" && !node.hasActions(){
                         validate1()
+                        startTime = NSDate()
+                        clickTime = NSDate()
                         break
                     }
                 }
@@ -597,6 +657,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             zPosUpdater = zPosUpdater + 3
                         }
                     }
+                    clickTime = NSDate()
                 }
             }
         } else if (sequenceApp == 3) || (sequenceApp == 5) {
@@ -827,6 +888,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                 }
                 locationOld = nil
                 nodeToMove = nil
+                validate2(node: castedNode)
             }
         }
     }
