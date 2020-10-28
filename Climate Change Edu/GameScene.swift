@@ -290,6 +290,41 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         }
         task.resume()
     }
+    func API3(){
+        // Prepare URL
+        //change base URL to change databases
+        // PROD: https://xj53w9d4z7.execute-api.us-east-2.amazonaws.com/default/session
+        // STAGING: https://lk62rbimtg.execute-api.us-west-2.amazonaws.com/beta/session
+        let endpoint3:String = "https://xj53w9d4z7.execute-api.us-east-2.amazonaws.com/default/school"
+        guard let URL3 = URL(string: endpoint3) else {
+            print("Error: Cannot create URL.")
+            return
+        }
+        // Prepare URL Request Obj
+        var URLRequest3 = URLRequest(url: URL3)
+        URLRequest3.httpMethod = "GET"
+        URLRequest3.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        // Creates session
+        let task = URLSession.shared.dataTask(with: URLRequest3){ data, response, error in
+            guard let responseData = data, error == nil else {
+                print("Error: error in calling Post3")
+                print(error ?? "No Data")
+                return
+            }
+            // Parse responce
+            let responseJSON3 = try? JSONSerialization.jsonObject(with: responseData, options: [])
+            if let responseJSON = responseJSON3 as? [String: Any] {
+                if let responseBody = responseJSON["body"] as? [String: Any] {
+                    self.school = responseBody["school_list"] as! [String]
+                } else {
+                    print("Error: error in converting response body")
+                }
+            } else {
+                print("Error: error in converting response data")
+            }
+        }
+        task.resume()
+    }
     
     // Question helper
     func setTileHistory(node:SKShapeNode, text:String){
@@ -391,7 +426,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         AGEID = "\(age.firstIndex(of: textFields[2].text!)! + 6)"
         GRADEID = "\(grade.firstIndex(of: textFields[1].text!)! + 1)"
         INSTRUCTID = "1" //TODO <- defualts Ross
-        SCHOOLID = "0" //TODO <- defaults failure
+        SCHOOLID = "\(school.firstIndex(of: textFields[0].text!)!)"
         form.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
         for i in 0...4 {
             textFields[i].isHidden = true
@@ -822,7 +857,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                                 castedNode.fillColor = SKColor(red: 1/2, green: 215/255, blue: 1/2, alpha: 1)
                                 nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                                 nodeFound = true
-                                setTileHistory(node: castedNode, text: "Enviroment")
+                                setTileHistory(node: castedNode, text: "Environment")
                                 questionaire1(node: castedNode)
                                 break
                             }
@@ -830,7 +865,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                             nodeFound = true
-                            setTileHistory(node: castedNode, text: "Climate, Weather, and Enviroment")
+                            setTileHistory(node: castedNode, text: "Climate, Weather, & Environment")
                             questionaire1(node: castedNode)
                             break
                         } else if node.name == "cw_space" || node.name == "we_space" || node.name == "ce_space" {
@@ -838,19 +873,19 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             nodeFound = true
                             if node.name == "cw_space" {
                                 castedNode.fillColor = SKColor(red: 1, green: 159/255, blue: 1, alpha: 1)
-                                setTileHistory(node: castedNode, text: "Climate and Weather")
+                                setTileHistory(node: castedNode, text: "Climate & Weather")
                                 questionaire1(node: castedNode)
                                 break
                             } else if node.name == "we_space" && (locationEnd.y > (((weBar[1].y - weBar[0].y)/(weBar[1].x - weBar[0].x)) * (locationEnd.x - weBar[0].x) + weBar[0].y)) && (locationEnd.y < (((weBar[2].y - weBar[3].y)/(weBar[2].x - weBar[3].x)) * (locationEnd.x - weBar[3].x) + weBar[3].y)) {
                                 nodeToMove.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
                                 castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1/2, alpha: 1)
-                                setTileHistory(node: castedNode, text: "Weather and Enviroment")
+                                setTileHistory(node: castedNode, text: "Weather & Environment")
                                 questionaire1(node: castedNode)
                                 break
                             } else if node.name == "ce_space" && (locationEnd.y > (((ceBar[2].y - ceBar[3].y)/(ceBar[2].x - ceBar[3].x)) * (locationEnd.x - ceBar[3].x) + ceBar[3].y)) && (locationEnd.y < (((ceBar[1].y - ceBar[0].y)/(ceBar[1].x - ceBar[0].x)) * (locationEnd.x - ceBar[0].x) + ceBar[0].y)) {
                                 nodeToMove.run(SKAction.rotate(byAngle: -(CGFloat.pi/3), duration: 0.2))
                                 castedNode.fillColor = SKColor(red: 1/2, green: 1, blue: 1, alpha: 1)
-                                setTileHistory(node: castedNode, text: "Climate and Enviroment")
+                                setTileHistory(node: castedNode, text: "Climate & Environment")
                                 questionaire1(node: castedNode)
                                 break
                             }
@@ -858,7 +893,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                             nodeToMove.run(SKAction.scale(to: 0.8, duration: 0.2))
                             castedNode.fillColor = SKColor(red: 210/255, green: 210/255, blue: 210/255, alpha: 1)
                             nodeFound = true
-                            setTileHistory(node: castedNode, text: "Unrelated")
+                            setTileHistory(node: castedNode, text: "I don’t know")
                             //questionaire1(node: castedNode)
                             break
                         }
@@ -894,6 +929,10 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     }
     
     private func initializeMenu() {
+        API3()
+        while (school.count) == 1 {
+            sleep(1)
+        }
         // THE NEXT 80 lines are just dog shit code design. Good luck.
         // Declaring constants to determine object sizing
         let screenSize: CGRect = UIScreen.main.bounds
@@ -981,7 +1020,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         weBG.name = "we_space"
         gameBG.addChild(weBG)
         let gameBarList = [ceBG, cwBG, weBG]
-        // Create Climate, Weather, and Enviroment Circle
+        // Create Climate, Weather, and Environment Circle
         var BG_circles:[SKShapeNode] = []
         let BG_circle_template = SKShapeNode.init(circleOfRadius: (circleWidth / 2))
         BG_circle_template.zPosition = 4
@@ -1007,7 +1046,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         bankLabel.fontColor = SKColor.black
         gameBG.addChild(bankLabel)
         // Create Immobile Circle Labels
-        let circleLabelText = ["Climate", "Weather", "Enviroment"]
+        let circleLabelText = ["Climate", "Weather", "Environment"]
         for i in 0...2 {
             let cicleLabel = SKLabelNode(fontNamed: "ArialMT")
             cicleLabel.fontSize = 50 * ratio
@@ -1020,7 +1059,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         let rotation1 = -60 * CGFloat.pi / 180
         let rotation2 = 60 * CGFloat.pi / 180
         let barLabelRotation = [rotation1, rotation1, 0, 0, rotation2, rotation2]
-        let barLabelText = ["Climate and", "Enviroment", "Climate and", "Weather", "Enviroment", "and Weather"]
+        let barLabelText = ["Climate &", "Environment", "Climate &", "Weather", "Environment", "& Weather"]
         let barLabelOriginX = [6 * ratio * CGFloat(3).squareRoot(), -15 * ratio * CGFloat(3).squareRoot(), 0, 0, -6 * ratio * CGFloat(3).squareRoot(), 15 * ratio * CGFloat(3).squareRoot()]
         let barLabelOriginY = [6 * ratioLocal, -15 * ratioLocal, 6 * ratioLocal, -36 * ratioLocal, 6 * ratioLocal, -15 * ratioLocal]
         for i in 0...5 {
@@ -1034,7 +1073,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             gameBG.addChild(barLabel)
         }
         //Creates cwe labels
-        let cweLabelsText = ["Enviroment and", "Weather and", "Climate"]
+        let cweLabelsText = ["Environment &", "Weather &", "Climate"]
         for i in 0...2 {
             let cweLabel = SKLabelNode(fontNamed: "ArialMT")
             cweLabel.text = cweLabelsText[i]
@@ -1047,7 +1086,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         // creates N/A lables
         for i in 0...3 {
             let naLabel = SKLabelNode(fontNamed: "ArialMT")
-            naLabel.text = "unrelated"
+            naLabel.text = "I don’t know"
             naLabel.fontSize = 30 * ratio
             naLabel.zPosition = 5
             naLabel.fontColor = SKColor.black
