@@ -131,6 +131,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var startTime: NSDate!
     var clickTime: NSDate!
     var currTime: NSDate!
+    var sessLabel: SKLabelNode!
     //UIButton setup -- manual magic values
     var questionPrompt1: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
     var q1: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
@@ -231,6 +232,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             if let responseJSON = responseJSON1 as? [String: Any] {
                 if let responseBody = responseJSON["body"] as? [String: Any] {
                     self.SESSIONID = (responseBody["id"] as! Int)
+                    self.sessLabel.text = String(responseBody["id"] as! Int)
                 } else {
                     print("Error: error in converting response body")
                 }
@@ -1031,12 +1033,20 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         }
         // Create Immobile Bank Label
         let bankLabel = SKLabelNode(fontNamed: "ArialMT")
-        bankLabel.text = "Word Bank"
-        bankLabel.fontSize = 50 * ratio
+        bankLabel.text = "Drag sub-concepts to base map below."
+        bankLabel.fontSize = 40 * ratio
         bankLabel.zPosition = 2
         bankLabel.position = CGPoint(x: naBG.frame.midX, y: naBG.frame.maxY + (25 * ratio))
         bankLabel.fontColor = SKColor.black
         gameBG.addChild(bankLabel)
+        // Create session label
+        sessLabel = SKLabelNode(fontNamed: "ArialMT")
+        sessLabel.text = "Null"
+        sessLabel.fontSize = 15 * ratio
+        sessLabel.zPosition = 2
+        sessLabel.position = CGPoint(x: (35 * ratio) - (screenWidth / 2), y: (20 * ratio) - (screenHeight / 2))
+        sessLabel.fontColor = SKColor.black
+        gameBG.addChild(sessLabel)
         // Create Immobile Circle Labels
         let circleLabelText = ["Climate", "Weather", "Environment"]
         for i in 0...2 {
@@ -1125,35 +1135,15 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tile_label_teplate.position = CGPoint(x: (tileHeight / 2), y: 0)
         tile_label_teplate.fontColor = SKColor.black
         tile_label_teplate.zPosition = 2
-        // Creates template for the tile static color
-        let tile_color_template = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        tile_color_template.zPosition = 1
-        tile_color_template.strokeColor = SKColor.black
-        let tile_colors = [
-            SKColor(red: 240/255, green: 224/255, blue: 144/255, alpha: 1),
-            SKColor(red: 240/255, green: 224/255, blue: 144/255, alpha: 1),
-            SKColor(red: 180/255, green: 240/255, blue: 180/255, alpha: 1),
-            SKColor(red: 180/255, green: 240/255, blue: 180/255, alpha: 1),
-            SKColor(red: 180/255, green: 240/255, blue: 180/255, alpha: 1),
-            SKColor(red: 180/255, green: 240/255, blue: 240/255, alpha: 1),
-            SKColor(red: 180/255, green: 240/255, blue: 240/255, alpha: 1),
-            SKColor(red: 240/255, green: 180/255, blue: 180/255, alpha: 1),
-            SKColor(red: 240/255, green: 180/255, blue: 180/255, alpha: 1),
-            SKColor(red: 240/255, green: 180/255, blue: 180/255, alpha: 1),
-            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
-            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
-            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
-            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
-            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1)
-        ]
+        // Creates template for the tile static color // DEPRICATED
         // Create Sprite constants
         let temporaryValue1 = ((tileHeight - (2 * ratio)) - tileLength)
         let spriteOffset = (temporaryValue1 / 2) + (3 * ratio)
         let spritePos = CGPoint(x: spriteOffset, y: 0)
         let spriteSize = CGSize(width: tileHeight - (2 * ratio), height: tileHeight - (2 * ratio))
         // Labels and associated position for tiles
-        let tile_labelsText = ["Cooling\n temps ", "Warming\n  temps ", "   Fast \nchanges", "Moderate\nchanges", "   Slow \nchanges", "Farming", "Industry", "Local", "Regional", "Global", "Animals\n& plants", "People", "Forests", "Oceans", "Greenhouse\n      effect "]
-        let tile_labelsName = ["Cooling Temps", "Warming Temps", "Fast Changes", "Moderate Changes", "Slow Changes", "Farming", "Industry", "Local", "Regional", "Global", "Animals & Plants", "People", "Forests", "Oceans", "Greenhouse Effect"]
+        let tile_labelsText = ["Cooling\n temps ", "Warming\n  temps ", "   Fast \nchanges", "  Yearly\nchanges", "   Slow \nchanges", "Farming", "Industry", "Local\n area", "Regional\n   area", "Global\n  area", "Animals\n& plants", "People", "Forests", "Oceans", "Greenhouse\n      effect "]
+        let tile_labelsName = ["Cooling Temps", "Warming Temps", "Fast Changes", "Yearly Changes", "Slow Changes", "Farming", "Industry", "Local area", "Regional area", "Global area", "Animals & Plants", "People", "Forests", "Oceans", "Greenhouse Effect"]
         // Assign tile properties, append to game board as children
         for i in 0...14 {
             //tile
@@ -1169,10 +1159,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             tile_label.preferredMaxLayoutWidth = tileLengthOriginal
             tile_labels.append(tile_label)
             tile.addChild(tile_label)
-            //static color
-            let tile_color = tile_color_template.copy() as! SKShapeNode
-            tile_color.fillColor = tile_colors[i]
-            tile.addChild(tile_color)
             //sprite
             let tileSprite = SKSpriteNode(imageNamed: "TileSprite-\(i+1)")
             tileSprite.size = spriteSize
