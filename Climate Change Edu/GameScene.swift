@@ -101,6 +101,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var tile_labels: [SKLabelNode]!
     var tilePrev: [String] = []
     var tileCurr: [String] = []
+    var tileBankLocDict: [CGPoint]!
+    var tileBankTranslator: [Int] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
     var numButtons: [SKNode]!
     var numAttempt: [SKShapeNode]!
     var attempt: Int = 0
@@ -119,7 +121,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var circleWidth: CGFloat!
     var bottomMargin: CGFloat!
     var midMargin: CGFloat!
-    var tileBankLocDict: [CGPoint]!
     var remainingInBank: Int = 15
     var dictLookup: Int!
     var sequenceApp: Int = 1
@@ -498,8 +499,9 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             textFields[i].isHidden = false
         }
         resetCounter = 0
+        tileBankTranslator.shuffle()
         for tile in tiles {
-            tile.run(SKAction.move(by: CGVector(dx: tileBankLocDict[resetCounter].x - (tile.position.x), dy: tileBankLocDict[resetCounter].y - (tile.position.y)), duration: 0.3))
+            tile.run(SKAction.move(by: CGVector(dx: tileBankLocDict[tileBankTranslator[resetCounter]].x - (tile.position.x), dy: tileBankLocDict[tileBankTranslator[resetCounter]].y - (tile.position.y)), duration: 0.3))
             if tile.fillColor == SKColor(red: 1/2, green: 1, blue: 1, alpha: 1) {
                 tile.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
             }
@@ -896,7 +898,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                     if !nodeFound {
                         // Returns tile to it's proper bank location
                         dictLookup = (tiles.firstIndex(of: castedNode) ?? 0)
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[dictLookup].x - (nodeToMove.position.x), dy: tileBankLocDict[dictLookup].y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[tileBankTranslator[dictLookup]].x - (nodeToMove.position.x), dy: tileBankLocDict[tileBankTranslator[dictLookup]].y - (nodeToMove.position.y)), duration: 0.3))
                         castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                         // Returns tile to normal side
                         nodeToMove.run(SKAction.scale(to: 1, duration: 0.2))
@@ -923,6 +925,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     }
     
     private func initializeMenu() {
+        tileBankTranslator.shuffle()
         API3()
         while (school.count) == 1 {
             sleep(1)
@@ -1148,7 +1151,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         for i in 0...14 {
             //tile
             let tile = tile_shape.copy() as! SKShapeNode
-            tile.position = tileBankLocDict[i]
+            tile.position = tileBankLocDict[tileBankTranslator[i]]
             tiles.append(tile)
             gameBG.addChild(tile)
             //label
