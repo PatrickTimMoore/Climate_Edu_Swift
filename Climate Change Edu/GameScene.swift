@@ -133,6 +133,8 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var clickTime: NSDate!
     var currTime: NSDate!
     var sessLabel: SKLabelNode!
+    var previousSessionField: UITextField!
+    var spinLockAPI: Bool = false
     //UIButton setup -- manual magic values
     var questionPrompt1: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
     var q1: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
@@ -371,6 +373,93 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         }
         task.resume()
     }
+    func API5(){
+        // Prepare URL
+        let endpoint5:String = "https://xj53w9d4z7.execute-api.us-east-2.amazonaws.com/default/session_remake"
+        guard let URL5 = URL(string: endpoint5) else {
+            print("Error: Cannot create URL.")
+            spinLockAPI = false
+            return
+        }
+        // Prepare URL Request Obj
+        var URLRequest5 = URLRequest(url: URL5)
+        URLRequest5.httpMethod = "POST"
+        let newPost5 = ["body-json" : [
+            "last_session": previousSessionField.text!
+        ]]
+        // Creates JSoN
+        let jsonPost5 = try? JSONSerialization.data(withJSONObject: newPost5, options: [])
+        URLRequest5.httpBody = jsonPost5
+        URLRequest5.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        // Creates session
+        let task = URLSession.shared.dataTask(with: URLRequest5){ data, response, error in
+            guard let responseData = data, error == nil else {
+                print("Error: error in calling Post5")
+                print(error ?? "No Data")
+                self.spinLockAPI = false
+                return
+            }
+            // Parse responce
+            let responseJSON5 = try? JSONSerialization.jsonObject(with: responseData, options: [])
+            if let responseJSON = responseJSON5 as? [String: Any] {
+                if let responseBody = responseJSON["body"] as? [String: Any] {
+                    self.SESSIONID = (responseBody["id"] as! Int)
+                    self.sessLabel.text = String(responseBody["id"] as! Int)
+                    self.sequenceApp = self.sequenceApp + 1
+                    self.spinLockAPI = false
+                } else {
+                    print("Error: error in converting response body")
+                    self.spinLockAPI = false
+                }
+            } else {
+                print("Error: error in converting response data")
+                self.spinLockAPI = false
+            }
+        }
+        task.resume()
+    }
+    func API6(){
+        // Prepare URL
+        let endpoint6:String = "https://xj53w9d4z7.execute-api.us-east-2.amazonaws.com/default/stat_generate"
+        guard let URL6 = URL(string: endpoint6) else {
+            print("Error: Cannot create URL.")
+            spinLockAPI = false
+            return
+        }
+        // Prepare URL Request Obj
+        var URLRequest6 = URLRequest(url: URL6)
+        URLRequest6.httpMethod = "POST"
+        let newPost6 = ["body-json" : [
+            "session_id": SESSIONID
+        ]]
+        // Creates JSoN
+        let jsonPost6 = try? JSONSerialization.data(withJSONObject: newPost6, options: [])
+        URLRequest6.httpBody = jsonPost6
+        URLRequest6.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        // Creates session
+        let task = URLSession.shared.dataTask(with: URLRequest6){ data, response, error in
+            guard let responseData = data, error == nil else {
+                print("Error: error in calling Post6")
+                print(error ?? "No Data")
+                self.spinLockAPI = false
+                return
+            }
+            // Parse responce
+            let responseJSON6 = try? JSONSerialization.jsonObject(with: responseData, options: [])
+            if let responseJSON = responseJSON6 as? [String: Any] {
+                if (responseJSON["body"] as? [String: Any]) != nil {
+                    self.spinLockAPI = false
+                } else {
+                    print("Error: error in converting response body")
+                    self.spinLockAPI = false
+                }
+            } else {
+                print("Error: error in converting response data")
+                self.spinLockAPI = false
+            }
+        }
+        task.resume()
+    }
     
     // Question helper
     func setTileHistory(node:SKShapeNode, text:String){
@@ -437,25 +526,42 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     func validate1(){
         // Validate submit info and then send to SQL server
         // Then set up game
-        for i in 0...4 {
-            if textFields[i].text == "" || textFields[i].text == nil {
-                return
+        if previousSessionField.text == "" || previousSessionField.text == nil {
+            for i in 0...4 {
+                if textFields[i].text == "" || textFields[i].text == nil {
+                    return
+                }
+            }
+            //ID handlers
+            ETHNICID = "\(race.firstIndex(of: textFields[3].text!)! + 1)"
+            SEXID = textFields[4].text == gender[1] ? "M" : "F"
+            AGEID = "\(age.firstIndex(of: textFields[2].text!)! + 6)"
+            GRADEID = "\(grade.firstIndex(of: textFields[1].text!)! + 1)"
+            INSTRUCTID = "1" //TODO <- defualts Ross
+            SCHOOLID = "\(school.firstIndex(of: textFields[0].text!)!)"
+            form.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
+            for i in 0...4 {
+                textFields[i].isHidden = true
+                pickers[i].isHidden = true
+            }
+            previousSessionField.isHidden = true
+            API1()
+            sequenceApp = sequenceApp + 1
+        } else {
+            spinLockAPI = true
+            API5()
+            while spinLockAPI == true {
+                sleep(1)
+            }
+            if sequenceApp == 2 {
+                form.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
+                for i in 0...4 {
+                    textFields[i].isHidden = true
+                    pickers[i].isHidden = true
+                }
+                previousSessionField.isHidden = true
             }
         }
-        //ID handlers
-        ETHNICID = "\(race.firstIndex(of: textFields[3].text!)! + 1)"
-        SEXID = textFields[4].text == gender[1] ? "M" : "F"
-        AGEID = "\(age.firstIndex(of: textFields[2].text!)! + 6)"
-        GRADEID = "\(grade.firstIndex(of: textFields[1].text!)! + 1)"
-        INSTRUCTID = "1" //TODO <- defualts Ross
-        SCHOOLID = "\(school.firstIndex(of: textFields[0].text!)!)"
-        form.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
-        for i in 0...4 {
-            textFields[i].isHidden = true
-            pickers[i].isHidden = true
-        }
-        API1()
-        sequenceApp = sequenceApp + 1
     }
     func validate2(node:SKShapeNode){
         // Validate submit info and then send to SQL server
@@ -486,6 +592,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             submitLabel.text = "SUBMIT"
         }
         if sequenceApp == 6 {
+            API6()
             stepBackward2()
         }
     }
@@ -498,6 +605,9 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         for i in 0...4 {
             textFields[i].isHidden = false
         }
+        previousSessionField.text = ""
+        previousSessionField.isHidden = false
+        sessLabel.text = "Null"
         resetCounter = 0
         tileBankTranslator.shuffle()
         for tile in tiles {
@@ -1283,6 +1393,9 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         let originX = (view.frame.size.width - view.frame.size.width/1.5)/2
         pickers = []
         textFields = []
+        previousSessionField = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5 - CGFloat(60), width: view.frame.size.width/1.5, height: 30))
+        view.addSubview(previousSessionField)
+        customize(textField: previousSessionField, placeholder: "Previous Session (Optional)")
         for i in 0...4 {
             let picker = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
             picker.dataSource = self
