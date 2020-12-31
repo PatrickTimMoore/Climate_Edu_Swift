@@ -97,18 +97,29 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var p2: CGPoint!
     var p3: CGPoint!
     var tileIndex: Int!
+    var stat_label_1: SKLabelNode!
+    var stat_label_2: SKLabelNode!
+    var stat_tiles: [SKShapeNode] = []
+    var stat_tile_labels: [SKLabelNode] = []
     var tiles: [SKShapeNode]!
     var tile_labels: [SKLabelNode]!
     var tilePrev: [String] = []
     var tileCurr: [String] = []
+    var tileBankLocDict: [CGPoint]!
+    var stat_tileBankLocDict: [CGPoint]!
+    var tileBankTranslator: [Int] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    var spriteSize: CGSize!
+    var spritePos: CGPoint!
     var numButtons: [SKNode]!
     var numAttempt: [SKShapeNode]!
     var attempt: Int = 0
     var form: SKShapeNode!
     var questionForm: SKShapeNode!
     var passScreen: SKShapeNode!
+    var statScreen: SKShapeNode!
     var submit: SKShapeNode!
     var submitLabel: SKLabelNode!
+    var statBtn: SKShapeNode!
     var contBtn: SKShapeNode!
     var questionBtn: SKShapeNode!
     var nodeToMove: SKNode!
@@ -119,7 +130,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var circleWidth: CGFloat!
     var bottomMargin: CGFloat!
     var midMargin: CGFloat!
-    var tileBankLocDict: [CGPoint]!
     var remainingInBank: Int = 15
     var dictLookup: Int!
     var sequenceApp: Int = 1
@@ -131,6 +141,49 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     var startTime: NSDate!
     var clickTime: NSDate!
     var currTime: NSDate!
+    var sessLabel: SKLabelNode!
+    var previousSessionField: UITextField!
+    var oldStats: Array<Any> = Array(repeating: NSNull(), count: 30)
+    var newStats: Array<Any> = Array(repeating: NSNull(), count: 30)
+    var oldStat1img: SKSpriteNode! = nil
+    var oldStat2img: SKSpriteNode! = nil
+    var oldStat3img: SKSpriteNode! = nil
+    var oldStat4img: SKSpriteNode! = nil
+    var oldStat5img: SKSpriteNode! = nil
+    var oldStat6img: SKSpriteNode! = nil
+    var oldStat7img: SKSpriteNode! = nil
+    var oldStat8img: SKSpriteNode! = nil
+    var oldStat9img: SKSpriteNode! = nil
+    var oldStat10img: SKSpriteNode! = nil
+    var oldStat11img: SKSpriteNode! = nil
+    var oldStat12img: SKSpriteNode! = nil
+    var oldStat13img: SKSpriteNode! = nil
+    var oldStat14img: SKSpriteNode! = nil
+    var oldStat15img: SKSpriteNode! = nil
+    var oldStat16img: SKSpriteNode! = nil
+    var oldStat17img: SKSpriteNode! = nil
+    var oldStat18img: SKSpriteNode! = nil
+    var newStat1img: SKSpriteNode! = nil
+    var newStat2img: SKSpriteNode! = nil
+    var newStat3img: SKSpriteNode! = nil
+    var newStat4img: SKSpriteNode! = nil
+    var newStat5img: SKSpriteNode! = nil
+    var newStat6img: SKSpriteNode! = nil
+    var newStat7img: SKSpriteNode! = nil
+    var newStat8img: SKSpriteNode! = nil
+    var newStat9img: SKSpriteNode! = nil
+    var newStat10img: SKSpriteNode! = nil
+    var newStat11img: SKSpriteNode! = nil
+    var newStat12img: SKSpriteNode! = nil
+    var newStat13img: SKSpriteNode! = nil
+    var newStat14img: SKSpriteNode! = nil
+    var newStat15img: SKSpriteNode! = nil
+    var newStat16img: SKSpriteNode! = nil
+    var newStat17img: SKSpriteNode! = nil
+    var newStat18img: SKSpriteNode! = nil
+    var oldStatImgs: [SKSpriteNode?]!
+    var newStatImgs: [SKSpriteNode?]!
+    var spinLockAPI: Bool = false
     //UIButton setup -- manual magic values
     var questionPrompt1: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
     var q1: SKLabelNode = SKLabelNode(fontNamed: "ArialMT")
@@ -231,6 +284,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             if let responseJSON = responseJSON1 as? [String: Any] {
                 if let responseBody = responseJSON["body"] as? [String: Any] {
                     self.SESSIONID = (responseBody["id"] as! Int)
+                    self.sessLabel.text = String(responseBody["id"] as! Int)
                 } else {
                     print("Error: error in converting response body")
                 }
@@ -368,6 +422,226 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         }
         task.resume()
     }
+    func API5(){
+        // Prepare URL
+        let endpoint5:String = "https://xj53w9d4z7.execute-api.us-east-2.amazonaws.com/default/session_remake"
+        guard let URL5 = URL(string: endpoint5) else {
+            print("Error: Cannot create URL.")
+            spinLockAPI = false
+            return
+        }
+        // Prepare URL Request Obj
+        var URLRequest5 = URLRequest(url: URL5)
+        URLRequest5.httpMethod = "POST"
+        let newPost5 = ["body-json" : [
+            "last_session": previousSessionField.text!
+        ]]
+        // Creates JSoN
+        let jsonPost5 = try? JSONSerialization.data(withJSONObject: newPost5, options: [])
+        URLRequest5.httpBody = jsonPost5
+        URLRequest5.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        // Creates session
+        let task = URLSession.shared.dataTask(with: URLRequest5){ data, response, error in
+            guard let responseData = data, error == nil else {
+                print("Error: error in calling Post5")
+                print(error ?? "No Data")
+                self.spinLockAPI = false
+                return
+            }
+            // Parse responce
+            let responseJSON5 = try? JSONSerialization.jsonObject(with: responseData, options: [])
+            if let responseJSON = responseJSON5 as? [String: Any] {
+                if let responseBody = responseJSON["body"] as? [String: Any] {
+                    self.SESSIONID = (responseBody["id"] as! Int)
+                    self.sessLabel.text = String(responseBody["id"] as! Int)
+                    self.sequenceApp = self.sequenceApp + 1
+                    self.spinLockAPI = false
+                } else {
+                    print("Error: error in converting response body")
+                    self.spinLockAPI = false
+                }
+            } else {
+                print("Error: error in converting response data")
+                self.spinLockAPI = false
+            }
+        }
+        task.resume()
+    }
+    func API6(){
+        // Prepare URL
+        let endpoint6:String = "https://xj53w9d4z7.execute-api.us-east-2.amazonaws.com/default/stat_generate"
+        guard let URL6 = URL(string: endpoint6) else {
+            print("Error: Cannot create URL.")
+            spinLockAPI = false
+            return
+        }
+        // Prepare URL Request Obj
+        var URLRequest6 = URLRequest(url: URL6)
+        URLRequest6.httpMethod = "POST"
+        let newPost6 = ["body-json" : [
+            "session_id": SESSIONID
+        ]]
+        // Creates JSoN
+        let jsonPost6 = try? JSONSerialization.data(withJSONObject: newPost6, options: [])
+        URLRequest6.httpBody = jsonPost6
+        URLRequest6.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        // Creates session
+        let task = URLSession.shared.dataTask(with: URLRequest6){ data, response, error in
+            guard let responseData = data, error == nil else {
+                print("Error: error in calling Post6")
+                print(error ?? "No Data")
+                self.spinLockAPI = false
+                return
+            }
+            // Parse responce
+            let responseJSON6 = try? JSONSerialization.jsonObject(with: responseData, options: [])
+            if let responseJSON = responseJSON6 as? [String: Any] {
+                if (responseJSON["body"] as? [String: Any]) != nil {
+                    self.spinLockAPI = false
+                } else {
+                    print("Error: error in converting response body")
+                    self.spinLockAPI = false
+                }
+            } else {
+                print("Error: error in converting response data")
+                self.spinLockAPI = false
+            }
+        }
+        task.resume()
+    }
+    func API7(){
+        // Prepare URL
+        let endpoint7:String = "https://xj53w9d4z7.execute-api.us-east-2.amazonaws.com/default/stat_display"
+        guard let URL7 = URL(string: endpoint7) else {
+            print("Error: Cannot create URL.")
+            spinLockAPI = false
+            return
+        }
+        // Prepare URL Request Obj
+        var URLRequest7 = URLRequest(url: URL7)
+        URLRequest7.httpMethod = "POST"
+        let newPost7 = ["body-json" : [
+            "old_id": previousSessionField.text!,
+            "new_id": SESSIONID
+        ]]
+        // Creates JSoN
+        let jsonPost7 = try? JSONSerialization.data(withJSONObject: newPost7, options: [])
+        URLRequest7.httpBody = jsonPost7
+        URLRequest7.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        // Creates session
+        let task = URLSession.shared.dataTask(with: URLRequest7){ data, response, error in
+            guard let responseData = data, error == nil else {
+                print("Error: error in calling Post7")
+                print(error ?? "No Data")
+                self.spinLockAPI = false
+                return
+            }
+            // Parse responce
+            let responseJSON7 = try? JSONSerialization.jsonObject(with: responseData, options: [])
+            if let responseJSON = responseJSON7 as? [String: Any] {
+                if let responseBody = responseJSON["body"] as? [String: Any] {
+                    self.oldStats = responseBody["Old_Stats"] as! Array<Any>
+                    self.newStats = responseBody["New_Stats"] as! Array<Any>
+                    self.spinLockAPI = false
+                } else {
+                    print("Error: error in converting response body")
+                    self.spinLockAPI = false
+                }
+            } else {
+                print("Error: error in converting response data")
+                self.spinLockAPI = false
+            }
+        }
+        task.resume()
+    }
+    
+    // Stat helper
+    func buildStats() {
+        for oldImg in oldStatImgs {
+            if oldImg != nil {
+                oldImg!.removeFromParent()
+            }
+        }
+        for newImg in newStatImgs {
+            if newImg != nil {
+                newImg!.removeFromParent()
+            }
+        }
+        for tile_label in stat_tile_labels {
+            tile_label.text = ""
+        }
+        spinLockAPI = true
+        API7()
+        while spinLockAPI == true {
+            sleep(1)
+        }
+        let num_pass_arr = [0, 2, 4, 6, 8, 10, 18, 20, 22]
+        let tile_pass_arr = [0, 1, 2, 3, 4, 5, 9, 10, 11]
+        for pass_num in 0...8 {
+            if(!(oldStats[num_pass_arr[pass_num]] is NSNull)){
+                oldStatImgs[tile_pass_arr[pass_num]] = SKSpriteNode(imageNamed: "TileSprite-\((oldStats[num_pass_arr[pass_num]] as! Int) + 1)")
+                oldStatImgs[tile_pass_arr[pass_num]]!.size = spriteSize
+                oldStatImgs[tile_pass_arr[pass_num]]!.position = spritePos
+                oldStatImgs[tile_pass_arr[pass_num]]!.zPosition = 1
+                stat_tiles[tile_pass_arr[pass_num] + 18].addChild(oldStatImgs[tile_pass_arr[pass_num]]!)
+                stat_tile_labels[tile_pass_arr[pass_num] + 18].text = "\(String(format: "%.2f", (oldStats[num_pass_arr[pass_num] + 1] as! NSNumber).floatValue))s"
+            }
+            if(!(newStats[num_pass_arr[pass_num]] is NSNull)){
+                newStatImgs[tile_pass_arr[pass_num]] = SKSpriteNode(imageNamed: "TileSprite-\((newStats[num_pass_arr[pass_num]] as! Int) + 1)")
+                newStatImgs[tile_pass_arr[pass_num]]!.size = spriteSize
+                newStatImgs[tile_pass_arr[pass_num]]!.position = spritePos
+                newStatImgs[tile_pass_arr[pass_num]]!.zPosition = 1
+                stat_tiles[tile_pass_arr[pass_num]].addChild(newStatImgs[tile_pass_arr[pass_num]]!)
+                stat_tile_labels[tile_pass_arr[pass_num]].text = "\(String(format: "%.2f", (newStats[num_pass_arr[pass_num] + 1] as! NSNumber).floatValue))s"
+            }
+        }
+        let num_pass_arr_2 = [12, 14, 16]
+        let tile_pass_arr_2 = [6, 7, 8]
+        for pass_num_2 in 0...2 {
+            if(!(oldStats[num_pass_arr_2[pass_num_2]] is NSNull)){
+                oldStatImgs[tile_pass_arr_2[pass_num_2]] = SKSpriteNode(imageNamed: "TileSprite-\((oldStats[num_pass_arr_2[pass_num_2]] as! Int) + 1)")
+                oldStatImgs[tile_pass_arr_2[pass_num_2]]!.size = spriteSize
+                oldStatImgs[tile_pass_arr_2[pass_num_2]]!.position = spritePos
+                oldStatImgs[tile_pass_arr_2[pass_num_2]]!.zPosition = 1
+                stat_tiles[tile_pass_arr_2[pass_num_2] + 18].addChild(oldStatImgs[tile_pass_arr_2[pass_num_2]]!)
+                stat_tile_labels[tile_pass_arr_2[pass_num_2] + 18].text = "\(String(format: "%.0f", (oldStats[num_pass_arr_2[pass_num_2] + 1] as! NSNumber).floatValue))"
+            }
+            if(!(newStats[num_pass_arr_2[pass_num_2]] is NSNull)){
+                newStatImgs[tile_pass_arr_2[pass_num_2]] = SKSpriteNode(imageNamed: "TileSprite-\((newStats[num_pass_arr_2[pass_num_2]] as! Int) + 1)")
+                newStatImgs[tile_pass_arr_2[pass_num_2]]!.size = spriteSize
+                newStatImgs[tile_pass_arr_2[pass_num_2]]!.position = spritePos
+                newStatImgs[tile_pass_arr_2[pass_num_2]]!.zPosition = 1
+                stat_tiles[tile_pass_arr_2[pass_num_2]].addChild(newStatImgs[tile_pass_arr_2[pass_num_2]]!)
+                stat_tile_labels[tile_pass_arr_2[pass_num_2]].text = "\(String(format: "%.0f", (newStats[num_pass_arr_2[pass_num_2] + 1] as! NSNumber).floatValue))"
+            }
+        }
+        for pass_num_3 in 12...17 {
+            if(!(oldStats[pass_num_3 + 12] is NSNull)){
+                oldStatImgs[pass_num_3] = SKSpriteNode(imageNamed: "TileSprite-\((oldStats[pass_num_3 + 12] as! Int) + 1)")
+                oldStatImgs[pass_num_3]!.size = spriteSize
+                oldStatImgs[pass_num_3]!.position = spritePos
+                oldStatImgs[pass_num_3]!.zPosition = 1
+                stat_tiles[pass_num_3 + 18].addChild(oldStatImgs[pass_num_3]!)
+            }
+            if(!(newStats[pass_num_3 + 12] is NSNull)){
+                newStatImgs[pass_num_3] = SKSpriteNode(imageNamed: "TileSprite-\((newStats[pass_num_3 + 12] as! Int) + 1)")
+                newStatImgs[pass_num_3]!.size = spriteSize
+                newStatImgs[pass_num_3]!.position = spritePos
+                newStatImgs[pass_num_3]!.zPosition = 1
+                stat_tiles[pass_num_3].addChild(newStatImgs[pass_num_3]!)
+            }
+        }
+        if SESSIONID != 0 {
+            stat_label_1.text = "Session \(SESSIONID)"
+        } else {
+            stat_label_1.text = ""
+        }
+        if previousSessionField.text! != "" {
+            stat_label_2.text = "Session \(previousSessionField.text!)"
+        } else {
+            stat_label_2.text = ""
+        }
+    }
     
     // Question helper
     func setTileHistory(node:SKShapeNode, text:String){
@@ -434,25 +708,42 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     func validate1(){
         // Validate submit info and then send to SQL server
         // Then set up game
-        for i in 0...4 {
-            if textFields[i].text == "" || textFields[i].text == nil {
-                return
+        if previousSessionField.text == "" || previousSessionField.text == nil {
+            for i in 0...4 {
+                if textFields[i].text == "" || textFields[i].text == nil {
+                    return
+                }
+            }
+            //ID handlers
+            ETHNICID = "\(race.firstIndex(of: textFields[3].text!)! + 1)"
+            SEXID = textFields[4].text == gender[1] ? "M" : "F"
+            AGEID = "\(age.firstIndex(of: textFields[2].text!)! + 6)"
+            GRADEID = "\(grade.firstIndex(of: textFields[1].text!)! + 1)"
+            INSTRUCTID = "1" //TODO <- defualts Ross
+            SCHOOLID = "\(school.firstIndex(of: textFields[0].text!)!)"
+            form.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
+            for i in 0...4 {
+                textFields[i].isHidden = true
+                pickers[i].isHidden = true
+            }
+            previousSessionField.isHidden = true
+            API1()
+            sequenceApp = sequenceApp + 1
+        } else {
+            spinLockAPI = true
+            API5()
+            while spinLockAPI == true {
+                sleep(1)
+            }
+            if sequenceApp == 2 {
+                form.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
+                for i in 0...4 {
+                    textFields[i].isHidden = true
+                    pickers[i].isHidden = true
+                }
+                previousSessionField.isHidden = true
             }
         }
-        //ID handlers
-        ETHNICID = "\(race.firstIndex(of: textFields[3].text!)! + 1)"
-        SEXID = textFields[4].text == gender[1] ? "M" : "F"
-        AGEID = "\(age.firstIndex(of: textFields[2].text!)! + 6)"
-        GRADEID = "\(grade.firstIndex(of: textFields[1].text!)! + 1)"
-        INSTRUCTID = "1" //TODO <- defualts Ross
-        SCHOOLID = "\(school.firstIndex(of: textFields[0].text!)!)"
-        form.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
-        for i in 0...4 {
-            textFields[i].isHidden = true
-            pickers[i].isHidden = true
-        }
-        API1()
-        sequenceApp = sequenceApp + 1
     }
     func validate2(node:SKShapeNode){
         // Validate submit info and then send to SQL server
@@ -471,7 +762,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         passScreen.zPosition = zPosUpdater + 2
         contBtn.run(SKAction.fadeAlpha(to: 0, duration: 0))
         sequenceApp = sequenceApp + 1
-        followDisable = false
     }
     func stepForward2(){
         passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
@@ -483,8 +773,21 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             submitLabel.text = "SUBMIT"
         }
         if sequenceApp == 6 {
-            stepBackward2()
+            spinLockAPI = true
+            API6()
+            while spinLockAPI == true {
+                sleep(1)
+            }
+            statScreen.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
+            statScreen.zPosition = zPosUpdater + 2
+            buildStats()
+            sequenceApp = 6
         }
+    }
+    func stepForward3(){
+        statScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
+        statScreen.zPosition = zPosUpdater + 2
+        stepBackward2()
     }
     func stepBackward1(){
         passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
@@ -495,9 +798,13 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         for i in 0...4 {
             textFields[i].isHidden = false
         }
+        previousSessionField.text = ""
+        previousSessionField.isHidden = false
+        sessLabel.text = "Null"
         resetCounter = 0
+        tileBankTranslator.shuffle()
         for tile in tiles {
-            tile.run(SKAction.move(by: CGVector(dx: tileBankLocDict[resetCounter].x - (tile.position.x), dy: tileBankLocDict[resetCounter].y - (tile.position.y)), duration: 0.3))
+            tile.run(SKAction.move(by: CGVector(dx: tileBankLocDict[tileBankTranslator[resetCounter]].x - (tile.position.x), dy: tileBankLocDict[tileBankTranslator[resetCounter]].y - (tile.position.y)), duration: 0.3))
             if tile.fillColor == SKColor(red: 1/2, green: 1, blue: 1, alpha: 1) {
                 tile.run(SKAction.rotate(byAngle: (CGFloat.pi/3), duration: 0.2))
             }
@@ -750,6 +1057,20 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                     }
                 }
             }
+        } else if (sequenceApp == 6) {
+            followDisable = true
+            for touch in touches {
+                let location = touch.location(in: self)
+                // Creates list of nodes sorted by Z-value at touch location
+                let touchedNode = self.nodes(at: location)
+                // Checks for first 'tile' node
+                for node in touchedNode {
+                    if node.name == "statBtn" && !node.hasActions(){
+                        stepForward3()
+                        break
+                    }
+                }
+            }
         }
     }
     
@@ -894,7 +1215,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                     if !nodeFound {
                         // Returns tile to it's proper bank location
                         dictLookup = (tiles.firstIndex(of: castedNode) ?? 0)
-                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[dictLookup].x - (nodeToMove.position.x), dy: tileBankLocDict[dictLookup].y - (nodeToMove.position.y)), duration: 0.3))
+                        nodeToMove.run(SKAction.move(by: CGVector(dx: tileBankLocDict[tileBankTranslator[dictLookup]].x - (nodeToMove.position.x), dy: tileBankLocDict[tileBankTranslator[dictLookup]].y - (nodeToMove.position.y)), duration: 0.3))
                         castedNode.fillColor = SKColor(red: 1, green: 1, blue: 1, alpha: 1)
                         // Returns tile to normal side
                         nodeToMove.run(SKAction.scale(to: 1, duration: 0.2))
@@ -921,11 +1242,15 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     }
     
     private func initializeMenu() {
+        tileBankTranslator.shuffle()
         API3()
         while (school.count) == 1 {
             sleep(1)
         }
         // THE NEXT 80 lines are just dog shit code design. Good luck.
+        // setting array for stats
+        oldStatImgs = [oldStat1img, oldStat2img, oldStat3img, oldStat4img, oldStat5img, oldStat6img, oldStat7img, oldStat8img, oldStat9img, oldStat10img, oldStat11img, oldStat12img, oldStat13img, oldStat14img, oldStat15img, oldStat16img, oldStat17img, oldStat18img]
+        newStatImgs = [newStat1img, newStat2img, newStat3img, newStat4img, newStat5img, newStat6img, newStat7img, newStat8img, newStat9img, newStat10img, newStat11img, newStat12img, newStat13img, newStat14img, newStat15img, newStat16img, newStat17img, newStat18img]
         // Declaring constants to determine object sizing
         let screenSize: CGRect = UIScreen.main.bounds
         let screenWidth = screenSize.width
@@ -1031,12 +1356,20 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         }
         // Create Immobile Bank Label
         let bankLabel = SKLabelNode(fontNamed: "ArialMT")
-        bankLabel.text = "Word Bank"
-        bankLabel.fontSize = 50 * ratio
+        bankLabel.text = "Drag sub-concepts to base map below."
+        bankLabel.fontSize = 40 * ratio
         bankLabel.zPosition = 2
         bankLabel.position = CGPoint(x: naBG.frame.midX, y: naBG.frame.maxY + (25 * ratio))
         bankLabel.fontColor = SKColor.black
         gameBG.addChild(bankLabel)
+        // Create session label
+        sessLabel = SKLabelNode(fontNamed: "ArialMT")
+        sessLabel.text = "Null"
+        sessLabel.fontSize = 15 * ratio
+        sessLabel.zPosition = 2
+        sessLabel.position = CGPoint(x: (35 * ratio) - (screenWidth / 2), y: (20 * ratio) - (screenHeight / 2))
+        sessLabel.fontColor = SKColor.black
+        gameBG.addChild(sessLabel)
         // Create Immobile Circle Labels
         let circleLabelText = ["Climate", "Weather", "Environment"]
         for i in 0...2 {
@@ -1108,6 +1441,19 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             y_pos_iter += (tileMin - tileMax) / 4
             x_pos_iter = tileOffsetX - (2 * tileBufferX) + (tileLength / 2)
         }
+        // same thing for stats
+        stat_tileBankLocDict = []
+        let statTileMin = bottomMargin + midMargin + circleWidth
+        x_pos_iter = (tileOffsetX - (2 * tileLength)) * 0.87
+        y_pos_iter = statTileMin + 1.74*tileHeight
+        while x_pos_iter <= tileOffsetX + (2 * tileBufferX) + (tileLength / 2){
+            while y_pos_iter >= (statTileMin) {
+                stat_tileBankLocDict.append(CGPoint(x:x_pos_iter, y:y_pos_iter))
+                y_pos_iter -= tileHeight * 0.87
+            }
+            x_pos_iter += tileLength * 0.87
+            y_pos_iter = statTileMin + 1.74*tileHeight
+        }
         // Creates shape for tiles to be used
         let tile_shape = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 2), width: tileLength, height: tileHeight))
         tile_shape.name = "tile"
@@ -1125,40 +1471,20 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         tile_label_teplate.position = CGPoint(x: (tileHeight / 2), y: 0)
         tile_label_teplate.fontColor = SKColor.black
         tile_label_teplate.zPosition = 2
-        // Creates template for the tile static color
-        let tile_color_template = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2) + tileHeight, y: -(tileHeight / 2), width: tileLength - tileHeight, height: tileHeight))
-        tile_color_template.zPosition = 1
-        tile_color_template.strokeColor = SKColor.black
-        let tile_colors = [
-            SKColor(red: 240/255, green: 224/255, blue: 144/255, alpha: 1),
-            SKColor(red: 240/255, green: 224/255, blue: 144/255, alpha: 1),
-            SKColor(red: 180/255, green: 240/255, blue: 180/255, alpha: 1),
-            SKColor(red: 180/255, green: 240/255, blue: 180/255, alpha: 1),
-            SKColor(red: 180/255, green: 240/255, blue: 180/255, alpha: 1),
-            SKColor(red: 180/255, green: 240/255, blue: 240/255, alpha: 1),
-            SKColor(red: 180/255, green: 240/255, blue: 240/255, alpha: 1),
-            SKColor(red: 240/255, green: 180/255, blue: 180/255, alpha: 1),
-            SKColor(red: 240/255, green: 180/255, blue: 180/255, alpha: 1),
-            SKColor(red: 240/255, green: 180/255, blue: 180/255, alpha: 1),
-            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
-            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
-            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
-            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1),
-            SKColor(red: 200/255, green: 240/255, blue: 240/255, alpha: 1)
-        ]
+        // Creates template for the tile static color // DEPRICATED
         // Create Sprite constants
         let temporaryValue1 = ((tileHeight - (2 * ratio)) - tileLength)
         let spriteOffset = (temporaryValue1 / 2) + (3 * ratio)
-        let spritePos = CGPoint(x: spriteOffset, y: 0)
-        let spriteSize = CGSize(width: tileHeight - (2 * ratio), height: tileHeight - (2 * ratio))
+        spritePos = CGPoint(x: spriteOffset, y: 0)
+        spriteSize = CGSize(width: tileHeight - (2 * ratio), height: tileHeight - (2 * ratio))
         // Labels and associated position for tiles
-        let tile_labelsText = ["Cooling\n temps ", "Warming\n  temps ", "   Fast \nchanges", "Moderate\nchanges", "   Slow \nchanges", "Farming", "Industry", "Local", "Regional", "Global", "Animals\n& plants", "People", "Forests", "Oceans", "Greenhouse\n      effect "]
-        let tile_labelsName = ["Cooling Temps", "Warming Temps", "Fast Changes", "Moderate Changes", "Slow Changes", "Farming", "Industry", "Local", "Regional", "Global", "Animals & Plants", "People", "Forests", "Oceans", "Greenhouse Effect"]
+        let tile_labelsText = ["Cooling\n temps ", "Warming\n  temps ", "   Fast \nchanges", "  Yearly\nchanges", "   Slow \nchanges", "Farming", "Industry", "Local\n area", "Regional\n   area", "Global\n  area", "Animals\n& plants", "People", "Forests", "Oceans", "Greenhouse\n      effect "]
+        let tile_labelsName = ["Cooling Temps", "Warming Temps", "Fast Changes", "Yearly Changes", "Slow Changes", "Farming", "Industry", "Local area", "Regional area", "Global area", "Animals & Plants", "People", "Forests", "Oceans", "Greenhouse Effect"]
         // Assign tile properties, append to game board as children
         for i in 0...14 {
             //tile
             let tile = tile_shape.copy() as! SKShapeNode
-            tile.position = tileBankLocDict[i]
+            tile.position = tileBankLocDict[tileBankTranslator[i]]
             tiles.append(tile)
             gameBG.addChild(tile)
             //label
@@ -1169,10 +1495,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             tile_label.preferredMaxLayoutWidth = tileLengthOriginal
             tile_labels.append(tile_label)
             tile.addChild(tile_label)
-            //static color
-            let tile_color = tile_color_template.copy() as! SKShapeNode
-            tile_color.fillColor = tile_colors[i]
-            tile.addChild(tile_color)
             //sprite
             let tileSprite = SKSpriteNode(imageNamed: "TileSprite-\(i+1)")
             tileSprite.size = spriteSize
@@ -1205,7 +1527,9 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         questionForm.addChild(questionBtn)
         passScreen = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
         passScreen.name = "pass"
-        let formCrew = [form, questionForm, passScreen]
+        statScreen = SKShapeNode.init(rect: CGRect(x: -(screenWidth*0.9 / 2), y: -(screenHeight*0.5 / 2), width: screenWidth*0.9, height: screenHeight*0.7), cornerRadius: 15)
+        statScreen.name = "statScreen"
+        let formCrew = [form, questionForm, passScreen, statScreen]
         for forms in formCrew {
             forms!.fillColor = SKColor.white
             forms!.strokeColor = SKColor.black
@@ -1289,11 +1613,87 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         contBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Continue Session", logo:nil, name:"contBtn")
         contBtn.zPosition = 1
         passScreen.addChild(contBtn)
+        // Stat tiles
+        for i in 0...17 {
+            //tile
+            let tile = tile_shape.copy() as! SKShapeNode
+            tile.position = stat_tileBankLocDict[i]
+            tile.run(SKAction.scale(to: 0.87, duration: 0))
+            stat_tiles.append(tile)
+            statScreen.addChild(tile)
+            let tile_label = tile_label_teplate.copy() as! SKLabelNode
+            tile_label.text = ""
+            tile_label.numberOfLines = 3
+            tile_label.preferredMaxLayoutWidth = tileLengthOriginal
+            stat_tile_labels.append(tile_label)
+            tile.addChild(tile_label)
+        }
+        for i in 0...17 {
+            //tile
+            let tile = tile_shape.copy() as! SKShapeNode
+            tile.position = CGPoint(x: stat_tileBankLocDict[i].x, y: stat_tileBankLocDict[i].y - (screenHeight / 6))
+            tile.run(SKAction.scale(to: 0.87, duration: 0))
+            stat_tiles.append(tile)
+            statScreen.addChild(tile)
+            let tile_label = tile_label_teplate.copy() as! SKLabelNode
+            tile_label.text = ""
+            tile_label.numberOfLines = 3
+            tile_label.preferredMaxLayoutWidth = tileLengthOriginal
+            stat_tile_labels.append(tile_label)
+            tile.addChild(tile_label)
+        }
+        let tile_shape_stat = SKShapeNode.init(rect: CGRect(x: -(tileLength / 2), y: -(tileHeight / 4), width: tileLength, height: tileHeight / 2))
+        tile_shape_stat.name = "tile"
+        tile_shape_stat.fillColor = SKColor.gray
+        tile_shape_stat.strokeColor = SKColor.black
+        tile_shape_stat.lineWidth = 2 * ratio
+        tile_shape_stat.zPosition = 6
+        let tile_label_teplate_stat = SKLabelNode(fontNamed: "ArialMT")
+        tile_label_teplate_stat.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tile_label_teplate_stat.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+        tile_label_teplate_stat.fontSize = tileLengthOriginal / 5
+        tile_label_teplate.position = CGPoint(x: 0, y: 0)
+        tile_label_teplate_stat.fontColor = SKColor.white
+        tile_label_teplate_stat.zPosition = 2
+        let header_labels = ["Last","Slowest",">1 Placement","Pause","Direction", "Unsureness"]
+        for i in 0...5 {
+            let tile1 = tile_shape_stat.copy() as! SKShapeNode
+            tile1.position = CGPoint(x: stat_tileBankLocDict[i*3].x, y: stat_tileBankLocDict[i*3].y - (screenHeight / 6) + tileHeight * 0.6525)
+            tile1.run(SKAction.scale(to: 0.87, duration: 0))
+            statScreen.addChild(tile1)
+            let tile2 = tile_shape_stat.copy() as! SKShapeNode
+            tile2.position = CGPoint(x: stat_tileBankLocDict[i*3].x, y: stat_tileBankLocDict[i*3].y + tileHeight * 0.6525)
+            tile2.run(SKAction.scale(to: 0.87, duration: 0))
+            statScreen.addChild(tile2)
+            let header_label = tile_label_teplate_stat.copy() as! SKLabelNode
+            header_label.text = header_labels[i]
+            header_label.numberOfLines = 1
+            header_label.preferredMaxLayoutWidth = tileLengthOriginal
+            let header_label_2 = header_label.copy() as! SKLabelNode
+            tile1.addChild(header_label)
+            tile2.addChild(header_label_2)
+        }
+        stat_label_1 = tile_label_teplate_stat.copy() as? SKLabelNode
+        stat_label_1.position = CGPoint(x: stat_tileBankLocDict[0].x, y: stat_tileBankLocDict[0].y + tileHeight * 1.1)
+        stat_label_1.fontColor = SKColor.black
+        stat_label_1.run(SKAction.scale(to: 0.87, duration: 0))
+        statScreen.addChild(stat_label_1)
+        stat_label_2 = tile_label_teplate_stat.copy() as? SKLabelNode
+        stat_label_2.position = CGPoint(x: stat_tileBankLocDict[0].x, y: stat_tileBankLocDict[0].y - (screenHeight / 6) + tileHeight * 1.1)
+        stat_label_2.fontColor = SKColor.black
+        stat_label_2.run(SKAction.scale(to: 0.87, duration: 0))
+        statScreen.addChild(stat_label_2)
+        statBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"New Session", logo:nil, name:"statBtn")
+        statBtn.zPosition = 1
+        statScreen.addChild(statBtn)
         // Add text fields/pickers for initial state
         guard let view = self.view else { return }
         let originX = (view.frame.size.width - view.frame.size.width/1.5)/2
         pickers = []
         textFields = []
+        previousSessionField = UITextField(frame: CGRect.init(x: originX, y: view.frame.size.height/4.5 - CGFloat(60), width: view.frame.size.width/1.5, height: 30))
+        view.addSubview(previousSessionField)
+        customize(textField: previousSessionField, placeholder: "Previous Session (Optional)")
         for i in 0...4 {
             let picker = UIPickerView(frame:CGRect(x: 0, y: view.frame.size.height - 216, width: view.frame.size.width, height: 216))
             picker.dataSource = self
@@ -1313,5 +1713,6 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         loginBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50),fillColor:SKColor.blue,title:"Begin Session",logo:nil,name:"loginBtn")
         loginBtn.zPosition = 9000
         form.addChild(loginBtn)
+        //buildStats()
     }
 }
