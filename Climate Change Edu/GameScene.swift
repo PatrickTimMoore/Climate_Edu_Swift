@@ -772,7 +772,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         } else {
             submitLabel.text = "SUBMIT"
         }
-        if sequenceApp == 6 {
+        if sequenceApp == 4 {
             spinLockAPI = true
             API6()
             while spinLockAPI == true {
@@ -781,13 +781,16 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             statScreen.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
             statScreen.zPosition = zPosUpdater + 2
             buildStats()
-            sequenceApp = 6
+            sequenceApp = 4
+        }
+        if sequenceApp == 7 {
+            stepBackward2()
         }
     }
     func stepForward3(){
         statScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
         statScreen.zPosition = zPosUpdater + 2
-        stepBackward2()
+        sequenceApp = sequenceApp + 1
     }
     func stepBackward1(){
         passScreen.run(SKAction.moveBy(x: 0, y: UIScreen.main.bounds.height, duration: 0.3))
@@ -912,7 +915,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                     }
                 }
             }
-        } else if (sequenceApp == 2) || (sequenceApp == 4) {
+        } else if (sequenceApp == 2) || (sequenceApp == 5) {
             followDisable = false
             for touch in touches {
                 let location = touch.location(in: self)
@@ -994,7 +997,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                     clickTime = NSDate()
                 }
             }
-        } else if (sequenceApp == 3) || (sequenceApp == 5) {
+        } else if (sequenceApp == 3) || (sequenceApp == 6) {
             followDisable = true
             for touch in touches {
                 let location = touch.location(in: self)
@@ -1057,7 +1060,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
                     }
                 }
             }
-        } else if (sequenceApp == 6) {
+        } else if (sequenceApp == 4) {
             followDisable = true
             for touch in touches {
                 let location = touch.location(in: self)
