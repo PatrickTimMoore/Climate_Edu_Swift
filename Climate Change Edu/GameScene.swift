@@ -434,7 +434,13 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         var URLRequest5 = URLRequest(url: URL5)
         URLRequest5.httpMethod = "POST"
         let newPost5 = ["body-json" : [
-            "last_session": previousSessionField.text!
+            "last_session": previousSessionField.text!,
+            "instructor_id": INSTRUCTID,
+            "school_id": SCHOOLID,
+            "ethnicity_id": ETHNICID,
+            "sex": SEXID,
+            "age": AGEID,
+            "grade": GRADEID
         ]]
         // Creates JSoN
         let jsonPost5 = try? JSONSerialization.data(withJSONObject: newPost5, options: [])
@@ -637,7 +643,11 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             stat_label_1.text = ""
         }
         if previousSessionField.text! != "" {
-            stat_label_2.text = "Session \(previousSessionField.text!)"
+            if (previousSessionField.text!.count > 4) {
+                stat_label_2.text = "Previous Session"
+            } else {
+                stat_label_2.text = "Session \(previousSessionField.text!)"
+            }
         } else {
             stat_label_2.text = ""
         }
@@ -730,6 +740,13 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
             API1()
             sequenceApp = sequenceApp + 1
         } else {
+            //ID handlers
+            ETHNICID = "\((race.firstIndex(of: textFields[3].text!) ?? -1) + 1)"
+            SEXID = textFields[4].text == gender[1] ? "M" : "F"
+            AGEID = "\((age.firstIndex(of: textFields[2].text!) ?? -6) + 6)"
+            GRADEID = "\((grade.firstIndex(of: textFields[1].text!) ?? -1) + 1)"
+            INSTRUCTID = "1" //TODO <- defualts Ross
+            SCHOOLID = "\(school.firstIndex(of: textFields[0].text!) ?? 0)"
             spinLockAPI = true
             API5()
             while spinLockAPI == true {
@@ -798,6 +815,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
     }
     func stepBackward2(){
         form.run(SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.height, duration: 0.3))
+        API6()
         for i in 0...4 {
             textFields[i].isHidden = false
         }
@@ -1686,7 +1704,7 @@ class GameScene: SKScene, UITextFieldDelegate, UIPickerViewDelegate, UIPickerVie
         stat_label_2.fontColor = SKColor.black
         stat_label_2.run(SKAction.scale(to: 0.87, duration: 0))
         statScreen.addChild(stat_label_2)
-        statBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"New Session", logo:nil, name:"statBtn")
+        statBtn = getButton(frame: CGRect(x:-self.size.width/4,y:-form.frame.height/4,width:self.size.width/2,height:50), fillColor:SKColor.blue, title:"Continue Session", logo:nil, name:"statBtn")
         statBtn.zPosition = 1
         statScreen.addChild(statBtn)
         // Add text fields/pickers for initial state
